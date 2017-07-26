@@ -1,0 +1,24 @@
+{
+  "name": "crayola",
+  "version": "1.0.0",
+  "description": "ES6 Game Development Library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://OmarGonzalez@bitbucket.org/OmarGonzalez/crayola.git"
+  },
+  "keywords": [
+    "Game",
+    "Dev"
+  ],
+  "author": "Omar Gonzalez",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/OmarGonzalez/crayola#readme",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.6.0"
+  }
+}
