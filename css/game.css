@@ -23,14 +23,6 @@ a{
     margin-right: auto;
 }
 
-.pixel{
-    width: 4px;
-    height: 4px;
-    background-color: black;
-    display:inline-grid;
-    float: left;
-}
-
 .legend{
     width: 800px;
     margin-right: auto;
