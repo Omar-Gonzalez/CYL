@@ -1,6 +1,6 @@
 #Crayola
 
-##S6 Library for browser based games
+## ES6 Tools for browser based games
 
 ## Dependencies 
 
@@ -9,9 +9,10 @@
 
 ## Usage 
 
-* todo
+* TODO
 
 ## License 
 
 * Code released under the MIT license.
+
 
