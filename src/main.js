@@ -16,7 +16,8 @@ class Scene{
         return {
             "noDpi":"CYL: you didn't set up pixel dimension, it's been set to 5px default",
             "noContainer":"CYL:Unable to retrieve Game Container (800x600)",
-            "noArgs":"CYL: You are missing the riht number of arguments for this method"
+            "noArgs":"CYL: You are missing the riht number of arguments for this method",
+            "updateParam": "CYL: to update a scene you need an array of sprites"
         }
     }
 
@@ -96,6 +97,7 @@ class Scene{
     pixelOff(x,y){
         if(this.validateCoordinates(x,y)){
             let id = x+','+y;
+
             document.getElementById(id).style.backgroundColor = this.pixel.off;
         }
     }
@@ -112,37 +114,24 @@ class Scene{
         return true;
     }
 
-    renderSprite(sprite){
-        for (let pixel of sprite){
-            if (pixel[2] === 1){
-                /**Turn pixel On**/
-                this.pixelOn(pixel[0],pixel[1]);
-            }else{
-                /**Pixel is off**/
-            }
-        }
-    }
-
     cleanSprites(){
-        for (let savedSprite of this.sprites){
+        for (let sprite of this.sprites){
             /**Turn Off Pixels**/
-            for (let sprite of savedSprite[0]){
-                this.pixelOff(sprite[0] + savedSprite[1], sprite[1] + savedSprite[2])
+            for (let pixel of sprite.shape){
+                this.pixelOff(pixel[0] + sprite.x, pixel[1] + sprite.y);
             }
         }
     }
 
-    updateSprite(sprite,x,y){
-        this.cleanSprites();
-        if (arguments.length === 3 && this.validateCoordinates(x,y)){
+    updateSprite(sprite){
+        if (arguments.length === 1){
             /**Save Current Sprite**/
-            let currentSprite = [sprite,x,y];
-            this.sprites.push(currentSprite);
+            this.sprites.push(sprite);
             /**Draw Current Sprite**/
-            for (let pixel of sprite){
-                if (pixel[2] === 1) {
+            for (let pixel of sprite.shape){
+                if (pixel[2] === 1){
                     /**Turn pixel On**/
-                    this.pixelOn(pixel[0] + x, pixel[1] + y);
+                    this.pixelOn(pixel[0] + sprite.x, pixel[1] + sprite.y);
                 }else{
                     /**Pixel is off**/
                 }
@@ -152,6 +141,16 @@ class Scene{
             return;
         }
     }
+
+    update(sprites){
+        if (Array.isArray(sprites)){
+            for (let sprite of sprites){
+                this.updateSprite(sprite);
+            }
+        }else{
+            console.log(this.msg.updateParam);
+        }
+    }
 }
 
 class Sprite{
@@ -159,8 +158,30 @@ class Sprite{
      * Class properties
      *  - this.shape : array with filtered coordinates
      *  - this.width : new line in shape
+     *  - this.x : x postion in scene
+     *  - this.y : y position in scene
+     *  - pixel : array[x,y,color
      */
-    constructor(width){
+    get msg(){
+        return {
+            "noWidth":"CYL: You need to define width for sprite"
+        }
+    }
+    constructor(width,x,y){
+
+        if (width === undefined){
+            console.log(this.msg.noWidth);
+            return;
+        }
+
+        if(x !== undefined && y !== undefined){
+            this.x = x;
+            this.y = y;
+        }else{
+            this.x = 0;
+            this.y = 1;
+        }
+
         this.coordinates = [
             1,1,1,1,
             1,0,0,1,
@@ -169,16 +190,16 @@ class Sprite{
         ]
 
         let index = 0;
-        let x = 0;
-        let y = 1;
         this.pixels = [];
+        let relativeX = 0;
+        let relativeY = 0;
         for(let state of this.coordinates){
-            let pixel = [x,y,state];
-            x++;
+            let pixel = [relativeX, relativeY, state];
+            relativeX++;
             index++;
             if(index % width === 0){
-                y++;
-                x = 0;
+                relativeY++;
+                relativeX = 0;
             }
             this.pixels.push(pixel);
         }
@@ -192,16 +213,21 @@ class Sprite{
 let block = new Sprite(4);
 
 window.scene= new Scene(10);
-//scene.drawFrame();
+scene.drawFrame();
 //scene.renderSprite(block.shape)
 
 let start = 5;
 
 var move = function () {
-    scene.updateSprite(block.shape,start,10);
+    scene.updateSprite(box);
     start++;
+    box.x = start;
     if (start < 40){
         setTimeout(move,100);
     }
 }
 
+
+let box = new Sprite(4,10,20);
+let box2 = new Sprite(4,40,20);
+scene.update([box,box2]);
