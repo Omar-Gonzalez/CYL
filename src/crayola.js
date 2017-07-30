@@ -10,7 +10,6 @@ class Scene{
      * this.frame[width,height]
      * this.pixelCount = total pixel density
      * this.container = Real px dimension of game container
-     * this.sprites = current sprites on scene
      */
     get msg(){
         return {
@@ -97,7 +96,6 @@ class Scene{
     pixelOff(x,y){
         if(this.validateCoordinates(x,y)){
             let id = x+','+y;
-
             document.getElementById(id).style.backgroundColor = this.pixel.off;
         }
     }
@@ -115,18 +113,12 @@ class Scene{
     }
 
     cleanSprites(){
-        for (let sprite of this.sprites){
-            /**Turn Off Pixels**/
-            for (let pixel of sprite.shape){
-                this.pixelOff(pixel[0] + sprite.x, pixel[1] + sprite.y);
-            }
-        }
+        const pixels = document.querySelectorAll('div.pixel');
+        pixels.forEach(pixel => pixel.style.backgroundColor = this.pixel.off);
     }
 
     updateSprite(sprite){
         if (arguments.length === 1){
-            /**Save Current Sprite**/
-            this.sprites.push(sprite);
             /**Draw Current Sprite**/
             for (let pixel of sprite.shape){
                 if (pixel[2] === 1){
@@ -143,13 +135,9 @@ class Scene{
     }
 
     update(sprites){
-        if (Array.isArray(sprites)){
-            this.cleanSprites();
-            for (let sprite of sprites){
-                this.updateSprite(sprite);
-            }
-        }else{
-            console.log(this.msg.updateParam);
+        this.cleanSprites();
+        for (let sprite of arguments){
+            this.updateSprite(sprite);
         }
     }
 }
@@ -215,20 +203,21 @@ let block = new Sprite(4);
 
 window.scene= new Scene(10);
 scene.drawFrame();
-//scene.renderSprite(block.shape)
 
-let start = 5;
+let box = new Sprite(4,2,20);
+let box2 = new Sprite(4,2,30);
+scene.update(box,box2);
+
+let start = 2;
+let start2 = 2;
 
 var move = function () {
-    scene.updateSprite(box);
+    scene.update(box,box2);
     start++;
+    start2 = start2 + 2;
     box.x = start;
-    if (start < 40){
+    box2.x = start2;
+    if (start < 30){
         setTimeout(move,100);
     }
 }
-
-
-let box = new Sprite(4,10,20);
-let box2 = new Sprite(4,40,20);
-scene.update([box,box2]);
