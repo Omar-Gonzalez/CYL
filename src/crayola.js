@@ -10,6 +10,7 @@ class Scene{
      * this.frame[width,height]
      * this.pixelCount = total pixel density
      * this.container = Real px dimension of game container
+     * this.framePixels = Current pixels ids in frame
      */
     get msg(){
         return {
@@ -20,11 +21,11 @@ class Scene{
         }
     }
 
-    constructor(dpi){
-        if (dpi !== undefined){
+    constructor(dpi) {
+        if (dpi !== undefined) {
             this.dpi = dpi;
-        }else{
-            this.dpi = 5;
+        } else {
+            this.dpi = 8;
             console.log(this.msg.noDpi);
         }
         this.iterationY = 0;
@@ -32,6 +33,7 @@ class Scene{
         this.pixelCount = 0;
         this.pixelIndex = 0;
         this.sprites = [];
+        this.framePixelsIds = [];
     }
 
     get container(){
@@ -89,6 +91,7 @@ class Scene{
     pixelOn(x,y){
         if(this.validateCoordinates(x,y)){
             let id = x+','+y;
+            this.framePixelsIds.push(id);
             document.getElementById(id).style.backgroundColor = this.pixel.on;
         }
     }
@@ -113,8 +116,10 @@ class Scene{
     }
 
     cleanSprites(){
-        const pixels = document.querySelectorAll('div.pixel');
-        pixels.forEach(pixel => pixel.style.backgroundColor = this.pixel.off);
+        for(let id of this.framePixelsIds){
+            document.getElementById(id).style.backgroundColor = this.pixel.off;
+        }
+        this.framePixelsIds = [];
     }
 
     updateSprite(sprite){
@@ -135,9 +140,13 @@ class Scene{
     }
 
     update(sprites){
-        this.cleanSprites();
-        for (let sprite of arguments){
-            this.updateSprite(sprite);
+        if(Array.isArray(sprites)){
+            this.cleanSprites();
+            for (let sprite of sprites){
+                this.updateSprite(sprite);
+            }
+        }else{
+            console.log(this.msg.updateParam)
         }
     }
 }
@@ -145,6 +154,7 @@ class Scene{
 class Sprite{
     /**
      * Class properties
+     *  - this.coordintes : the shape you want to make
      *  - this.shape : array with filtered coordinates
      *  - this.width : new line in shape
      *  - this.x : x postion in scene
@@ -153,13 +163,19 @@ class Sprite{
      */
     get msg(){
         return {
-            "noWidth":"CYL: You need to define width for sprite"
+            "noWidth":"CYL : You need to define width to initialize a sprite",
+            "noShape":"CYL : You need a shape to initialize a sprite"
         }
     }
-    constructor(width,x,y){
+    constructor(width,shape,x,y){
 
         if (width === undefined){
             console.log(this.msg.noWidth);
+            return;
+        }
+
+        if(shape === undefined){
+            console.log(this.msg.noShape);
             return;
         }
 
@@ -171,12 +187,7 @@ class Sprite{
             this.y = 1;
         }
 
-        this.coordinates = [
-            1,1,1,1,
-            1,0,0,1,
-            1,0,0,1,
-            1,1,1,1,
-        ]
+        this.coordinates = shape;
 
         let index = 0;
         this.pixels = [];
@@ -199,25 +210,48 @@ class Sprite{
     }
 }
 
-let block = new Sprite(4);
+class Game{
 
-window.scene= new Scene(10);
-scene.drawFrame();
+    /**
+     * Class Properties;
+     * - shouldUpdate - Should the loop update the scene
+     * - sprites - array of sprites you want to draw for each cycle
+     */
 
-let box = new Sprite(4,2,20);
-let box2 = new Sprite(4,2,30);
-scene.update(box,box2);
+    get msg(){
+        return {
+            "pause":"CYL : Request Animation Frame is not updating",
+            "updating":"CYL : Request Animation Frame is updating",
+            "spritesParam" : "CYL : Set sprites params can only take an array of sprites"
+        }
+    }
 
-let start = 2;
-let start2 = 2;
+    constructor(){
+        this.shouldUpdate= true;
+        this.sprites = [];
+    }
 
-var move = function () {
-    scene.update(box,box2);
-    start++;
-    start2 = start2 + 2;
-    box.x = start;
-    box2.x = start2;
-    if (start < 30){
-        setTimeout(move,100);
+    run(){
+        (()=>{
+            if (game.shouldUpdate){
+                let cycleSprites = [];
+                for(let update of game.sprites){
+                    cycleSprites .push(update);
+                }
+                scene.update(cycleSprites);
+            }
+            window.requestAnimationFrame(game.run)
+        })();
+    }
+
+    pause(){
+        if (this.shouldUpdate){
+            this.shouldUpdate = false;
+            console.log(this.msg.pause);
+        }else{
+            this.shouldUpdate = true;
+            console.log(this.msg.updating);
+        }
     }
 }
+
