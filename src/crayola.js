@@ -144,6 +144,7 @@ class Scene{
 
     update(sprites){
         if (Array.isArray(sprites)){
+            this.cleanSprites();
             for (let sprite of sprites){
                 this.updateSprite(sprite);
             }
