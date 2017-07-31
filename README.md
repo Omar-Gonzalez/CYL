@@ -1,8 +1,6 @@
-#Crayola
-
 ## ES6 Tools for browser based games
 
-* You can check the [live example here! ](https://omar-gonzalez.github.io/Crayola/)
+* You can check the [live example here! ](https://omar-gonzalez.github.io/crayola/)
 
 ## Dependencies 
 
