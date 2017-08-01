@@ -2,6 +2,13 @@
  * Created by Omar Gonzalez on 7/26/2017.
  */
 
+/**
+ * TODO:Cartesian coordinates validation
+ * TODO:Stock Animations
+ * TODO:Game update recognizes sprite self animation
+ * TODO:Sprite drawing tool
+ */
+
 class Scene{
     /**
      * Class Properties
