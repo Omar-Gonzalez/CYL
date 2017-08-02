@@ -15,14 +15,6 @@ a{
     color: #a5c261;
 }
 
-#game{
-    background-color: #313335;
-    width: 800px;
-    height: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .legend{
     width: 800px;
     margin-right: auto;
@@ -30,5 +22,5 @@ a{
 }
 
 strong{
-    color: #171b1f;
+    color: #393f4c;
 }

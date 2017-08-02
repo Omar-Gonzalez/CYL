@@ -1,264 +1,245 @@
 /**
- * Created by Omar Gonzalez on 7/26/2017.
+ * Created by Omar Gonzalez on 8/1/2017.
  */
 
 /**
- * TODO:Cartesian coordinates validation
- * TODO:Stock Animations
- * TODO:Game update recognizes sprite self animation
- * TODO:Sprite drawing tool
+ * Utils
+ * @param msg - Console Log Shortcut
  */
-
-class Scene{
-    /**
-     * Class Properties
-     * this.width
-     * this.height
-     * this.frame[width,height]
-     * this.pixelCount = total pixel density
-     * this.container = Real px dimension of game container
-     * this.framePixels = Current pixels ids in frame
-     */
-    get msg(){
-        return {
-            "noDpi":"CYL: you didn't set up pixel dimension, it's been set to 5px default",
-            "noContainer":"CYL:Unable to retrieve Game Container (800x600)",
-            "noArgs":"CYL: You are missing the riht number of arguments for this method",
-            "updateParam": "CYL: to update a scene you need an array of sprites"
-        }
-    }
-
-    constructor(dpi) {
-        if (dpi !== undefined) {
-            this.dpi = dpi;
-        } else {
-            this.dpi = 8;
-            console.log(this.msg.noDpi);
-        }
-        this.iterationY = 0;
-        this.iterationX = 0;
-        this.pixelCount = 0;
-        this.pixelIndex = 0;
-        this.sprites = [];
-        this.framePixelsIds = [];
-    }
-
-    get container(){
-        return {
-            'width':800,
-            'height':600
-        }
-    }
-
-    get frame(){
-        return {
-            'width':this.container.width/this.dpi,
-            'height':this.container.height/this.dpi
-        }
-    }
-
-    get pixel(){
-        return {
-            'dimension':this.dpi,
-            'off': 'black',
-            'on': 'white',
-        }
-    }
-
-    drawFrame(){
-        /**Pixel Properties*/
-        let pixelClass = document.createElement('style');
-        pixelClass.type = 'text/css';
-        pixelClass.innerHTML = ".pixel{width:"+this.pixel.dimension+"px;height:"+this.pixel.dimension+"px;background-color:#000;display:inline-grid;float:left}"
-        document.getElementsByTagName('head')[0].appendChild(pixelClass);
-
-        /**Render Pixesl**/
-        this.pixelCount = this.frame.width * this.frame.height;
-        let gameContainer = document.getElementById('game');
-        if (gameContainer === null){
-            console.log(this.msg.noContainer);
-            return;
-        }
-        let html = "";
-        for(let i = 0; i < this.pixelCount; i++){
-            html = html + "<div class ='pixel' id='"+this.pixelId(i)+"'></div>";
-        }
-        gameContainer.innerHTML = html;
-    }
-
-    pixelId(i){
-        this.iterationX++;
-        if (i % this.frame.width === 0){
-            this.iterationY++;
-            this.iterationX = 0;
-        }
-        return(this.iterationX+','+this.iterationY);
-    }
-
-    pixelOn(x,y){
-        if(this.validateCoordinates(x,y)){
-            let id = x+','+y;
-            this.framePixelsIds.push(id);
-            document.getElementById(id).style.backgroundColor = this.pixel.on;
-        }
-    }
-
-    pixelOff(x,y){
-        if(this.validateCoordinates(x,y)){
-            let id = x+','+y;
-            document.getElementById(id).style.backgroundColor = this.pixel.off;
-        }
-    }
-
-    validateCoordinates(x,y){
-        if(x > this.frame.width || x < 0){
-            console.log('CYL: x('+x+') coordinate is no valid, must in the range of 0 and '+this.frame.width);
-            return false;
-        }
-        if(y > this.frame.height || y < 0){
-            console.log('CYL: y('+y+') coordinate is no valid, must in the range of 0 and '+this.frame.height);
-            return false;
-        }
-        return true;
-    }
-
-    cleanSprites(){
-        for(let id of this.framePixelsIds){
-            document.getElementById(id).style.backgroundColor = this.pixel.off;
-        }
-        this.framePixelsIds = [];
-    }
-
-    updateSprite(sprite){
-        if (arguments.length === 1){
-            /**Draw Current Sprite**/
-            for (let pixel of sprite.shape){
-                if (pixel[2] === 1){
-                    /**Turn pixel On**/
-                    this.pixelOn(pixel[0] + sprite.x, pixel[1] + sprite.y);
-                }else{
-                    /**Pixel is off**/
-                }
-            }
-        }else{
-            console.log(this.msg.noArgs)
-            return;
-        }
-    }
-
-    update(sprites){
-        if(Array.isArray(sprites)){
-            this.cleanSprites();
-            for (let sprite of sprites){
-                this.updateSprite(sprite);
-            }
-        }else{
-            console.log(this.msg.updateParam)
-        }
-    }
+window.log = function (msg) {
+    console.log(msg)
 }
 
-class Sprite{
-    /**
-     * Class properties
-     *  - this.coordintes : the shape you want to make
-     *  - this.shape : array with filtered coordinates
-     *  - this.width : new line in shape
-     *  - this.x : x postion in scene
-     *  - this.y : y position in scene
-     *  - pixel : array[x,y,color
-     */
-    get msg(){
+class Scene {
+
+    get msg() {
         return {
-            "noWidth":"CYL : You need to define width to initialize a sprite",
-            "noShape":"CYL : You need a shape to initialize a sprite"
+            "noGameContainer": "CYL : No div with id game available to place canvas",
+            "wrongAlign": "CYL : Game container set to default center due to wrong alignment parameter",
+            "noSprites": "CYL : Update method requires an array of sprites",
         }
     }
-    constructor(width,shape,x,y){
+    /***
+     * Scene
+     * As per convention _method is intended to warn for a "private" method
+     * @param width
+     * @param height
+     * @param alignment
+     * @param bgColor
+     * @param pixelSize
+     */
+    constructor(width = 800, height = 600, alignment = "center", bgColor = "#393f4c", pixelSize = 4) {
+        this.width = width;
+        this.height = height;
+        this.pixelSize = pixelSize;
+        this.alingment = alignment;
+        this.bgColor = bgColor;
+        this.ctx = {};
+        /**Run Initialization Methods**/
+        this._placeGameContainer();
+    }
 
-        if (width === undefined){
-            console.log(this.msg.noWidth);
+    _placeGameContainer() {
+        /**Validate HTML Set Up**/
+        let gameContainer = document.getElementById("game");
+        if (gameContainer === null) {
+            log(this.msg.noGameContainer);
             return;
         }
+        /**Configure Game Container**/
+        gameContainer.style.width = this.width + "px";
+        gameContainer.style.height = this.height + "px";
+        gameContainer.style.backgroundColor = "black";
+        switch (this.alingment.toLowerCase()) {
+            case 'center':
+                gameContainer.style.marginLeft = "auto";
+                gameContainer.style.marginRight = "auto";
+                break;
+            case 'left':
+                gameContainer.style.marginLeft = "0px";
+                break;
+            case 'right':
+                gameContainer.style.marginRight = "0px";
+                gameContainer.style.float = "right";
+                break;
+            default:
+                gameContainer.style.marginLeft = "auto";
+                gameContainer.style.marginRight = "auto";
+                log(this.msg.wrongAlign);
+                break;
+        }
+        this._placeCanvas();
+    }
 
-        if(shape === undefined){
+    _placeCanvas() {
+        let canvas = document.createElement("canvas");
+        canvas.width = this.width;
+        canvas.height = this.height;
+        canvas.style.position = 'absolute';
+        canvas.style.backgroundColor = this.bgColor;
+        document.getElementById("game").appendChild(canvas);
+        this.ctx = canvas.getContext("2d");
+    }
+
+    /**
+     * Setup Color Pallet
+     * @param i - pixel.color - numeric value of color
+     * @returns {"Color String"}
+     */
+    color(i) {
+        switch (i) {
+            case 0:
+                return "transparent";
+                break;
+            case 1:
+                return "white";
+                break;
+        }
+    }
+
+    _drawPixel(pixel, x = 0, y = 0) {
+        this.ctx.fillStyle = this.color(pixel.color);
+        this.ctx.fillRect(parseInt(pixel.x + x), parseInt(pixel.y + y), this.pixelSize, this.pixelSize);
+    }
+
+    _drawSprite(sprite) {
+        for (let pixel of sprite.shape) {
+            this._drawPixel(pixel, sprite.x, sprite.y);
+        }
+    }
+
+    /**
+     * Clear clear the canvax context
+     */
+    clear() {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+    }
+
+    /**
+     * Update Canvas with a sprites array
+     * @param sprites
+     */
+    update(sprites) {
+        if (sprites === undefined) {
             console.log(this.msg.noShape);
             return;
         }
-
-        if(x !== undefined && y !== undefined){
-            this.x = x;
-            this.y = y;
-        }else{
-            this.x = 0;
-            this.y = 1;
+        if (!(Array.isArray(sprites))) {
+            log(this.msg.wrongShape);
+            return;
         }
-
-        this.coordinates = shape;
-
-        let index = 0;
-        this.pixels = [];
-        let relativeX = 0;
-        let relativeY = 0;
-        for(let state of this.coordinates){
-            let pixel = [relativeX, relativeY, state];
-            relativeX++;
-            index++;
-            if(index % width === 0){
-                relativeY++;
-                relativeX = 0;
-            }
-            this.pixels.push(pixel);
+        this.clear();
+        for (let sprite of sprites) {
+            this._drawSprite(sprite);
         }
-    }
-
-    get shape(){
-        return this.pixels
     }
 }
 
-class Game{
+/**
+ * Due to co-dependant properties Scene Must be always initialized before sprites
+ * @type {Scene}
+ */
+window.scene = new Scene();
 
+class Sprite {
+
+    get msg() {
+        return {
+            "noShape": "CYL : You need a shape to initialize a sprite",
+            "wrongShape": "CYL : Shape object must be an array"
+        }
+    }
+    /**
+     * Sprite Properties
+     * @param shape - array with filtered coordinates
+     * @param width - new line in shape
+     * @param x - x postion in scene
+     * @param y - y position in scene
+     */
+    constructor(shape, width = 4, x = 0, y = 0) {
+        if (shape === undefined) {
+            console.log(this.msg.noArray);
+            return;
+        }
+        if (!(Array.isArray(shape))) {
+            log(this.msg.wrongShape);
+            return;
+        }
+
+        this.x = x;
+        this.y = y;
+
+        this.pixels = [];
+        let relativeX = 0;
+        let relativeY = 0;
+        let index = 0;
+
+        for (let colorCode of shape){
+            this.pixels.push({
+                x:relativeX,
+                y:relativeY,
+                color:colorCode
+            });
+            relativeX = relativeX + scene.pixelSize;
+            index++;
+            if (index === width){
+                relativeY = relativeY + scene.pixelSize;
+                relativeX = 0;
+                index = 0;
+            }
+        }
+    }
+
+    get shape() {
+        return this.pixels;
+    }
+}
+
+class Game {
+
+    get msg() {
+        return {
+            "pause": "CYL : Request Animation Frame is not updating",
+            "updating": "CYL : Request Animation Frame is updating",
+            "spritesParam": "CYL : Set sprites params can only take an array of sprites"
+        }
+    }
     /**
      * Class Properties;
      * - shouldUpdate - Should the loop update the scene
      * - sprites - array of sprites you want to draw for each cycle
      */
-
-    get msg(){
-        return {
-            "pause":"CYL : Request Animation Frame is not updating",
-            "updating":"CYL : Request Animation Frame is updating",
-            "spritesParam" : "CYL : Set sprites params can only take an array of sprites"
-        }
-    }
-
-    constructor(){
-        this.shouldUpdate= true;
+    constructor() {
+        this.shouldUpdate = true;
         this.sprites = [];
     }
 
-    run(){
-        (()=>{
-            if (game.shouldUpdate){
+    run() {
+        (() => {
+            if (game.shouldUpdate) {
                 let cycleSprites = [];
-                for(let update of game.sprites){
-                    cycleSprites .push(update);
+                for (let update of game.sprites) {
+                    cycleSprites.push(update);
                 }
-                scene.update(cycleSprites);
+                if(cycleSprites.length !== 0){
+                    scene.update(cycleSprites);
+                }
             }
             window.requestAnimationFrame(game.run)
         })();
     }
 
-    pause(){
-        if (this.shouldUpdate){
+    pause() {
+        if (this.shouldUpdate) {
             this.shouldUpdate = false;
             console.log(this.msg.pause);
-        }else{
+        } else {
             this.shouldUpdate = true;
             console.log(this.msg.updating);
         }
     }
 }
+
+
+
 
