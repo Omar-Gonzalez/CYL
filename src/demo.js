@@ -2,6 +2,9 @@
  * Created by Omar Gonzalez on 7/30/2017.
  */
 
+var Game = require('./crayola.js').Game;
+var Sprite = require('./crayola.js').Sprite;
+
 window.game = new Game();
 game.run();
 
@@ -92,5 +95,4 @@ game.sprites.push(ghost)
 
 ghost.y = baseY
 ghost.x = baseX + 150;
-
 

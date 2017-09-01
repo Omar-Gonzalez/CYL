@@ -240,6 +240,8 @@ class Game {
     }
 }
 
-
-
-
+module.exports = {
+    Scene:Scene,
+    Sprite:Sprite,
+    Game:Game
+};

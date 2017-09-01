@@ -2,17 +2,17 @@
 
 * You can check the [live demo here! ](https://omar-gonzalez.github.io/crayola/)
 
-## Dependencies 
+## Dependencies
 
-* Optional use of skeleton as a CSS grid 
+* Optional use of skeleton as a CSS grid
 * Babel ES6 transpiler
+* Webpack bundler
+* Webpack dev-server
 
-## Usage 
+## Usage
 
-* TODO
+* npm install - will install all required Dependencies
 
-## License 
+## License
 
 * Code released under the MIT license.
-
-
