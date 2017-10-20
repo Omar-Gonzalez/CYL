@@ -1,0 +1,36 @@
+@import "./style/settings";
+
+body,html{
+    height: 100%;
+    background-color: $theme-dark-1;
+    margin: 0px;
+}
+
+#screen{
+    width: 640px;
+    height: 480px;
+    background-color: $theme-dark-2;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+
+    //Small-Mobile
+    @media (max-width: $bp-mobile){
+        width: 100%;
+        height: 80%;
+    }
+
+    //Medium Desktop
+    @media (min-width: $bp-mobile) and (max-width: $bp-large){
+        margin-top: $game-margin-top;
+        width: 640px;
+        height: 480px;
+    }
+
+    //Large Desktop
+    @media (min-width: $bp-large){
+        margin-top: $game-margin-top;
+        width: 800px;
+        height: 600px;
+    }
+}
