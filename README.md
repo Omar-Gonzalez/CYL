@@ -4,15 +4,8 @@
 
 ## Dependencies
 
-* Optional use of skeleton as a CSS grid
 * Babel ES6 transpiler
-* Webpack bundler
-* Webpack dev-server
-
-## Usage
-
-* npm install - will install all required Dependencies
 
 ## License
 
-* Code released under the MIT license.
+* Omar Gonzalez &copy; 2017 - Code released under the MIT license.
