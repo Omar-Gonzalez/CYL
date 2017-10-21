@@ -5,13 +5,33 @@
  * _underscore for pseudo private methods 
  */
 
-//Global Settings
-let DEBUG = true;
+//Lib Imports
+//@prepros-prepend ./lib/utils.js
+//@prepros-prepend ./lib/scene.js
+//@prepros-prepend ./lib/shape-sprite.js
+//@prepros-prepend ./lib/game.js
 
 //Scene Config 
 let pixelSize = 5;
 
-//Lib 
-//@prepros-append ./lib/utils.js
-//@prepros-append ./lib/scene.js
-//@prepros-append ./lib/sprite.js
+let screenSize = {
+    "width": "100%",
+    "height": "100%"
+};
+
+let sprite = new ShapeSprite(
+    "player", [
+        "transparent", "white", "white", "transparent",
+        "white", "red", "white", "red",
+        "white", "white", "white", "white",
+        "white", "red", "red", "red",
+        "transparent", "white", "white", "transparent",
+    ], 4
+)
+
+let scene = new Scene([sprite], pixelSize, screenSize);
+
+let game = new Game([scene]);
+game.mouseClick();
+game.keyPress();
+game.run();

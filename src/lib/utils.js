@@ -3,9 +3,8 @@
  * @param msg - Console Log Shortcut
  */
 
-window.l = function(msg) {
-    if(DEBUG){
+let l = function(msg) {
+    if(true){
         console.log(msg)
     }
 }
-
