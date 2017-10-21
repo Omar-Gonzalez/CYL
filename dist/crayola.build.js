@@ -5,133 +5,87 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- * Created by Omar Gonzalez on 8/1/2017.
- */
-
-/**
  * Utils
  * @param msg - Console Log Shortcut
  */
-window.log = function (msg) {
-    console.log(msg);
+
+var l = function l(msg) {
+    if (true) {
+        console.log(msg);
+    }
 };
 
 var Scene = function () {
-    _createClass(Scene, [{
-        key: "msg",
-        get: function get() {
-            return {
-                "noGameContainer": "CYL : No div with id game available to place canvas",
-                "wrongAlign": "CYL : Game container set to default center due to wrong alignment parameter",
-                "noSprites": "CYL : Update method requires an array of sprites"
-            };
-        }
-        /***
-         * Scene
-         * As per convention _method is intended to warn for a "private" method
-         * @param width
-         * @param height
-         * @param alignment
-         * @param bgColor
-         * @param pixelSize
-         */
-
-    }]);
-
     function Scene() {
-        var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 800;
-        var height = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 600;
-        var alignment = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "center";
-        var bgColor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "#393f4c";
-        var pixelSize = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 4;
+        var sprites = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+        var pixelSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 5;
+        var screenSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {
+            "width": "100%",
+            "height": "100%"
+        };
 
         _classCallCheck(this, Scene);
 
-        this.width = width;
-        this.height = height;
+        //Param Validation
+        if (!Array.isArray(sprites)) {
+            l("CYL:[Exception]Update method requires an array of sprites");
+            return;
+        }
+        if (sprites.length < 1) {
+            l("CYL:[Exception]Need at least one sprite to initialize a scene");
+            return;
+        }
+        if (pixelSize.isInteger === false) {
+            l("CYL:[Exception]PixelSize must be a interger");
+            return;
+        }
+        if (pixelSize === 5) {
+            l("CYL:Scene pixel size default of 5");
+        }
+        //Props
+        this.screen = document.getElementById("screen");
+        this.canvas = document.getElementById("game");
+        this.screenSize = screenSize;
         this.pixelSize = pixelSize;
-        this.alingment = alignment;
-        this.bgColor = bgColor;
-        this.ctx = {};
-        /**Run Initialization Methods**/
-        this._placeGameContainer();
+        this.ctx = this.canvas.getContext("2d");
+        this.sprites = sprites;
+        //Init Methods
+        this._defineCanvasDimensions();
     }
 
     _createClass(Scene, [{
-        key: "_placeGameContainer",
-        value: function _placeGameContainer() {
-            /**Validate HTML Set Up**/
-            var gameContainer = document.getElementById("game");
-            if (gameContainer === null) {
-                log(this.msg.noGameContainer);
-                return;
-            }
-            /**Configure Game Container**/
-            gameContainer.style.width = this.width + "px";
-            gameContainer.style.height = this.height + "px";
-            gameContainer.style.backgroundColor = "black";
-            switch (this.alingment.toLowerCase()) {
-                case 'center':
-                    gameContainer.style.marginLeft = "auto";
-                    gameContainer.style.marginRight = "auto";
-                    break;
-                case 'left':
-                    gameContainer.style.marginLeft = "0px";
-                    break;
-                case 'right':
-                    gameContainer.style.marginRight = "0px";
-                    gameContainer.style.float = "right";
-                    break;
-                default:
-                    gameContainer.style.marginLeft = "auto";
-                    gameContainer.style.marginRight = "auto";
-                    log(this.msg.wrongAlign);
-                    break;
-            }
-            this._placeCanvas();
-        }
-    }, {
-        key: "_placeCanvas",
-        value: function _placeCanvas() {
-            var canvas = document.createElement("canvas");
-            canvas.width = this.width;
-            canvas.height = this.height;
-            canvas.style.position = 'absolute';
-            canvas.style.backgroundColor = this.bgColor;
-            document.getElementById("game").appendChild(canvas);
-            this.ctx = canvas.getContext("2d");
-        }
+        key: "_defineCanvasDimensions",
+        value: function _defineCanvasDimensions() {
+            var _this = this;
 
-        /**
-         * Setup Color Pallet
-         * @param i - pixel.color - numeric value of color
-         * @returns {"Color String"}
-         */
+            this.screen.style.width = this.screenSize.width;
+            this.screen.style.height = this.screenSize.height;
+            this.canvas.width = this.screen.offsetWidth;
+            this.canvas.height = this.screen.offsetHeight;
 
-    }, {
-        key: "color",
-        value: function color(i) {
-            switch (i) {
-                case 0:
-                    return "transparent";
-                    break;
-                case 1:
-                    return "white";
-                    break;
-            }
+            window.addEventListener("resize", function () {
+                _this.canvas.width = _this.screen.offsetWidth;
+                _this.canvas.height = _this.screen.offsetHeight;
+                l("CYL: Canvas resize: " + _this.canvas.width);
+            });
         }
     }, {
-        key: "_drawPixel",
-        value: function _drawPixel(pixel) {
+        key: "clear",
+        value: function clear() {
+            this.ctx.clearRect(0, 0, this.frame.width, this.frame.height);
+        }
+    }, {
+        key: "_renderPixel",
+        value: function _renderPixel(pixel) {
             var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
             var y = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
-            this.ctx.fillStyle = this.color(pixel.color);
-            this.ctx.fillRect(parseInt(pixel.x + x), parseInt(pixel.y + y), this.pixelSize, this.pixelSize);
+            this.ctx.fillStyle = pixel.color;
+            this.ctx.fillRect(pixel.x + x, pixel.y + y, this.pixelSize, this.pixelSize);
         }
     }, {
-        key: "_drawSprite",
-        value: function _drawSprite(sprite) {
+        key: "_renderShapeSprite",
+        value: function _renderShapeSprite(sprite) {
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
@@ -140,7 +94,7 @@ var Scene = function () {
                 for (var _iterator = sprite.shape[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                     var pixel = _step.value;
 
-                    this._drawPixel(pixel, sprite.x, sprite.y);
+                    this._renderPixel(pixel, sprite.x, sprite.y);
                 }
             } catch (err) {
                 _didIteratorError = true;
@@ -157,43 +111,19 @@ var Scene = function () {
                 }
             }
         }
-
-        /**
-         * Clear clear the canvax context
-         */
-
-    }, {
-        key: "clear",
-        value: function clear() {
-            this.ctx.clearRect(0, 0, this.width, this.height);
-        }
-
-        /**
-         * Update Canvas with a sprites array
-         * @param sprites
-         */
-
     }, {
         key: "update",
-        value: function update(sprites) {
-            if (sprites === undefined) {
-                console.log(this.msg.noShape);
-                return;
-            }
-            if (!Array.isArray(sprites)) {
-                log(this.msg.wrongShape);
-                return;
-            }
+        value: function update() {
             this.clear();
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
 
             try {
-                for (var _iterator2 = sprites[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    var sprite = _step2.value;
+                for (var _iterator2 = this.sprites[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var _sprite = _step2.value;
 
-                    this._drawSprite(sprite);
+                    this._renderShapeSprite(_sprite);
                 }
             } catch (err) {
                 _didIteratorError2 = true;
@@ -210,54 +140,72 @@ var Scene = function () {
                 }
             }
         }
+    }, {
+        key: "setShapeSprites",
+        value: function setShapeSprites(sprites) {
+            if (!Array.isArray(sprites)) {
+                l("CYL:[Exception]Update method requires an array of sprites");
+                return;
+            }
+            this.sprites = sprites;
+        }
+    }, {
+        key: "frame",
+        get: function get() {
+            return {
+                "width": this.canvas.width,
+                "height": this.canvas.height
+            };
+        }
+    }, {
+        key: "assets",
+        get: function get() {
+            return {
+                "spriteCount": this.sprites.length,
+                "sprites": this.sprites
+            };
+        }
     }]);
 
     return Scene;
 }();
 
-/**
- * Due to co-dependant properties Scene Must be always initialized before sprites
- * @type {Scene}
- */
+var ShapeSprite = function () {
+    /**
+     * Sprite Properties
+     * @param shape - array with filtered coordinates
+     * @param width - sprite width new line in shape
+     * @param x - x postion in scene
+     * @param y - y position in scene
+     */
+    function ShapeSprite(name, shape) {
+        var width = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 4;
+        var x = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+        var y = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
 
+        _classCallCheck(this, ShapeSprite);
 
-window.scene = new Scene();
-
-var Sprite = function () {
-    _createClass(Sprite, [{
-        key: "msg",
-        get: function get() {
-            return {
-                "noShape": "CYL : You need a shape to initialize a sprite",
-                "wrongShape": "CYL : Shape object must be an array"
-            };
+        //Param Validation
+        if (name === undefined) {
+            l("CYL:Warning, no name identifier for sprite");
         }
-        /**
-         * Sprite Properties
-         * @param shape - array with filtered coordinates
-         * @param width - new line in shape
-         * @param x - x postion in scene
-         * @param y - y position in scene
-         */
-
-    }]);
-
-    function Sprite(shape) {
-        var width = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4;
-        var x = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-        var y = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-
-        _classCallCheck(this, Sprite);
-
+        if (width === 4) {
+            l("CYL:Warning, default 4 sprite size, make sure you are passing width param");
+        }
         if (shape === undefined) {
-            console.log(this.msg.noArray);
+            l("CYL:[Exception]You need a shape to initialize a sprite");
             return;
         }
         if (!Array.isArray(shape)) {
-            log(this.msg.wrongShape);
+            l("CYL:[Exception]Shape object must be an array");
             return;
         }
-
+        if (pixelSize === undefined) {
+            l("CYL:[Exception]Please define global pixelSize value");
+            return;
+        }
+        //Props Definition
+        this.spriteName = name;
         this.x = x;
         this.y = y;
 
@@ -265,7 +213,7 @@ var Sprite = function () {
         var relativeX = 0;
         var relativeY = 0;
         var index = 0;
-
+        //Iterate Build Shape
         var _iteratorNormalCompletion3 = true;
         var _didIteratorError3 = false;
         var _iteratorError3 = undefined;
@@ -279,10 +227,10 @@ var Sprite = function () {
                     y: relativeY,
                     color: colorCode
                 });
-                relativeX = relativeX + scene.pixelSize;
+                relativeX = relativeX + pixelSize;
                 index++;
                 if (index === width) {
-                    relativeY = relativeY + scene.pixelSize;
+                    relativeY = relativeY + pixelSize;
                     relativeX = 0;
                     index = 0;
                 }
@@ -303,98 +251,164 @@ var Sprite = function () {
         }
     }
 
-    _createClass(Sprite, [{
+    _createClass(ShapeSprite, [{
+        key: "name",
+        get: function get() {
+            return this.spriteName;
+        }
+    }, {
         key: "shape",
         get: function get() {
             return this.pixels;
         }
     }]);
 
-    return Sprite;
+    return ShapeSprite;
 }();
 
 var Game = function () {
-    _createClass(Game, [{
-        key: "msg",
-        get: function get() {
-            return {
-                "pause": "CYL : Request Animation Frame is not updating",
-                "updating": "CYL : Request Animation Frame is updating",
-                "spritesParam": "CYL : Set sprites params can only take an array of sprites"
-            };
-        }
-        /**
-         * Class Properties;
-         * - shouldUpdate - Should the loop update the scene
-         * - sprites - array of sprites you want to draw for each cycle
-         */
+    function Game(scenes) {
+        var _this2 = this;
 
-    }]);
+        var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
-    function Game() {
         _classCallCheck(this, Game);
 
+        this.run = function () {
+            if (_this2.shouldUpdate) {
+                _this2.activeScene.update();
+            }
+            window.requestAnimationFrame(_this2.run);
+        };
+
+        this.pause = function () {
+            if (_this2.shouldUpdate) {
+                _this2.shouldUpdate = false;
+            } else {
+                _this2.shouldUpdate = true;
+            }
+        };
+
+        this.spriteNamed = function (name) {
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                for (var _iterator4 = _this2.activeScene.sprites[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var _sprite2 = _step4.value;
+
+                    if (name = _sprite2.name) {
+                        return _sprite2;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
+            }
+        };
+
+        this.mouseClick = function () {
+            document.getElementById("game").addEventListener("click", function (e) {
+                //handle click events... 
+                _this2.spriteNamed("player").x = e.clientX;
+                _this2.spriteNamed("player").y = e.clientY;
+            });
+        };
+
+        this.keyPress = function () {
+            window.addEventListener("keydown", function (e) {
+                //handle click events... 
+                if (e.key === "ArrowLeft") {
+                    _this2.spriteNamed("player").x = _this2.spriteNamed("player").x - 30;
+                }
+                if (e.key === "ArrowRight") {
+                    _this2.spriteNamed("player").x = _this2.spriteNamed("player").x + 30;
+                }
+                if (e.key === "ArrowUp") {
+                    _this2.spriteNamed("player").y = _this2.spriteNamed("player").y - 30;
+                }
+                if (e.key === "ArrowDown") {
+                    _this2.spriteNamed("player").y = _this2.spriteNamed("player").y + 30;
+                }
+            });
+        };
+
+        //Param Validations
+        if (!Array.isArray(scenes)) {
+            l("CYL:[Exception]Game requires an array of scenes");
+            return;
+        }
+        if (scene === 0) {
+            l("CYL:Default initial scene with index 0 is being loaded");
+        }
+        //Props
+        this.scenes = scenes;
+        this.active = active;
         this.shouldUpdate = true;
-        this.sprites = [];
+        //Init Mehtods:
+        this.setActiveScene();
     }
 
     _createClass(Game, [{
-        key: "run",
-        value: function run() {
-            (function () {
-                if (game.shouldUpdate) {
-                    var cycleSprites = [];
-                    var _iteratorNormalCompletion4 = true;
-                    var _didIteratorError4 = false;
-                    var _iteratorError4 = undefined;
-
-                    try {
-                        for (var _iterator4 = game.sprites[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                            var update = _step4.value;
-
-                            cycleSprites.push(update);
-                        }
-                    } catch (err) {
-                        _didIteratorError4 = true;
-                        _iteratorError4 = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                                _iterator4.return();
-                            }
-                        } finally {
-                            if (_didIteratorError4) {
-                                throw _iteratorError4;
-                            }
-                        }
-                    }
-
-                    if (cycleSprites.length !== 0) {
-                        scene.update(cycleSprites);
-                    }
-                }
-                window.requestAnimationFrame(game.run);
-            })();
+        key: "setActiveScene",
+        value: function setActiveScene(active) {
+            if (active !== undefined) {
+                this.active = active;
+            }
+            this.activeScene = this.scenes[this.active];
         }
     }, {
-        key: "pause",
-        value: function pause() {
-            if (this.shouldUpdate) {
-                this.shouldUpdate = false;
-                console.log(this.msg.pause);
-            } else {
-                this.shouldUpdate = true;
-                console.log(this.msg.updating);
-            }
+        key: "assets",
+        get: function get() {
+            return {
+                'scenes': this.scenes,
+                'activeScene': this.activeScene
+            };
         }
     }]);
 
     return Game;
 }();
+/******
+ * Crayola ES6 Game Dev Tools 
+ * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Conventions: 
+ * _underscore for pseudo private methods 
+ */
 
-module.exports = {
-    Scene: Scene,
-    Sprite: Sprite,
-    Game: Game
+//Lib Imports
+//@prepros-prepend ./lib/utils.js
+//@prepros-prepend ./lib/scene.js
+//@prepros-prepend ./lib/shape-sprite.js
+//@prepros-prepend ./lib/game.js
+
+//Scene Config 
+
+
+var pixelSize = 5;
+
+var screenSize = {
+    "width": "100%",
+    "height": "100%"
 };
+
+var sprite = new ShapeSprite("player", ["transparent", "white", "white", "transparent", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "transparent", "white", "white", "transparent"], 4);
+
+var scene = new Scene([sprite], pixelSize, screenSize);
+
+var game = new Game([scene]);
+game.mouseClick();
+game.keyPress();
+game.run();
 //# sourceMappingURL=crayola.build.js.map
