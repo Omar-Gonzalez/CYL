@@ -1,0 +1,13 @@
+//Style Global Settings 
+
+//Colors:
+$theme-dark-1:#282C34;
+$theme-dark-2:#21252B;
+
+//BreakPoints:
+$bp-mobile:768px;
+$bp-large:1200px;
+$game-margin-top:0rem;
+
+//imports
+@import "./style/canvas";
