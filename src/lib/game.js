@@ -3,11 +3,11 @@ class Game {
     constructor(scenes, active = 0) {
         //Param Validations
         if (!(Array.isArray(scenes))) {
-            l("CYL:[Exception]Game requires an array of scenes");
+            console.log("CYL:[Exception]Game requires an array of scenes");
             return;
         }
         if (scene === 0) {
-            l("CYL:Default initial scene with index 0 is being loaded");
+            console.log("CYL:Default initial scene with index 0 is being loaded");
         }
         //Props
         this.scenes = scenes

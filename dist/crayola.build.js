@@ -4,17 +4,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- * Utils
- * @param msg - Console Log Shortcut
- */
-
-var l = function l(msg) {
-    if (true) {
-        console.log(msg);
-    }
-};
-
 var Scene = function () {
     function Scene() {
         var sprites = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
@@ -28,19 +17,19 @@ var Scene = function () {
 
         //Param Validation
         if (!Array.isArray(sprites)) {
-            l("CYL:[Exception]Update method requires an array of sprites");
+            console.log("CYL:[Exception]Update method requires an array of sprites");
             return;
         }
         if (sprites.length < 1) {
-            l("CYL:[Exception]Need at least one sprite to initialize a scene");
+            console.log("CYL:[Exception]Need at least one sprite to initialize a scene");
             return;
         }
         if (pixelSize.isInteger === false) {
-            l("CYL:[Exception]PixelSize must be a interger");
+            console.log("CYL:[Exception]PixelSize must be a interger");
             return;
         }
         if (pixelSize === 5) {
-            l("CYL:Scene pixel size default of 5");
+            console.log("CYL:Scene pixel size default of 5");
         }
         //Props
         this.screen = document.getElementById("screen");
@@ -66,7 +55,7 @@ var Scene = function () {
             window.addEventListener("resize", function () {
                 _this.canvas.width = _this.screen.offsetWidth;
                 _this.canvas.height = _this.screen.offsetHeight;
-                l("CYL: Canvas resize: " + _this.canvas.width);
+                console.log("CYL: Canvas resize: " + _this.canvas.width);
             });
         }
     }, {
@@ -84,14 +73,14 @@ var Scene = function () {
             this.ctx.fillRect(pixel.x + x, pixel.y + y, this.pixelSize, this.pixelSize);
         }
     }, {
-        key: "_renderShapeSprite",
-        value: function _renderShapeSprite(sprite) {
+        key: "_renderShapeWith",
+        value: function _renderShapeWith(frame) {
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
 
             try {
-                for (var _iterator = sprite.shape[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                for (var _iterator = frame[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                     var pixel = _step.value;
 
                     this._renderPixel(pixel, sprite.x, sprite.y);
@@ -112,6 +101,21 @@ var Scene = function () {
             }
         }
     }, {
+        key: "_sortFrameWith",
+        value: function _sortFrameWith(sprite) {
+            //Update frame to render on update
+            if (sprite.tickCounter > sprite.tick) {
+                sprite.tickCounter = 0;
+                sprite.currentFrame++;
+                if (sprite.currentFrame >= sprite.frameCount) {
+                    sprite.currentFrame = 0;
+                }
+            }
+            sprite.tickCounter++;
+            //Render currentFrame
+            this._renderShapeWith(sprite.frames[sprite.currentFrame]);
+        }
+    }, {
         key: "update",
         value: function update() {
             this.clear();
@@ -123,7 +127,7 @@ var Scene = function () {
                 for (var _iterator2 = this.sprites[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                     var _sprite = _step2.value;
 
-                    this._renderShapeSprite(_sprite);
+                    this._sortFrameWith(_sprite);
                 }
             } catch (err) {
                 _didIteratorError2 = true;
@@ -144,7 +148,7 @@ var Scene = function () {
         key: "setShapeSprites",
         value: function setShapeSprites(sprites) {
             if (!Array.isArray(sprites)) {
-                l("CYL:[Exception]Update method requires an array of sprites");
+                console.log("CYL:[Exception]Update method requires an array of sprites");
                 return;
             }
             this.sprites = sprites;
@@ -178,62 +182,54 @@ var ShapeSprite = function () {
      * @param x - x postion in scene
      * @param y - y position in scene
      */
-    function ShapeSprite(name, shape) {
+    function ShapeSprite(name, shapes) {
         var width = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 4;
-        var x = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-        var y = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+        var tick = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 20;
+        var x = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+        var y = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
 
         _classCallCheck(this, ShapeSprite);
 
         //Param Validation
         if (name === undefined) {
-            l("CYL:Warning, no name identifier for sprite");
+            console.log("CYL:Warning, no name identifier for sprite");
         }
         if (width === 4) {
-            l("CYL:Warning, default 4 sprite size, make sure you are passing width param");
+            console.log("CYL:Warning, default 4 sprite size, make sure you are passing width param");
         }
-        if (shape === undefined) {
-            l("CYL:[Exception]You need a shape to initialize a sprite");
+        if (shapes === undefined) {
+            console.log("CYL:[Exception]You need a shape to initialize a sprite");
             return;
         }
-        if (!Array.isArray(shape)) {
-            l("CYL:[Exception]Shape object must be an array");
+        if (!Array.isArray(shapes)) {
+            console.log("CYL:[Exception]Shape object must be an array");
             return;
         }
         if (pixelSize === undefined) {
-            l("CYL:[Exception]Please define global pixelSize value");
+            console.log("CYL:[Exception]Please define global pixelSize value");
             return;
         }
         //Props Definition
         this.spriteName = name;
+        this.spriteFrames = [];
+        this.width = width;
         this.x = x;
         this.y = y;
+        this.currentFrame = 0;
+        this.frameCount = shapes.length;
+        this.tick = tick;
+        this.tickCounter = 0;
 
-        this.pixels = [];
-        var relativeX = 0;
-        var relativeY = 0;
-        var index = 0;
-        //Iterate Build Shape
+        //Iterate mapFrameWithShapes
         var _iteratorNormalCompletion3 = true;
         var _didIteratorError3 = false;
         var _iteratorError3 = undefined;
 
         try {
-            for (var _iterator3 = shape[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                var colorCode = _step3.value;
+            for (var _iterator3 = shapes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                var shape = _step3.value;
 
-                this.pixels.push({
-                    x: relativeX,
-                    y: relativeY,
-                    color: colorCode
-                });
-                relativeX = relativeX + pixelSize;
-                index++;
-                if (index === width) {
-                    relativeY = relativeY + pixelSize;
-                    relativeX = 0;
-                    index = 0;
-                }
+                this.mapFrameWith(shape);
             }
         } catch (err) {
             _didIteratorError3 = true;
@@ -252,14 +248,61 @@ var ShapeSprite = function () {
     }
 
     _createClass(ShapeSprite, [{
+        key: "mapFrameWith",
+        value: function mapFrameWith(shape) {
+            var frame = [];
+            var relativeX = 0;
+            var relativeY = 0;
+            var index = 0;
+
+            //Iterate Build Shape
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                for (var _iterator4 = shape[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var colorCode = _step4.value;
+
+                    frame.push({
+                        x: relativeX,
+                        y: relativeY,
+                        color: colorCode
+                    });
+                    relativeX = relativeX + pixelSize;
+                    index++;
+                    if (index === this.width) {
+                        relativeY = relativeY + pixelSize;
+                        relativeX = 0;
+                        index = 0;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
+            }
+
+            this.spriteFrames.push(frame);
+        }
+    }, {
         key: "name",
         get: function get() {
             return this.spriteName;
         }
     }, {
-        key: "shape",
+        key: "frames",
         get: function get() {
-            return this.pixels;
+            return this.spriteFrames;
         }
     }]);
 
@@ -290,29 +333,29 @@ var Game = function () {
         };
 
         this.spriteNamed = function (name) {
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
 
             try {
-                for (var _iterator4 = _this2.activeScene.sprites[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var _sprite2 = _step4.value;
+                for (var _iterator5 = _this2.activeScene.sprites[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var _sprite2 = _step5.value;
 
                     if (name = _sprite2.name) {
                         return _sprite2;
                     }
                 }
             } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
                     }
                 } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
                     }
                 }
             }
@@ -346,11 +389,11 @@ var Game = function () {
 
         //Param Validations
         if (!Array.isArray(scenes)) {
-            l("CYL:[Exception]Game requires an array of scenes");
+            console.log("CYL:[Exception]Game requires an array of scenes");
             return;
         }
         if (scene === 0) {
-            l("CYL:Default initial scene with index 0 is being loaded");
+            console.log("CYL:Default initial scene with index 0 is being loaded");
         }
         //Props
         this.scenes = scenes;
@@ -388,7 +431,6 @@ var Game = function () {
  */
 
 //Lib Imports
-//@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
 //@prepros-prepend ./lib/game.js
@@ -403,7 +445,11 @@ var screenSize = {
     "height": "100%"
 };
 
-var sprite = new ShapeSprite("player", ["transparent", "white", "white", "transparent", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "transparent", "white", "white", "transparent"], 4);
+var shape1 = ["transparent", "white", "white", "transparent", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "transparent", "white", "white", "transparent"];
+
+var shape2 = ["transparent", "white", "white", "transparent", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "transparent", "white", "white", "transparent"];
+
+var sprite = new ShapeSprite("player", [shape1, shape2], 4);
 
 var scene = new Scene([sprite], pixelSize, screenSize);
 

@@ -6,7 +6,6 @@
  */
 
 //Lib Imports
-//@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
 //@prepros-prepend ./lib/game.js
@@ -19,14 +18,24 @@ let screenSize = {
     "height": "100%"
 };
 
+let shape1 = [
+    "transparent", "white", "white", "transparent",
+    "red", "white", "red", "white",
+    "white", "white", "white", "white",
+    "red", "red", "red", "white",
+    "transparent", "white", "white", "transparent",
+]
+
+let shape2 = [
+    "transparent", "white", "white", "transparent",
+    "white", "red", "white", "red",
+    "white", "white", "white", "white",
+    "white", "red", "red", "red",
+    "transparent", "white", "white", "transparent",
+]
+
 let sprite = new ShapeSprite(
-    "player", [
-        "transparent", "white", "white", "transparent",
-        "white", "red", "white", "red",
-        "white", "white", "white", "white",
-        "white", "red", "red", "red",
-        "transparent", "white", "white", "transparent",
-    ], 4
+    "player", [shape1, shape2], 4
 )
 
 let scene = new Scene([sprite], pixelSize, screenSize);

@@ -6,57 +6,72 @@ class ShapeSprite {
      * @param x - x postion in scene
      * @param y - y position in scene
      */
-    constructor(name, shape, width = 4, x = 0, y = 0) {
+    constructor(name, shapes, width = 4, tick = 20, x = 0, y = 0) {
         //Param Validation
         if (name === undefined) {
-            l("CYL:Warning, no name identifier for sprite");
+            console.log("CYL:Warning, no name identifier for sprite");
         }
         if (width === 4) {
-            l("CYL:Warning, default 4 sprite size, make sure you are passing width param");
+            console.log("CYL:Warning, default 4 sprite size, make sure you are passing width param");
         }
-        if (shape === undefined) {
-            l("CYL:[Exception]You need a shape to initialize a sprite");
+        if (shapes === undefined) {
+            console.log("CYL:[Exception]You need a shape to initialize a sprite");
             return;
         }
-        if (!(Array.isArray(shape))) {
-            l("CYL:[Exception]Shape object must be an array");
+        if (!(Array.isArray(shapes))) {
+            console.log("CYL:[Exception]Shape object must be an array");
             return;
         }
         if(pixelSize === undefined){
-            l("CYL:[Exception]Please define global pixelSize value");
+            console.log("CYL:[Exception]Please define global pixelSize value");
             return;
         }
         //Props Definition
         this.spriteName = name;
+        this.spriteFrames = [];
+        this.width = width;
         this.x = x;
         this.y = y;
+        this.currentFrame = 0;
+        this.frameCount = shapes.length;
+        this.tick = tick;
+        this.tickCounter = 0;
 
-        this.pixels = [];
+        //Iterate mapFrameWithShapes
+        for (let shape of shapes){
+            this.mapFrameWith(shape);
+        }
+    }
+
+    mapFrameWith(shape){
+        let frame = [];
         let relativeX = 0;
         let relativeY = 0;
         let index = 0;
+
         //Iterate Build Shape
         for (let colorCode of shape) {
-            this.pixels.push({
+            frame.push({
                 x: relativeX,
                 y: relativeY,
                 color: colorCode
             });
             relativeX = relativeX + pixelSize;
             index++;
-            if (index === width) {
+            if (index === this.width) {
                 relativeY = relativeY + pixelSize;
                 relativeX = 0;
                 index = 0;
             }
-        }
+        }  
+        this.spriteFrames.push(frame);  
     }
 
     get name(){
         return this.spriteName;
     }
 
-    get shape() {
-        return this.pixels;
+    get frames() {
+        return this.spriteFrames;
     }
 }

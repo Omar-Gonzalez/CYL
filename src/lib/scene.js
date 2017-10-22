@@ -10,19 +10,19 @@ class Scene {
     ) {
         //Param Validation
         if (!(Array.isArray(sprites))) {
-            l("CYL:[Exception]Update method requires an array of sprites");
+            console.log("CYL:[Exception]Update method requires an array of sprites");
             return;
         }
         if (sprites.length < 1) {
-            l("CYL:[Exception]Need at least one sprite to initialize a scene");
+            console.log("CYL:[Exception]Need at least one sprite to initialize a scene");
             return;
         }
         if (pixelSize.isInteger === false) {
-            l("CYL:[Exception]PixelSize must be a interger");
+            console.log("CYL:[Exception]PixelSize must be a interger");
             return;
         }
         if (pixelSize === 5) {
-            l("CYL:Scene pixel size default of 5");
+            console.log("CYL:Scene pixel size default of 5");
         }
         //Props
         this.screen = document.getElementById("screen");
@@ -42,10 +42,10 @@ class Scene {
         }
     }
 
-    get assets(){
+    get assets() {
         return {
-            "spriteCount":this.sprites.length,
-            "sprites":this.sprites
+            "spriteCount": this.sprites.length,
+            "sprites": this.sprites
         }
     }
 
@@ -58,7 +58,7 @@ class Scene {
         window.addEventListener("resize", () => {
             this.canvas.width = this.screen.offsetWidth;
             this.canvas.height = this.screen.offsetHeight;
-            l("CYL: Canvas resize: " + this.canvas.width);
+            console.log("CYL: Canvas resize: " + this.canvas.width);
         });
     }
 
@@ -71,22 +71,36 @@ class Scene {
         this.ctx.fillRect(pixel.x + x, pixel.y + y, this.pixelSize, this.pixelSize);
     }
 
-    _renderShapeSprite(sprite) {
-        for (let pixel of sprite.shape) {
+    _renderShapeWith(frame) {
+        for (let pixel of frame) {
             this._renderPixel(pixel, sprite.x, sprite.y);
         }
+    }
+
+    _sortFrameWith(sprite) {
+        //Update frame to render on update
+        if (sprite.tickCounter > sprite.tick) {
+            sprite.tickCounter = 0;
+            sprite.currentFrame++;
+            if (sprite.currentFrame >= sprite.frameCount) {
+                sprite.currentFrame = 0;
+            }
+        }
+        sprite.tickCounter++;
+        //Render currentFrame
+        this._renderShapeWith(sprite.frames[sprite.currentFrame]);
     }
 
     update() {
         this.clear();
         for (let sprite of this.sprites) {
-            this._renderShapeSprite(sprite);
+            this._sortFrameWith(sprite);
         }
     }
 
     setShapeSprites(sprites) {
         if (!(Array.isArray(sprites))) {
-            l("CYL:[Exception]Update method requires an array of sprites");
+            console.log("CYL:[Exception]Update method requires an array of sprites");
             return;
         }
         this.sprites = sprites;
