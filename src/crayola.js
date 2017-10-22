@@ -11,31 +11,60 @@
 //@prepros-prepend ./lib/game.js
 
 //Scene Config 
-let pixelSize = 5;
+let pixelSize = 10;
 
 let screenSize = {
     "width": "100%",
     "height": "100%"
 };
 
-let shape1 = [
-    "transparent", "white", "white", "transparent",
-    "red", "white", "red", "white",
-    "white", "white", "white", "white",
-    "red", "red", "red", "white",
-    "transparent", "white", "white", "transparent",
-]
+let idle1 = {
+    "set": "idle",
+    "shape": [
+        "transparent", "white", "white", "transparent",
+        "red", "white", "red", "white",
+        "white", "white", "white", "white",
+        "red", "red", "red", "white",
+        "transparent", "white", "white", "transparent",
+    ]
+}
 
-let shape2 = [
-    "transparent", "white", "white", "transparent",
-    "white", "red", "white", "red",
-    "white", "white", "white", "white",
-    "white", "red", "red", "red",
-    "transparent", "white", "white", "transparent",
-]
+let idle2 = {
+    "set": "idle",
+    "shape": [
+        "transparent", "white", "white", "transparent",
+        "white", "red", "white", "red",
+        "white", "white", "white", "white",
+        "white", "red", "red", "red",
+        "transparent", "white", "white", "transparent",
+    ]
+
+}
+
+let moving1 = {
+    "set": "moving",
+    "shape": [
+        "transparent", "white", "white", "transparent",
+        "white", "red", "white", "red",
+        "white", "white", "white", "white",
+        "white", "red", "red", "red",
+        "white", "white", "white", "white",
+    ]
+}
+
+let moving2 = {
+    "set": "moving",
+    "shape": [
+        "white", "white", "white", "white",
+        "red", "white", "red", "white",
+        "white", "white", "white", "white",
+        "red", "red", "red", "white",
+        "transparent", "white", "white", "transparent",
+    ]
+}
 
 let sprite = new ShapeSprite(
-    "player", [shape1, shape2], 4
+    "player", [idle1, idle2, moving1, moving2], 4
 )
 
 let scene = new Scene([sprite], pixelSize, screenSize);

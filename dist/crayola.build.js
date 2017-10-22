@@ -216,38 +216,61 @@ var ShapeSprite = function () {
         this.x = x;
         this.y = y;
         this.currentFrame = 0;
-        this.frameCount = shapes.length;
         this.tick = tick;
         this.tickCounter = 0;
+        this.shapes = shapes;
+        this.activeFrames = "";
 
-        //Iterate mapFrameWithShapes
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
-
-        try {
-            for (var _iterator3 = shapes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                var shape = _step3.value;
-
-                this.mapFrameWith(shape);
-            }
-        } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                    _iterator3.return();
-                }
-            } finally {
-                if (_didIteratorError3) {
-                    throw _iteratorError3;
-                }
-            }
-        }
+        //Init Methods
+        this.setAnimation();
     }
 
     _createClass(ShapeSprite, [{
+        key: "setAnimation",
+        value: function setAnimation(named) {
+            this.spriteFrames = [];
+            if (named === undefined) {
+                this.activeFrames = "idle";
+            } else {
+                this.activeFrames = named;
+            }
+            var activeCount = 0;
+            //Iterate map active frames with shapes
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
+
+            try {
+                for (var _iterator3 = this.shapes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var shape = _step3.value;
+
+                    if (shape.set === this.activeFrames) {
+                        this.mapFrameWith(shape.shape);
+                        activeCount++;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
+                    }
+                } finally {
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
+                    }
+                }
+            }
+
+            if (activeCount === 0) {
+                console.log("CYL:[Exception]No active sets in srite");
+                return;
+            }
+            this.frameCount = activeCount;
+        }
+    }, {
         key: "mapFrameWith",
         value: function mapFrameWith(shape) {
             var frame = [];
@@ -384,6 +407,12 @@ var Game = function () {
                 if (e.key === "ArrowDown") {
                     _this2.spriteNamed("player").y = _this2.spriteNamed("player").y + 30;
                 }
+                if (e.key === "a") {
+                    _this2.spriteNamed("player").setAnimation("moving");
+                }
+                if (e.key === "s") {
+                    _this2.spriteNamed("player").setAnimation("idle");
+                }
             });
         };
 
@@ -438,18 +467,35 @@ var Game = function () {
 //Scene Config 
 
 
-var pixelSize = 5;
+var pixelSize = 10;
 
 var screenSize = {
     "width": "100%",
     "height": "100%"
 };
 
-var shape1 = ["transparent", "white", "white", "transparent", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "transparent", "white", "white", "transparent"];
+var idle1 = {
+    "set": "idle",
+    "shape": ["transparent", "white", "white", "transparent", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "transparent", "white", "white", "transparent"]
+};
 
-var shape2 = ["transparent", "white", "white", "transparent", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "transparent", "white", "white", "transparent"];
+var idle2 = {
+    "set": "idle",
+    "shape": ["transparent", "white", "white", "transparent", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "transparent", "white", "white", "transparent"]
 
-var sprite = new ShapeSprite("player", [shape1, shape2], 4);
+};
+
+var moving1 = {
+    "set": "moving",
+    "shape": ["transparent", "white", "white", "transparent", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "white", "white", "white"]
+};
+
+var moving2 = {
+    "set": "moving",
+    "shape": ["white", "white", "white", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "transparent", "white", "white", "transparent"]
+};
+
+var sprite = new ShapeSprite("player", [idle1, idle2, moving1, moving2], 4);
 
 var scene = new Scene([sprite], pixelSize, screenSize);
 

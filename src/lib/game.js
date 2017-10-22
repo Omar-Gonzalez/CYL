@@ -77,6 +77,12 @@ class Game {
             if (e.key === "ArrowDown"){
                 this.spriteNamed("player").y = this.spriteNamed("player").y + 30;
             }
+            if(e.key === "a"){
+                this.spriteNamed("player").setAnimation("moving");
+            }
+            if(e.key === "s"){
+                this.spriteNamed("player").setAnimation("idle");
+            }
         });
     }
 }
