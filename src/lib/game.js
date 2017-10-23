@@ -1,3 +1,8 @@
+/******
+ * Crayola - Game
+ * Omar Gonzalez Rocha - Copyright MIT license 2017
+ */
+
 class Game {
 
     constructor(scenes, active = 0) {
@@ -34,6 +39,7 @@ class Game {
     run = () => {
         if (this.shouldUpdate) {
             this.activeScene.update();
+            this.activeScene.detectCollision();
         }
         window.requestAnimationFrame(this.run);
     }
@@ -52,6 +58,10 @@ class Game {
                 return sprite;
             }
         }
+    }
+
+    detectCollision(){
+
     }
 
     mouseClick = () =>  {
@@ -82,6 +92,9 @@ class Game {
             }
             if(e.key === "s"){
                 this.spriteNamed("player").setAnimation("idle");
+            }
+            if(e.key === " "){
+                this.activeScene.detectCollision();
             }
         });
     }

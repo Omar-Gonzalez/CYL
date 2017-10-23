@@ -6,6 +6,7 @@
  */
 
 //Lib Imports
+//@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
 //@prepros-prepend ./lib/game.js
@@ -63,13 +64,47 @@ let moving2 = {
     ]
 }
 
-let sprite = new ShapeSprite(
-    "player", [idle1, idle2, moving1, moving2], 4
+let player = new ShapeSprite(
+    "player", [idle1, idle2, moving1, moving2], 4, 20, "A"
 )
 
-let scene = new Scene([sprite], pixelSize, screenSize);
+let eIdle1 = {
+    "set": "idle",
+    "shape": [
+        "orange", "red", "red", "orange",
+        "orange", "red", "red", "orange",
+        "red", "orange", "orange", "red",
+        "red", "red", "red", "red",
+        "red", "red", "red", "red",
+    ]
+}
 
-let game = new Game([scene]);
-game.mouseClick();
-game.keyPress();
-game.run();
+let eIdle2 = {
+    "set": "idle",
+    "shape": [
+        "red", "red", "red", "red",
+        "red", "red", "red", "red",
+        "red", "orange", "orange", "red",
+        "orange", "red", "red", "orange",
+        "orange", "red", "red", "orange",
+    ]
+}
+
+let enemy = new ShapeSprite(
+    "enemy", [eIdle1, eIdle2], 4, 10, "A"
+)
+
+let scene = new Scene([player, enemy], pixelSize, screenSize);
+
+player.x = scene.frame.width / 2;
+player.y = scene.frame.height / 2;
+
+enemy.x = scene.frame.width / 3;
+enemy.y = scene.frame.height / 3;
+
+docReady(function() {
+    let game = new Game([scene]);
+    game.mouseClick();
+    game.keyPress();
+    game.run();
+});

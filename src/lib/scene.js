@@ -1,5 +1,15 @@
+/******
+ * Crayola - Shape Sprite
+ * Omar Gonzalez Rocha - Copyright MIT license 2017
+ */
+ 
 class Scene {
-
+    /**
+     * Scene Properties
+     * @param sprites - array with sprites to load into scene
+     * @param pixelSize - taken from CONFIG.pixelSize global
+     * @param Screen Size - W x H - defaults to 100% 
+     */
     constructor(
         sprites = [],
         pixelSize = 5,
@@ -64,16 +74,22 @@ class Scene {
 
     clear() {
         this.ctx.clearRect(0, 0, this.frame.width, this.frame.height);
+        for (let sprite of this.sprites) {
+            sprite.renderedX = [];
+            sprite.renderedY = [];
+        }
     }
 
-    _renderPixel(pixel, x = 0, y = 0) {
+    _renderPixel(sprite, pixel, x = 0, y = 0) {
         this.ctx.fillStyle = pixel.color;
         this.ctx.fillRect(pixel.x + x, pixel.y + y, this.pixelSize, this.pixelSize);
+        sprite.renderedX.push(pixel.x + x);
+        sprite.renderedY.push(pixel.y + y);
     }
 
-    _renderShapeWith(frame) {
+    _renderShapeWith(sprite, frame) {
         for (let pixel of frame) {
-            this._renderPixel(pixel, sprite.x, sprite.y);
+            this._renderPixel(sprite, pixel, sprite.x, sprite.y);
         }
     }
 
@@ -88,7 +104,7 @@ class Scene {
         }
         sprite.tickCounter++;
         //Render currentFrame
-        this._renderShapeWith(sprite.frames[sprite.currentFrame]);
+        this._renderShapeWith(sprite, sprite.frames[sprite.currentFrame]);
     }
 
     update() {
@@ -104,5 +120,30 @@ class Scene {
             return;
         }
         this.sprites = sprites;
+    }
+
+    detectCollision() {
+        /***
+         * Default Support for 3 collision groups A,B,C
+         * Add More if required
+         */
+        let groupA = [];
+
+        for (let sprite of this.sprites) {
+            if (sprite.collisionGroup === "A") {
+                groupA.push(sprite);
+            }
+            if (sprite.collisionGroup === "B") {
+                groupB.push(sprite);
+            }
+            if (sprite.collisionGroup === "C") {
+                groupC.push(sprite);
+            }
+        }
+        //TODO:Iterate trough all possible collision - handle result
+        if(groupA[0].isCollindingWith(groupA[1]).colliding){
+            console.log(groupA[0].isCollindingWith(groupA[1]).inCollision);
+        }
+
     }
 }
