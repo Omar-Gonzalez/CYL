@@ -5,7 +5,7 @@
  * _underscore for pseudo private methods 
  */
 
-//Lib Imports
+//Lib Concatenation
 //@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js

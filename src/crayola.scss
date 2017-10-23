@@ -9,5 +9,32 @@ $bp-mobile:768px;
 $bp-large:1200px;
 $game-margin-top:0rem;
 
-//imports
-@import "./style/canvas";
+body,html{
+    height: 100%;
+    background-color: $theme-dark-1;
+    margin: 0px;
+}
+
+#screen{
+    width: 640px;
+    height: 480px;
+    background-color: $theme-dark-2;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+
+    //Small-Mobile
+    @media (max-width: $bp-mobile){
+
+    }
+
+    //Medium Desktop
+    @media (min-width: $bp-mobile) and (max-width: $bp-large){
+        margin-top: $game-margin-top;
+    }
+
+    //Large Desktop
+    @media (min-width: $bp-large){
+        margin-top: $game-margin-top;
+    }
+}
