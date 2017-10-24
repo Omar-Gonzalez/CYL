@@ -2,7 +2,7 @@
  * Crayola - Shape Sprite
  * Omar Gonzalez Rocha - Copyright MIT license 2017
  */
- 
+
 class Scene {
     /**
      * Scene Properties
@@ -107,43 +107,28 @@ class Scene {
         this._renderShapeWith(sprite, sprite.frames[sprite.currentFrame]);
     }
 
+    _renderBitmapSprite(sprite){
+        let img = sprite.frames[0];
+        this.ctx.drawImage(img, img.x, img.y, img.width, img.height)
+    }
+
     update() {
         this.clear();
         for (let sprite of this.sprites) {
-            this._sortFrameWith(sprite);
+            if (sprite.kind === "shape") {
+                this._sortFrameWith(sprite);
+            }
+            if (sprite.kind === "bitmap") {
+                this._renderBitmapSprite(sprite);
+            }
         }
     }
 
-    setShapeSprites(sprites) {
+    setSprites(sprites) {
         if (!(Array.isArray(sprites))) {
             console.log("CYL:[Exception]Update method requires an array of sprites");
             return;
         }
         this.sprites = sprites;
-    }
-
-    detectCollision() {
-        /***
-         * Default Support for 3 collision groups A,B,C
-         * Add More if required
-         */
-        let groupA = [];
-
-        for (let sprite of this.sprites) {
-            if (sprite.collisionGroup === "A") {
-                groupA.push(sprite);
-            }
-            if (sprite.collisionGroup === "B") {
-                groupB.push(sprite);
-            }
-            if (sprite.collisionGroup === "C") {
-                groupC.push(sprite);
-            }
-        }
-        //TODO:Iterate trough all possible collision - handle result
-        if(groupA[0].isCollindingWith(groupA[1]).colliding){
-            console.log(groupA[0].isCollindingWith(groupA[1]).inCollision);
-        }
-
     }
 }

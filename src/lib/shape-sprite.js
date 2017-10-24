@@ -12,9 +12,17 @@ class ShapeSprite {
      * @param y - y position in scene
      * @param current frame - frame tornder on tick
      * @param tick - number of ticks before frame update
-     * @param collision group - defines collision groups
+     * @param Contact group - defines Contact groups
      */
-    constructor(name, shapes, width = 4, tick = 20, collisionGroup = null, x = 0, y = 0) {
+    constructor(
+        name,
+        shapes,
+        width = 4,
+        tick = 20,
+        contactGroup = null,
+        x = 0,
+        y = 0
+    ) {
         //Param Validation
         if (name === undefined) {
             console.log("CYL:Warning, no name identifier for sprite");
@@ -35,36 +43,38 @@ class ShapeSprite {
             return;
         }
         //Props Definition
-        this.spriteName = name;
+        this.kind = "shape";
+        this.name = name;
         this.spriteFrames = [];
         this.width = width;
         this.x = x;
         this.y = y;
+        //animation related props
         this.currentFrame = 0;
         this.tick = tick;
         this.tickCounter = 0;
         this.shapes = shapes;
-        this.activeFrames = "";
-        //Collision detection props
+        this.activeAnimation = "";
+        //Contact detection props
         this.renderedX = [];
         this.renderedY = [];
-        this.collisionGroup = collisionGroup;
+        this.contactGroup = contactGroup;
 
         //Init Methods
         this.setAnimation();
     }
 
     setAnimation(named) {
-        this.spriteFrames = [];
+        this.spriteFrames = []; //clean active frames before setting them again
         if (named === undefined) {
-            this.activeFrames = "idle";
+            this.activeAnimation = "idle";
         } else {
-            this.activeFrames = named;
+            this.activeAnimation = named;
         }
         let activeCount = 0;
         //Iterate map active frames with shapes
         for (let shape of this.shapes) {
-            if (shape.set === this.activeFrames) {
+            if (shape.set === this.activeAnimation) {
                 this.mapFrameWith(shape.shape);
                 activeCount++;
             }
@@ -109,31 +119,51 @@ class ShapeSprite {
         }
     }
 
-    isCollindingWith(sprite) {
+    inContactWith(sprite) {
+        let xContact = false;
+        let yContact = false;
+        if ((this.bounds.maxX).between(sprite.bounds.minX, sprite.bounds.maxX) ||
+            (this.bounds.minX).between(sprite.bounds.minX, sprite.bounds.maxX)) {
+            xContact = true;
+        }
+        if ((this.bounds.maxY).between(sprite.bounds.minY, sprite.bounds.maxY) ||
+            (this.bounds.minY).between(sprite.bounds.minY, sprite.bounds.maxY)) {
+            yContact = true;
+        }
+        if (xContact === true && yContact === true) {
+            return {
+                'inContact': true,
+                'contactWith': this.name + " in contact with " + sprite.name
+            }
+        } else {
+            return {
+                'inContact': false
+            }
+        }
+    }
+
+    inCollisionWith(sprite) {
         let xCollision = false;
         let yCollision = false;
-        if ((this.bounds.maxX).between(sprite.bounds.minX, sprite.bounds.maxX) || 
+        if ((this.bounds.maxX).between(sprite.bounds.minX, sprite.bounds.maxX) ||
             (this.bounds.minX).between(sprite.bounds.minX, sprite.bounds.maxX)) {
             xCollision = true;
-        } 
-        if ((this.bounds.maxY).between(sprite.bounds.minY, sprite.bounds.maxY) || 
+        }
+        if ((this.bounds.maxY).between(sprite.bounds.minY, sprite.bounds.maxY) ||
             (this.bounds.minY).between(sprite.bounds.minY, sprite.bounds.maxY)) {
             yCollision = true;
         }
-        if(xCollision === true && yCollision === true){
-            return{
-                'colliding':true,
-                'inCollision':this.name + " in collision with " + sprite.name
+        if (xCollision === true && yCollision === true) {
+            //if in collision prevent futher movement
+            return {
+                'inCollision': true,
+                'collisionWith': this.name + " in collision with " + sprite.name
             }
-        }else{
-            return{
-                'colliding':false
-            }        
-        }   
-    }
-
-    get name() {
-        return this.spriteName;
+        } else {
+            return {
+                'inCollision': false
+            }
+        }
     }
 
     get frames() {

@@ -39,7 +39,6 @@ class Game {
     run = () => {
         if (this.shouldUpdate) {
             this.activeScene.update();
-            this.activeScene.detectCollision();
         }
         window.requestAnimationFrame(this.run);
     }
@@ -53,15 +52,27 @@ class Game {
     }
 
     spriteNamed = (name) => {
-        for (let sprite of this.activeScene.sprites){
-            if(name = sprite.name){
+        for (let sprite of this.activeScene.sprites) {
+            if (name === sprite.name) {
                 return sprite;
             }
         }
     }
 
-    detectCollision(){
+    detectContact() {
+        //set your contact logic
+        let contact = this.spriteNamed("player").inContactWith(this.spriteNamed("enemy"));
+        if (contact.inContact) {
+            console.log(contact.contactWith);
+        }
+    }
 
+    detectCollision() {
+        //set your collision logic
+        let collision = this.spriteNamed("player").inCollisionWith(this.spriteNamed("enemy")).inCollision;
+        if (collision.inCollision) {
+            console.log(collision.collisionWith);
+        }
     }
 
     mouseClick = () =>  {
@@ -75,25 +86,25 @@ class Game {
     keyPress = () => {
         window.addEventListener("keydown", (e) => {
             //handle click events... 
-            if (e.key === "ArrowLeft"){
+            if (e.key === "ArrowLeft") {
                 this.spriteNamed("player").x = this.spriteNamed("player").x - 30;
             }
-            if (e.key === "ArrowRight"){
+            if (e.key === "ArrowRight") {
                 this.spriteNamed("player").x = this.spriteNamed("player").x + 30;
             }
-            if (e.key === "ArrowUp"){
+            if (e.key === "ArrowUp") {
                 this.spriteNamed("player").y = this.spriteNamed("player").y - 30;
             }
-            if (e.key === "ArrowDown"){
+            if (e.key === "ArrowDown") {
                 this.spriteNamed("player").y = this.spriteNamed("player").y + 30;
             }
-            if(e.key === "a"){
+            if (e.key === "a") {
                 this.spriteNamed("player").setAnimation("moving");
             }
-            if(e.key === "s"){
+            if (e.key === "s") {
                 this.spriteNamed("player").setAnimation("idle");
             }
-            if(e.key === " "){
+            if (e.key === " ") {
                 this.activeScene.detectCollision();
             }
         });
