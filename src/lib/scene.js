@@ -20,19 +20,19 @@ class Scene {
     ) {
         //Param Validation
         if (!(Array.isArray(sprites))) {
-            console.log("CYL:[Exception]Update method requires an array of sprites");
+            console.error("CYL:[Exception]Update method requires an array of sprites");
             return;
         }
         if (sprites.length < 1) {
-            console.log("CYL:[Exception]Need at least one sprite to initialize a scene");
+            console.error("CYL:[Exception]Need at least one sprite to initialize a scene");
             return;
         }
         if (pixelSize.isInteger === false) {
-            console.log("CYL:[Exception]PixelSize must be a interger");
+            console.error("CYL:[Exception]PixelSize must be a interger");
             return;
         }
         if (pixelSize === 5) {
-            console.log("CYL:Scene pixel size default of 5");
+            console.warn("CYL:Scene pixel size default of 5");
         }
         //Props
         this.screen = document.getElementById("screen");
@@ -132,7 +132,7 @@ class Scene {
 
     setSprites(sprites) {
         if (!(Array.isArray(sprites))) {
-            console.log("CYL:[Exception]Update method requires an array of sprites");
+            console.error("CYL:[Exception]Update method requires an array of sprites");
             return;
         }
         this.sprites = sprites;

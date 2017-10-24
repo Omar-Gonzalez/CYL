@@ -17,18 +17,18 @@ class BitmapSprite {
     ) {
         //Param Validation
         if (name === undefined) {
-            console.log("CYL:Warning, no name identifier for sprite");
+            console.warn("CYL:Warning, no name identifier for sprite");
         }
         if (!(Array.isArray(bitmaps))) {
-            console.log("CYL:[Exception]Bitmaps object must be an array");
+            console.error("CYL:[Exception]Bitmaps object must be an array");
             return;
         }
         if (bitmaps === undefined) {
-            console.log("CYL:[Exception]You need at least one bitmap to initialize a sprite");
+            console.error("CYL:[Exception]You need at least one bitmap to initialize a sprite");
             return;
         }
         if (height === 50 && width === 50) {
-            console.log("CYL:Warning, bitmap sprite dimensions set to default 50x50");
+            console.warn("CYL:Warning, bitmap sprite dimensions set to default 50x50");
         }
 
         //Props Definition:
@@ -70,7 +70,7 @@ class BitmapSprite {
             }
         }
         if (activeCount === 0) {
-            console.log("CYL:[Exception]No active frames in srite");
+            console.error("CYL:[Exception]No active frames in srite");
             return;
         }
         this.frameCount = activeCount;

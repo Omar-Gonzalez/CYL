@@ -25,21 +25,21 @@ class ShapeSprite {
     ) {
         //Param Validation
         if (name === undefined) {
-            console.log("CYL:Warning, no name identifier for sprite");
+            console.warn("CYL:Warning, no name identifier for sprite");
         }
         if (width === 4) {
-            console.log("CYL:Warning, default 4 sprite size");
+            console.warn("CYL:Warning, default 4 sprite size");
         }
         if (shapes === undefined) {
-            console.log("CYL:[Exception]You need a shape to initialize a sprite");
+            console.error("CYL:[Exception]You need a shape to initialize a sprite");
             return;
         }
         if (!(Array.isArray(shapes))) {
-            console.log("CYL:[Exception]Shape object must be an array");
+            console.error("CYL:[Exception]Shape object must be an array");
             return;
         }
         if (pixelSize === undefined) {
-            console.log("CYL:[Exception]Please define global pixelSize value");
+            console.error("CYL:[Exception]Please define global pixelSize value");
             return;
         }
         //Props Definition

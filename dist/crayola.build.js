@@ -127,19 +127,19 @@ var Scene = function () {
 
         //Param Validation
         if (!Array.isArray(sprites)) {
-            console.log("CYL:[Exception]Update method requires an array of sprites");
+            console.error("CYL:[Exception]Update method requires an array of sprites");
             return;
         }
         if (sprites.length < 1) {
-            console.log("CYL:[Exception]Need at least one sprite to initialize a scene");
+            console.error("CYL:[Exception]Need at least one sprite to initialize a scene");
             return;
         }
         if (pixelSize.isInteger === false) {
-            console.log("CYL:[Exception]PixelSize must be a interger");
+            console.error("CYL:[Exception]PixelSize must be a interger");
             return;
         }
         if (pixelSize === 5) {
-            console.log("CYL:Scene pixel size default of 5");
+            console.warn("CYL:Scene pixel size default of 5");
         }
         //Props
         this.screen = document.getElementById("screen");
@@ -282,7 +282,7 @@ var Scene = function () {
         key: "setSprites",
         value: function setSprites(sprites) {
             if (!Array.isArray(sprites)) {
-                console.log("CYL:[Exception]Update method requires an array of sprites");
+                console.error("CYL:[Exception]Update method requires an array of sprites");
                 return;
             }
             this.sprites = sprites;
@@ -334,21 +334,21 @@ var ShapeSprite = function () {
 
         //Param Validation
         if (name === undefined) {
-            console.log("CYL:Warning, no name identifier for sprite");
+            console.warn("CYL:Warning, no name identifier for sprite");
         }
         if (width === 4) {
-            console.log("CYL:Warning, default 4 sprite size");
+            console.warn("CYL:Warning, default 4 sprite size");
         }
         if (shapes === undefined) {
-            console.log("CYL:[Exception]You need a shape to initialize a sprite");
+            console.error("CYL:[Exception]You need a shape to initialize a sprite");
             return;
         }
         if (!Array.isArray(shapes)) {
-            console.log("CYL:[Exception]Shape object must be an array");
+            console.error("CYL:[Exception]Shape object must be an array");
             return;
         }
         if (pixelSize === undefined) {
-            console.log("CYL:[Exception]Please define global pixelSize value");
+            console.error("CYL:[Exception]Please define global pixelSize value");
             return;
         }
         //Props Definition
@@ -552,18 +552,18 @@ var BitmapSprite = function () {
 
         //Param Validation
         if (name === undefined) {
-            console.log("CYL:Warning, no name identifier for sprite");
+            console.warn("CYL:Warning, no name identifier for sprite");
         }
         if (!Array.isArray(bitmaps)) {
-            console.log("CYL:[Exception]Bitmaps object must be an array");
+            console.error("CYL:[Exception]Bitmaps object must be an array");
             return;
         }
         if (bitmaps === undefined) {
-            console.log("CYL:[Exception]You need at least one bitmap to initialize a sprite");
+            console.error("CYL:[Exception]You need at least one bitmap to initialize a sprite");
             return;
         }
         if (height === 50 && width === 50) {
-            console.log("CYL:Warning, bitmap sprite dimensions set to default 50x50");
+            console.warn("CYL:Warning, bitmap sprite dimensions set to default 50x50");
         }
 
         //Props Definition:
@@ -629,7 +629,7 @@ var BitmapSprite = function () {
             }
 
             if (activeCount === 0) {
-                console.log("CYL:[Exception]No active frames in srite");
+                console.error("CYL:[Exception]No active frames in srite");
                 return;
             }
             this.frameCount = activeCount;
@@ -777,11 +777,11 @@ var Game = function () {
 
         //Param Validations
         if (!Array.isArray(scenes)) {
-            console.log("CYL:[Exception]Game requires an array of scenes");
+            console.error("CYL:[Exception]Game requires an array of scenes");
             return;
         }
         if (scene === 0) {
-            console.log("CYL:Default initial scene with index 0 is being loaded");
+            console.warn("CYL:Default initial scene with index 0 is being loaded");
         }
         //Props
         this.scenes = scenes;
