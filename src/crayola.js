@@ -120,6 +120,9 @@ player.y = scene.frame.height / 2;
 enemy.x = scene.frame.width / 3;
 enemy.y = scene.frame.height / 3;
 
+cat.x = scene.frame.width * .7
+cat.y = scene.frame.height / 3
+
 docReady(function() {
     let game = new Game([scene]);
     game.mouseClick();

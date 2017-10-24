@@ -172,16 +172,28 @@ var Scene = function () {
         key: "clear",
         value: function clear() {
             this.ctx.clearRect(0, 0, this.frame.width, this.frame.height);
+        }
+    }, {
+        key: "_renderPixel",
+        value: function _renderPixel(sprite, pixel) {
+            var x = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+            var y = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+
+            this.ctx.fillStyle = pixel.color;
+            this.ctx.fillRect(pixel.x + x, pixel.y + y, this.pixelSize, this.pixelSize);
+        }
+    }, {
+        key: "_renderShapeWith",
+        value: function _renderShapeWith(sprite) {
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
 
             try {
-                for (var _iterator = this.sprites[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var sprite = _step.value;
+                for (var _iterator = sprite.currentFrame[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var pixel = _step.value;
 
-                    sprite.renderedX = [];
-                    sprite.renderedY = [];
+                    this._renderPixel(sprite, pixel, sprite.x, sprite.y);
                 }
             } catch (err) {
                 _didIteratorError = true;
@@ -199,28 +211,57 @@ var Scene = function () {
             }
         }
     }, {
-        key: "_renderPixel",
-        value: function _renderPixel(sprite, pixel) {
-            var x = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-            var y = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-
-            this.ctx.fillStyle = pixel.color;
-            this.ctx.fillRect(pixel.x + x, pixel.y + y, this.pixelSize, this.pixelSize);
-            sprite.renderedX.push(pixel.x + x);
-            sprite.renderedY.push(pixel.y + y);
+        key: "_sortShapeFrameWith",
+        value: function _sortShapeFrameWith(sprite) {
+            //Update frame to render on update
+            if (sprite.tickCounter > sprite.tick) {
+                sprite.tickCounter = 0;
+                sprite.currentFrameIndex++;
+                if (sprite.currentFrameIndex >= sprite.frameCount) {
+                    sprite.currentFrameIndex = 0;
+                }
+            }
+            sprite.tickCounter++;
+            //Render currentFrame
+            this._renderShapeWith(sprite);
         }
     }, {
-        key: "_renderShapeWith",
-        value: function _renderShapeWith(sprite, frame) {
+        key: "_renderBitmapFrame",
+        value: function _renderBitmapFrame(sprite) {
+            this.ctx.drawImage(sprite.currentFrame, sprite.x, sprite.y, sprite.currentFrame.width, sprite.currentFrame.height);
+        }
+    }, {
+        key: "_sortBitmapFrameWith",
+        value: function _sortBitmapFrameWith(sprite) {
+            //Update frame to render on update
+            if (sprite.tickCounter > sprite.tick) {
+                sprite.tickCounter = 0;
+                sprite.currentFrameIndex++;
+                if (sprite.currentFrameIndex >= sprite.frameCount) {
+                    sprite.currentFrameIndex = 0;
+                }
+            }
+            sprite.tickCounter++;
+            this._renderBitmapFrame(sprite);
+        }
+    }, {
+        key: "update",
+        value: function update() {
+            this.clear();
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
 
             try {
-                for (var _iterator2 = frame[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    var pixel = _step2.value;
+                for (var _iterator2 = this.sprites[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var sprite = _step2.value;
 
-                    this._renderPixel(sprite, pixel, sprite.x, sprite.y);
+                    if (sprite.kind === "shape") {
+                        this._sortShapeFrameWith(sprite);
+                    }
+                    if (sprite.kind === "bitmap") {
+                        this._sortBitmapFrameWith(sprite);
+                    }
                 }
             } catch (err) {
                 _didIteratorError2 = true;
@@ -233,61 +274,6 @@ var Scene = function () {
                 } finally {
                     if (_didIteratorError2) {
                         throw _iteratorError2;
-                    }
-                }
-            }
-        }
-    }, {
-        key: "_sortFrameWith",
-        value: function _sortFrameWith(sprite) {
-            //Update frame to render on update
-            if (sprite.tickCounter > sprite.tick) {
-                sprite.tickCounter = 0;
-                sprite.currentFrame++;
-                if (sprite.currentFrame >= sprite.frameCount) {
-                    sprite.currentFrame = 0;
-                }
-            }
-            sprite.tickCounter++;
-            //Render currentFrame
-            this._renderShapeWith(sprite, sprite.frames[sprite.currentFrame]);
-        }
-    }, {
-        key: "_renderBitmapSprite",
-        value: function _renderBitmapSprite(sprite) {
-            var img = sprite.frames[0];
-            this.ctx.drawImage(img, img.x, img.y, img.width, img.height);
-        }
-    }, {
-        key: "update",
-        value: function update() {
-            this.clear();
-            var _iteratorNormalCompletion3 = true;
-            var _didIteratorError3 = false;
-            var _iteratorError3 = undefined;
-
-            try {
-                for (var _iterator3 = this.sprites[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                    var sprite = _step3.value;
-
-                    if (sprite.kind === "shape") {
-                        this._sortFrameWith(sprite);
-                    }
-                    if (sprite.kind === "bitmap") {
-                        this._renderBitmapSprite(sprite);
-                    }
-                }
-            } catch (err) {
-                _didIteratorError3 = true;
-                _iteratorError3 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                        _iterator3.return();
-                    }
-                } finally {
-                    if (_didIteratorError3) {
-                        throw _iteratorError3;
                     }
                 }
             }
@@ -351,7 +337,7 @@ var ShapeSprite = function () {
             console.log("CYL:Warning, no name identifier for sprite");
         }
         if (width === 4) {
-            console.log("CYL:Warning, default 4 sprite size, make sure you are passing width param");
+            console.log("CYL:Warning, default 4 sprite size");
         }
         if (shapes === undefined) {
             console.log("CYL:[Exception]You need a shape to initialize a sprite");
@@ -373,7 +359,7 @@ var ShapeSprite = function () {
         this.x = x;
         this.y = y;
         //animation related props
-        this.currentFrame = 0;
+        this.currentFrameIndex = 0;
         this.tick = tick;
         this.tickCounter = 0;
         this.shapes = shapes;
@@ -398,13 +384,13 @@ var ShapeSprite = function () {
             }
             var activeCount = 0;
             //Iterate map active frames with shapes
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
 
             try {
-                for (var _iterator4 = this.shapes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var shape = _step4.value;
+                for (var _iterator3 = this.shapes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var shape = _step3.value;
 
                     if (shape.set === this.activeAnimation) {
                         this.mapFrameWith(shape.shape);
@@ -412,16 +398,16 @@ var ShapeSprite = function () {
                     }
                 }
             } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
                     }
                 } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
                     }
                 }
             }
@@ -441,13 +427,13 @@ var ShapeSprite = function () {
             var index = 0;
 
             //Iterate Build Shape
-            var _iteratorNormalCompletion5 = true;
-            var _didIteratorError5 = false;
-            var _iteratorError5 = undefined;
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
 
             try {
-                for (var _iterator5 = shape[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                    var colorCode = _step5.value;
+                for (var _iterator4 = shape[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var colorCode = _step4.value;
 
                     frame.push({
                         x: relativeX,
@@ -463,16 +449,16 @@ var ShapeSprite = function () {
                     }
                 }
             } catch (err) {
-                _didIteratorError5 = true;
-                _iteratorError5 = err;
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                        _iterator5.return();
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
                     }
                 } finally {
-                    if (_didIteratorError5) {
-                        throw _iteratorError5;
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
                     }
                 }
             }
@@ -535,6 +521,11 @@ var ShapeSprite = function () {
             };
         }
     }, {
+        key: "currentFrame",
+        get: function get() {
+            return this.spriteFrames[this.currentFrameIndex];
+        }
+    }, {
         key: "frames",
         get: function get() {
             return this.spriteFrames;
@@ -585,7 +576,9 @@ var BitmapSprite = function () {
         this.y = y;
         //animation related props
         this.tick = tick;
+        this.tickCounter = 0;
         this.frameCount = 0;
+        this.currentFrameIndex = 0;
         //Contact detection props
         this.contactGroup = contactGroup;
 
@@ -603,6 +596,48 @@ var BitmapSprite = function () {
             }
             var activeCount = 0;
 
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
+
+            try {
+                for (var _iterator5 = this.bitmaps[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var bitmap = _step5.value;
+
+                    if (bitmap.set === this.activeAnimation) {
+                        var img = new Image();
+                        img.src = bitmap.src;
+                        img.width = this.width;
+                        img.height = this.height;
+                        this.spriteFrames.push(img);
+                        activeCount++;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
+                    }
+                }
+            }
+
+            if (activeCount === 0) {
+                console.log("CYL:[Exception]No active frames in srite");
+                return;
+            }
+            this.frameCount = activeCount;
+        }
+    }, {
+        key: "setDimension",
+        value: function setDimension(x, y) {
+            this.spriteFrames = [];
             var _iteratorNormalCompletion6 = true;
             var _didIteratorError6 = false;
             var _iteratorError6 = undefined;
@@ -614,10 +649,9 @@ var BitmapSprite = function () {
                     if (bitmap.set === this.activeAnimation) {
                         var img = new Image();
                         img.src = bitmap.src;
-                        img.width = this.width;
-                        img.height = this.height;
+                        img.width = x;
+                        img.height = x;
                         this.spriteFrames.push(img);
-                        activeCount++;
                     }
                 }
             } catch (err) {
@@ -634,47 +668,11 @@ var BitmapSprite = function () {
                     }
                 }
             }
-
-            if (activeCount === 0) {
-                console.log("CYL:[Exception]No active frames in srite");
-                return;
-            }
-            this.frameCount = activeCount;
         }
     }, {
-        key: "setDimension",
-        value: function setDimension(x, y) {
-            this.spriteFrames = [];
-            var _iteratorNormalCompletion7 = true;
-            var _didIteratorError7 = false;
-            var _iteratorError7 = undefined;
-
-            try {
-                for (var _iterator7 = this.bitmaps[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                    var bitmap = _step7.value;
-
-                    if (bitmap.set === this.activeAnimation) {
-                        var img = new Image();
-                        img.src = bitmap.src;
-                        img.width = x;
-                        img.height = x;
-                        this.spriteFrames.push(img);
-                    }
-                }
-            } catch (err) {
-                _didIteratorError7 = true;
-                _iteratorError7 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion7 && _iterator7.return) {
-                        _iterator7.return();
-                    }
-                } finally {
-                    if (_didIteratorError7) {
-                        throw _iteratorError7;
-                    }
-                }
-            }
+        key: "currentFrame",
+        get: function get() {
+            return this.spriteFrames[this.currentFrameIndex];
         }
     }, {
         key: "frames",
@@ -714,29 +712,29 @@ var Game = function () {
         };
 
         this.spriteNamed = function (name) {
-            var _iteratorNormalCompletion8 = true;
-            var _didIteratorError8 = false;
-            var _iteratorError8 = undefined;
+            var _iteratorNormalCompletion7 = true;
+            var _didIteratorError7 = false;
+            var _iteratorError7 = undefined;
 
             try {
-                for (var _iterator8 = _this2.activeScene.sprites[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-                    var sprite = _step8.value;
+                for (var _iterator7 = _this2.activeScene.sprites[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                    var sprite = _step7.value;
 
                     if (name === sprite.name) {
                         return sprite;
                     }
                 }
             } catch (err) {
-                _didIteratorError8 = true;
-                _iteratorError8 = err;
+                _didIteratorError7 = true;
+                _iteratorError7 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion8 && _iterator8.return) {
-                        _iterator8.return();
+                    if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                        _iterator7.return();
                     }
                 } finally {
-                    if (_didIteratorError8) {
-                        throw _iteratorError8;
+                    if (_didIteratorError7) {
+                        throw _iteratorError7;
                     }
                 }
             }
@@ -745,8 +743,8 @@ var Game = function () {
         this.mouseClick = function () {
             document.getElementById("game").addEventListener("click", function (e) {
                 //handle click events... 
-                _this2.spriteNamed("player").x = e.clientX;
-                _this2.spriteNamed("player").y = e.clientY;
+                _this2.spriteNamed("cat").x = e.clientX;
+                _this2.spriteNamed("cat").y = e.clientY;
             });
         };
 
@@ -909,6 +907,9 @@ player.y = scene.frame.height / 2;
 
 enemy.x = scene.frame.width / 3;
 enemy.y = scene.frame.height / 3;
+
+cat.x = scene.frame.width * .7;
+cat.y = scene.frame.height / 3;
 
 docReady(function () {
     var game = new Game([scene]);

@@ -74,52 +74,58 @@ class Scene {
 
     clear() {
         this.ctx.clearRect(0, 0, this.frame.width, this.frame.height);
-        for (let sprite of this.sprites) {
-            sprite.renderedX = [];
-            sprite.renderedY = [];
-        }
     }
 
     _renderPixel(sprite, pixel, x = 0, y = 0) {
         this.ctx.fillStyle = pixel.color;
         this.ctx.fillRect(pixel.x + x, pixel.y + y, this.pixelSize, this.pixelSize);
-        sprite.renderedX.push(pixel.x + x);
-        sprite.renderedY.push(pixel.y + y);
     }
 
-    _renderShapeWith(sprite, frame) {
-        for (let pixel of frame) {
+    _renderShapeWith(sprite) {
+        for (let pixel of sprite.currentFrame) {
             this._renderPixel(sprite, pixel, sprite.x, sprite.y);
         }
     }
 
-    _sortFrameWith(sprite) {
+    _sortShapeFrameWith(sprite) {
         //Update frame to render on update
         if (sprite.tickCounter > sprite.tick) {
             sprite.tickCounter = 0;
-            sprite.currentFrame++;
-            if (sprite.currentFrame >= sprite.frameCount) {
-                sprite.currentFrame = 0;
+            sprite.currentFrameIndex++;
+            if (sprite.currentFrameIndex >= sprite.frameCount) {
+                sprite.currentFrameIndex = 0;
             }
         }
         sprite.tickCounter++;
         //Render currentFrame
-        this._renderShapeWith(sprite, sprite.frames[sprite.currentFrame]);
+        this._renderShapeWith(sprite);
     }
 
-    _renderBitmapSprite(sprite){
-        let img = sprite.frames[0];
-        this.ctx.drawImage(img, img.x, img.y, img.width, img.height)
+    _renderBitmapFrame(sprite) {
+        this.ctx.drawImage(sprite.currentFrame, sprite.x , sprite.y , sprite.currentFrame.width, sprite.currentFrame.height)
+    }
+
+    _sortBitmapFrameWith(sprite) {
+        //Update frame to render on update
+        if (sprite.tickCounter > sprite.tick) {
+            sprite.tickCounter = 0;
+            sprite.currentFrameIndex++;
+            if (sprite.currentFrameIndex >= sprite.frameCount) {
+                sprite.currentFrameIndex = 0;
+            }
+        }
+        sprite.tickCounter++;
+        this._renderBitmapFrame(sprite);   
     }
 
     update() {
         this.clear();
         for (let sprite of this.sprites) {
             if (sprite.kind === "shape") {
-                this._sortFrameWith(sprite);
+                this._sortShapeFrameWith(sprite);
             }
             if (sprite.kind === "bitmap") {
-                this._renderBitmapSprite(sprite);
+                this._sortBitmapFrameWith(sprite);
             }
         }
     }

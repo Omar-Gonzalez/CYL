@@ -78,8 +78,8 @@ class Game {
     mouseClick = () =>  {
         document.getElementById("game").addEventListener("click", (e) => {
             //handle click events... 
-            this.spriteNamed("player").x = e.clientX;
-            this.spriteNamed("player").y = e.clientY;
+            this.spriteNamed("cat").x = e.clientX;
+            this.spriteNamed("cat").y = e.clientY;
         });
     }
 
