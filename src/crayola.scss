@@ -13,6 +13,7 @@ body,html{
     height: 100%;
     background-color: $theme-dark-1;
     margin: 0px;
+    overflow:hidden;
 }
 
 #screen{
@@ -30,11 +31,11 @@ body,html{
 
     //Medium Desktop
     @media (min-width: $bp-mobile) and (max-width: $bp-large){
-        margin-top: $game-margin-top;
+
     }
 
     //Large Desktop
     @media (min-width: $bp-large){
-        margin-top: $game-margin-top;
+
     }
 }

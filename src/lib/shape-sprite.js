@@ -28,7 +28,7 @@ class ShapeSprite {
             console.log("CYL:Warning, no name identifier for sprite");
         }
         if (width === 4) {
-            console.log("CYL:Warning, default 4 sprite size, make sure you are passing width param");
+            console.log("CYL:Warning, default 4 sprite size");
         }
         if (shapes === undefined) {
             console.log("CYL:[Exception]You need a shape to initialize a sprite");
@@ -50,7 +50,7 @@ class ShapeSprite {
         this.x = x;
         this.y = y;
         //animation related props
-        this.currentFrame = 0;
+        this.currentFrameIndex = 0;
         this.tick = tick;
         this.tickCounter = 0;
         this.shapes = shapes;
@@ -164,6 +164,10 @@ class ShapeSprite {
                 'inCollision': false
             }
         }
+    }
+
+    get currentFrame(){
+        return this.spriteFrames[this.currentFrameIndex];
     }
 
     get frames() {

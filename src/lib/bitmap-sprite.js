@@ -41,7 +41,9 @@ class BitmapSprite {
         this.y = y;
         //animation related props
         this.tick = tick;
+        this.tickCounter = 0;
         this.frameCount = 0;
+        this.currentFrameIndex = 0;
         //Contact detection props
         this.contactGroup = contactGroup;
 
@@ -85,6 +87,10 @@ class BitmapSprite {
                 this.spriteFrames.push(img);
             }
         }
+    }
+
+    get currentFrame(){
+        return this.spriteFrames[this.currentFrameIndex];
     }
 
     get frames() {
