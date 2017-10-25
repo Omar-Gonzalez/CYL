@@ -92,7 +92,7 @@ Array.prototype.max = function(evaluate) {
     return v;
 }
 
-//Number Range Prototyp - credits to jbabey - https://stackoverflow.com/questions/12806304/shortest-code-to-check-if-a-number-is-in-a-range-in-javascript
+//Number Range Prototype - credits to jbabey - https://stackoverflow.com/questions/12806304/shortest-code-to-check-if-a-number-is-in-a-range-in-javascript
 
 Number.prototype.between = function (min, max) {
     return this > min && this < max;

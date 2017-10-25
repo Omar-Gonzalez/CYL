@@ -98,11 +98,65 @@ Array.prototype.max = function (evaluate) {
     return v;
 };
 
-//Number Range Prototyp - credits to jbabey - https://stackoverflow.com/questions/12806304/shortest-code-to-check-if-a-number-is-in-a-range-in-javascript
+//Number Range Prototype - credits to jbabey - https://stackoverflow.com/questions/12806304/shortest-code-to-check-if-a-number-is-in-a-range-in-javascript
 
 Number.prototype.between = function (min, max) {
     return this > min && this < max;
 };
+/******
+ * Crayola - Utilities
+ * Omar Gonzalez Rocha - Copyright MIT license 2017
+ */
+
+//Scene Config 
+window.CONFIG = function () {
+    //Set Accordingily 
+    var pixelSize = 10;
+    var predefinedPixel = "L"; //S,M,L //set to null if you want a fixed dimension
+    var apectRatio = [16, 9];
+    var percentual = null; // [100, 70]; null or ser w % or h &
+
+    if (predefinedPixel === "S") {
+        pixelSize = window.innerWidth / 200;
+    }
+    if (predefinedPixel === "M") {
+        pixelSize = window.innerWidth / 150;
+    }
+    if (predefinedPixel === "L") {
+        pixelSize = window.innerWidth / 100;
+    }
+
+    var width;
+    var height;
+
+    if (percentual) {
+        var verticalMargin = (100 - percentual[1]) / 2;
+        document.getElementById('screen').style.marginTop = verticalMargin + "%";
+        width = percentual[0] + "%";
+        height = percentual[1] + "%";
+    }
+
+    if (apectRatio) {
+        width = window.innerWidth;
+        height = parseFloat(width / apectRatio[0] * apectRatio[1]);
+        var _verticalMargin = (window.innerHeight - height) / 2;
+        document.getElementById('screen').style.marginTop = _verticalMargin + "px";
+        width = width + "px";
+        height = height + "px";
+    }
+
+    return {
+        'pixelSize': pixelSize,
+        'screen': {
+            'width': width,
+            'height': height
+        }
+    };
+};
+
+window.addEventListener("resize", function () {
+    window.CONFIG();
+});
 /******
  * Crayola - Shape Sprite
  * Omar Gonzalez Rocha - Copyright MIT license 2017
@@ -112,40 +166,25 @@ var Scene = function () {
     /**
      * Scene Properties
      * @param sprites - array with sprites to load into scene
-     * @param pixelSize - taken from CONFIG.pixelSize global
-     * @param Screen Size - W x H - defaults to 100% 
+     * @param Screen Size - W x H - defaults to 100%
      */
     function Scene() {
         var sprites = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-        var pixelSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 5;
-        var screenSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {
-            "width": "100%",
-            "height": "100%"
-        };
 
         _classCallCheck(this, Scene);
 
         //Param Validation
         if (!Array.isArray(sprites)) {
-            console.log("CYL:[Exception]Update method requires an array of sprites");
+            console.error("CYL:[Exception]Update method requires an array of sprites");
             return;
         }
         if (sprites.length < 1) {
-            console.log("CYL:[Exception]Need at least one sprite to initialize a scene");
+            console.error("CYL:[Exception]Need at least one sprite to initialize a scene");
             return;
-        }
-        if (pixelSize.isInteger === false) {
-            console.log("CYL:[Exception]PixelSize must be a interger");
-            return;
-        }
-        if (pixelSize === 5) {
-            console.log("CYL:Scene pixel size default of 5");
         }
         //Props
         this.screen = document.getElementById("screen");
         this.canvas = document.getElementById("game");
-        this.screenSize = screenSize;
-        this.pixelSize = pixelSize;
         this.ctx = this.canvas.getContext("2d");
         this.sprites = sprites;
         //Init Methods
@@ -157,15 +196,16 @@ var Scene = function () {
         value: function _defineCanvasDimensions() {
             var _this = this;
 
-            this.screen.style.width = this.screenSize.width;
-            this.screen.style.height = this.screenSize.height;
+            this.screen.style.width = CONFIG().screen.width;
+            this.screen.style.height = CONFIG().screen.height;
             this.canvas.width = this.screen.offsetWidth;
             this.canvas.height = this.screen.offsetHeight;
 
             window.addEventListener("resize", function () {
+                _this.screen.style.width = CONFIG().screen.width;
+                _this.screen.style.height = CONFIG().screen.height;
                 _this.canvas.width = _this.screen.offsetWidth;
                 _this.canvas.height = _this.screen.offsetHeight;
-                console.log("CYL: Canvas resize: " + _this.canvas.width);
             });
         }
     }, {
@@ -198,6 +238,10 @@ var Scene = function () {
                 }
             }
         }
+        /**
+        *Shapre srite render methods
+        */
+
     }, {
         key: "_renderPixel",
         value: function _renderPixel(sprite, pixel) {
@@ -205,19 +249,19 @@ var Scene = function () {
             var y = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
             this.ctx.fillStyle = pixel.color;
-            this.ctx.fillRect(pixel.x + x, pixel.y + y, this.pixelSize, this.pixelSize);
+            this.ctx.fillRect(pixel.x + x, pixel.y + y, CONFIG().pixelSize, CONFIG().pixelSize);
             sprite.renderedX.push(pixel.x + x);
             sprite.renderedY.push(pixel.y + y);
         }
     }, {
         key: "_renderShapeWith",
-        value: function _renderShapeWith(sprite, frame) {
+        value: function _renderShapeWith(sprite) {
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
 
             try {
-                for (var _iterator2 = frame[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                for (var _iterator2 = sprite.currentFrame[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                     var pixel = _step2.value;
 
                     this._renderPixel(sprite, pixel, sprite.x, sprite.y);
@@ -238,20 +282,47 @@ var Scene = function () {
             }
         }
     }, {
-        key: "_sortFrameWith",
-        value: function _sortFrameWith(sprite) {
+        key: "_sortShapeFrameWith",
+        value: function _sortShapeFrameWith(sprite) {
             //Update frame to render on update
             if (sprite.tickCounter > sprite.tick) {
                 sprite.tickCounter = 0;
-                sprite.currentFrame++;
-                if (sprite.currentFrame >= sprite.frameCount) {
-                    sprite.currentFrame = 0;
+                sprite.currentFrameIndex++;
+                if (sprite.currentFrameIndex >= sprite.frameCount) {
+                    sprite.currentFrameIndex = 0;
                 }
             }
             sprite.tickCounter++;
             //Render currentFrame
-            this._renderShapeWith(sprite, sprite.frames[sprite.currentFrame]);
+            this._renderShapeWith(sprite);
         }
+        /**
+        * Bitam sprites render methods
+        */
+
+    }, {
+        key: "_renderBitmapFrame",
+        value: function _renderBitmapFrame(sprite) {
+            this.ctx.drawImage(sprite.currentFrame, sprite.x, sprite.y, sprite.currentFrame.width, sprite.currentFrame.height);
+        }
+    }, {
+        key: "_sortBitmapFrameWith",
+        value: function _sortBitmapFrameWith(sprite) {
+            //Update frame to render on update
+            if (sprite.tickCounter > sprite.tick) {
+                sprite.tickCounter = 0;
+                sprite.currentFrameIndex++;
+                if (sprite.currentFrameIndex >= sprite.frameCount) {
+                    sprite.currentFrameIndex = 0;
+                }
+            }
+            sprite.tickCounter++;
+            this._renderBitmapFrame(sprite);
+        }
+        /**
+        *Scene Update, sort sprite kind for render
+        */
+
     }, {
         key: "update",
         value: function update() {
@@ -264,7 +335,12 @@ var Scene = function () {
                 for (var _iterator3 = this.sprites[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                     var sprite = _step3.value;
 
-                    this._sortFrameWith(sprite);
+                    if (sprite.kind === "shape") {
+                        this._sortShapeFrameWith(sprite);
+                    }
+                    if (sprite.kind === "bitmap") {
+                        this._sortBitmapFrameWith(sprite);
+                    }
                 }
             } catch (err) {
                 _didIteratorError3 = true;
@@ -282,60 +358,13 @@ var Scene = function () {
             }
         }
     }, {
-        key: "setShapeSprites",
-        value: function setShapeSprites(sprites) {
+        key: "setSprites",
+        value: function setSprites(sprites) {
             if (!Array.isArray(sprites)) {
-                console.log("CYL:[Exception]Update method requires an array of sprites");
+                console.error("CYL:[Exception]Update method requires an array of sprites");
                 return;
             }
             this.sprites = sprites;
-        }
-    }, {
-        key: "detectCollision",
-        value: function detectCollision() {
-            /***
-             * Default Support for 3 collision groups A,B,C
-             * Add More if required
-             */
-            var groupA = [];
-
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-                for (var _iterator4 = this.sprites[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var sprite = _step4.value;
-
-                    if (sprite.collisionGroup === "A") {
-                        groupA.push(sprite);
-                    }
-                    if (sprite.collisionGroup === "B") {
-                        groupB.push(sprite);
-                    }
-                    if (sprite.collisionGroup === "C") {
-                        groupC.push(sprite);
-                    }
-                }
-                //TODO:Iterate trough all possible collision - handle result
-            } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
-                    }
-                } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
-                    }
-                }
-            }
-
-            if (groupA[0].isCollindingWith(groupA[1]).colliding) {
-                console.log(groupA[0].isCollindingWith(groupA[1]).inCollision);
-            }
         }
     }, {
         key: "frame",
@@ -362,6 +391,7 @@ var Scene = function () {
  * Omar Gonzalez Rocha - Copyright MIT license 2017
  */
 
+
 var ShapeSprite = function () {
     /**
      * Sprite Properties
@@ -371,12 +401,12 @@ var ShapeSprite = function () {
      * @param y - y position in scene
      * @param current frame - frame tornder on tick
      * @param tick - number of ticks before frame update
-     * @param collision group - defines collision groups
+     * @param Contact group - defines Contact groups
      */
     function ShapeSprite(name, shapes) {
         var width = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 4;
         var tick = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 20;
-        var collisionGroup = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+        var contactGroup = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
         var x = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
         var y = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 0;
 
@@ -384,39 +414,36 @@ var ShapeSprite = function () {
 
         //Param Validation
         if (name === undefined) {
-            console.log("CYL:Warning, no name identifier for sprite");
+            console.warn("CYL:Warning, no name identifier for sprite");
         }
         if (width === 4) {
-            console.log("CYL:Warning, default 4 sprite size, make sure you are passing width param");
+            console.warn("CYL:Warning, default 4 sprite size");
         }
         if (shapes === undefined) {
-            console.log("CYL:[Exception]You need a shape to initialize a sprite");
+            console.error("CYL:[Exception]You need a shape to initialize a sprite");
             return;
         }
         if (!Array.isArray(shapes)) {
-            console.log("CYL:[Exception]Shape object must be an array");
-            return;
-        }
-        if (pixelSize === undefined) {
-            console.log("CYL:[Exception]Please define global pixelSize value");
+            console.error("CYL:[Exception]Shape object must be an array");
             return;
         }
         //Props Definition
-        this.spriteName = name;
+        this.kind = "shape";
+        this.name = name;
         this.spriteFrames = [];
         this.width = width;
         this.x = x;
         this.y = y;
-        this.currentFrame = 0;
+        //animation related props
+        this.currentFrameIndex = 0;
         this.tick = tick;
         this.tickCounter = 0;
         this.shapes = shapes;
-        this.activeFrames = "";
-        //Collision detection props
+        this.activeAnimation = "";
+        //Contact detection props
         this.renderedX = [];
         this.renderedY = [];
-        this.collisionGroup = collisionGroup;
-
+        this.contactGroup = contactGroup;
         //Init Methods
         this.setAnimation();
     }
@@ -424,38 +451,38 @@ var ShapeSprite = function () {
     _createClass(ShapeSprite, [{
         key: "setAnimation",
         value: function setAnimation(named) {
-            this.spriteFrames = [];
+            this.spriteFrames = []; //clean active frames before setting them again
             if (named === undefined) {
-                this.activeFrames = "idle";
+                this.activeAnimation = "idle";
             } else {
-                this.activeFrames = named;
+                this.activeAnimation = named;
             }
             var activeCount = 0;
             //Iterate map active frames with shapes
-            var _iteratorNormalCompletion5 = true;
-            var _didIteratorError5 = false;
-            var _iteratorError5 = undefined;
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
 
             try {
-                for (var _iterator5 = this.shapes[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                    var shape = _step5.value;
+                for (var _iterator4 = this.shapes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var shape = _step4.value;
 
-                    if (shape.set === this.activeFrames) {
+                    if (shape.set === this.activeAnimation) {
                         this.mapFrameWith(shape.shape);
                         activeCount++;
                     }
                 }
             } catch (err) {
-                _didIteratorError5 = true;
-                _iteratorError5 = err;
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                        _iterator5.return();
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
                     }
                 } finally {
-                    if (_didIteratorError5) {
-                        throw _iteratorError5;
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
                     }
                 }
             }
@@ -473,27 +500,189 @@ var ShapeSprite = function () {
             var relativeX = 0;
             var relativeY = 0;
             var index = 0;
-
             //Iterate Build Shape
-            var _iteratorNormalCompletion6 = true;
-            var _didIteratorError6 = false;
-            var _iteratorError6 = undefined;
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
 
             try {
-                for (var _iterator6 = shape[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                    var colorCode = _step6.value;
+                for (var _iterator5 = shape[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var colorCode = _step5.value;
 
                     frame.push({
                         x: relativeX,
                         y: relativeY,
                         color: colorCode
                     });
-                    relativeX = relativeX + pixelSize;
+                    relativeX = relativeX + CONFIG().pixelSize;
                     index++;
                     if (index === this.width) {
-                        relativeY = relativeY + pixelSize;
+                        relativeY = relativeY + CONFIG().pixelSize;
                         relativeX = 0;
                         index = 0;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
+                    }
+                }
+            }
+
+            this.spriteFrames.push(frame);
+        }
+    }, {
+        key: "inContactWith",
+        value: function inContactWith(sprite) {
+            var xContact = false;
+            var yContact = false;
+            if (this.bounds.maxX.between(sprite.bounds.minX, sprite.bounds.maxX) || this.bounds.minX.between(sprite.bounds.minX, sprite.bounds.maxX)) {
+                xContact = true;
+            }
+            if (this.bounds.maxY.between(sprite.bounds.minY, sprite.bounds.maxY) || this.bounds.minY.between(sprite.bounds.minY, sprite.bounds.maxY)) {
+                yContact = true;
+            }
+            if (xContact === true && yContact === true) {
+                return {
+                    'inContact': true,
+                    'contactWith': this.name + " in contact with " + sprite.name
+                };
+            } else {
+                return {
+                    'inContact': false
+                };
+            }
+        }
+    }, {
+        key: "inCollisionWith",
+        value: function inCollisionWith(sprite) {
+            var xCollision = false;
+            var yCollision = false;
+            if (this.bounds.maxX.between(sprite.bounds.minX, sprite.bounds.maxX) || this.bounds.minX.between(sprite.bounds.minX, sprite.bounds.maxX)) {
+                xCollision = true;
+            }
+            if (this.bounds.maxY.between(sprite.bounds.minY, sprite.bounds.maxY) || this.bounds.minY.between(sprite.bounds.minY, sprite.bounds.maxY)) {
+                yCollision = true;
+            }
+            if (xCollision === true && yCollision === true) {
+                //if in collision prevent futher movement
+                return {
+                    'inCollision': true,
+                    'collisionWith': this.name + " in collision with " + sprite.name
+                };
+            } else {
+                return {
+                    'inCollision': false
+                };
+            }
+        }
+    }, {
+        key: "bounds",
+        get: function get() {
+            return {
+                "maxX": this.renderedX.max(),
+                "minX": this.renderedX.min(),
+                "maxY": this.renderedY.max(),
+                "minY": this.renderedY.min()
+            };
+        }
+    }, {
+        key: "currentFrame",
+        get: function get() {
+            return this.spriteFrames[this.currentFrameIndex];
+        }
+    }, {
+        key: "frames",
+        get: function get() {
+            return this.spriteFrames;
+        }
+    }]);
+
+    return ShapeSprite;
+}();
+/******
+ * Crayola - Bitmap Sprite
+ * Omar Gonzalez Rocha - Copyright MIT license 2017
+ */
+
+
+var BitmapSprite = function () {
+    function BitmapSprite(name, bitmaps) {
+        var width = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 50;
+        var height = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 50;
+        var tick = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 20;
+        var contactGroup = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
+        var x = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 0;
+        var y = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0;
+
+        _classCallCheck(this, BitmapSprite);
+
+        //Param Validation
+        if (name === undefined) {
+            console.warn("CYL:Warning, no name identifier for sprite");
+        }
+        if (!Array.isArray(bitmaps)) {
+            console.error("CYL:[Exception]Bitmaps object must be an array");
+            return;
+        }
+        if (bitmaps === undefined) {
+            console.error("CYL:[Exception]You need at least one bitmap to initialize a sprite");
+            return;
+        }
+        if (height === 50 && width === 50) {
+            console.warn("CYL:Warning, bitmap sprite dimensions set to default 50x50");
+        }
+        //Props Definition:
+        this.kind = "bitmap";
+        this.name = name;
+        this.bitmaps = bitmaps;
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
+        //animation related props
+        this.tick = tick;
+        this.tickCounter = 0;
+        this.frameCount = 0;
+        this.currentFrameIndex = 0;
+        //Contact detection props
+        this.contactGroup = contactGroup;
+        this.setAnimation();
+    }
+
+    _createClass(BitmapSprite, [{
+        key: "setAnimation",
+        value: function setAnimation(named) {
+            this.spriteFrames = []; //clean active frames before setting them again
+            if (named === undefined) {
+                this.activeAnimation = "idle";
+            } else {
+                this.activeAnimation = named;
+            }
+            var activeCount = 0;
+            var _iteratorNormalCompletion6 = true;
+            var _didIteratorError6 = false;
+            var _iteratorError6 = undefined;
+
+            try {
+                for (var _iterator6 = this.bitmaps[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                    var bitmap = _step6.value;
+
+                    if (bitmap.set === this.activeAnimation) {
+                        var img = new Image();
+                        img.src = bitmap.src;
+                        img.width = this.width;
+                        img.height = this.height;
+                        this.spriteFrames.push(img);
+                        activeCount++;
                     }
                 }
             } catch (err) {
@@ -511,94 +700,30 @@ var ShapeSprite = function () {
                 }
             }
 
-            this.spriteFrames.push(frame);
+            if (activeCount === 0) {
+                console.error("CYL:[Exception]No active frames in srite");
+                return;
+            }
+            this.frameCount = activeCount;
         }
     }, {
-        key: "isCollindingWith",
-        value: function isCollindingWith(sprite) {
-            var xCollision = false;
-            var yCollision = false;
-            if (this.bounds.maxX.between(sprite.bounds.minX, sprite.bounds.maxX) || this.bounds.minX.between(sprite.bounds.minX, sprite.bounds.maxX)) {
-                xCollision = true;
-            }
-            if (this.bounds.maxY.between(sprite.bounds.minY, sprite.bounds.maxY) || this.bounds.minY.between(sprite.bounds.minY, sprite.bounds.maxY)) {
-                yCollision = true;
-            }
-            if (xCollision === true && yCollision === true) {
-                return {
-                    'colliding': true,
-                    'inCollision': this.name + " in collision with " + sprite.name
-                };
-            } else {
-                return {
-                    'colliding': false
-                };
-            }
-        }
-    }, {
-        key: "bounds",
-        get: function get() {
-            return {
-                "maxX": this.renderedX.max(),
-                "minX": this.renderedX.min(),
-                "maxY": this.renderedY.max(),
-                "minY": this.renderedY.min()
-            };
-        }
-    }, {
-        key: "name",
-        get: function get() {
-            return this.spriteName;
-        }
-    }, {
-        key: "frames",
-        get: function get() {
-            return this.spriteFrames;
-        }
-    }]);
-
-    return ShapeSprite;
-}();
-/******
- * Crayola - Game
- * Omar Gonzalez Rocha - Copyright MIT license 2017
- */
-
-var Game = function () {
-    function Game(scenes) {
-        var _this2 = this;
-
-        var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-
-        _classCallCheck(this, Game);
-
-        this.run = function () {
-            if (_this2.shouldUpdate) {
-                _this2.activeScene.update();
-                _this2.activeScene.detectCollision();
-            }
-            window.requestAnimationFrame(_this2.run);
-        };
-
-        this.pause = function () {
-            if (_this2.shouldUpdate) {
-                _this2.shouldUpdate = false;
-            } else {
-                _this2.shouldUpdate = true;
-            }
-        };
-
-        this.spriteNamed = function (name) {
+        key: "setDimension",
+        value: function setDimension(x, y) {
+            this.spriteFrames = [];
             var _iteratorNormalCompletion7 = true;
             var _didIteratorError7 = false;
             var _iteratorError7 = undefined;
 
             try {
-                for (var _iterator7 = _this2.activeScene.sprites[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                    var sprite = _step7.value;
+                for (var _iterator7 = this.bitmaps[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                    var bitmap = _step7.value;
 
-                    if (name = sprite.name) {
-                        return sprite;
+                    if (bitmap.set === this.activeAnimation) {
+                        var img = new Image();
+                        img.src = bitmap.src;
+                        img.width = x;
+                        img.height = x;
+                        this.spriteFrames.push(img);
                     }
                 }
             } catch (err) {
@@ -615,50 +740,40 @@ var Game = function () {
                     }
                 }
             }
-        };
+        }
+    }, {
+        key: "currentFrame",
+        get: function get() {
+            return this.spriteFrames[this.currentFrameIndex];
+        }
+    }, {
+        key: "frames",
+        get: function get() {
+            return this.spriteFrames;
+        }
+    }]);
 
-        this.mouseClick = function () {
-            document.getElementById("game").addEventListener("click", function (e) {
-                //handle click events... 
-                _this2.spriteNamed("player").x = e.clientX;
-                _this2.spriteNamed("player").y = e.clientY;
-            });
-        };
+    return BitmapSprite;
+}();
+/******
+ * Crayola - Game
+ * Omar Gonzalez Rocha - Copyright MIT license 2017
+ */
 
-        this.keyPress = function () {
-            window.addEventListener("keydown", function (e) {
-                //handle click events... 
-                if (e.key === "ArrowLeft") {
-                    _this2.spriteNamed("player").x = _this2.spriteNamed("player").x - 30;
-                }
-                if (e.key === "ArrowRight") {
-                    _this2.spriteNamed("player").x = _this2.spriteNamed("player").x + 30;
-                }
-                if (e.key === "ArrowUp") {
-                    _this2.spriteNamed("player").y = _this2.spriteNamed("player").y - 30;
-                }
-                if (e.key === "ArrowDown") {
-                    _this2.spriteNamed("player").y = _this2.spriteNamed("player").y + 30;
-                }
-                if (e.key === "a") {
-                    _this2.spriteNamed("player").setAnimation("moving");
-                }
-                if (e.key === "s") {
-                    _this2.spriteNamed("player").setAnimation("idle");
-                }
-                if (e.key === " ") {
-                    _this2.activeScene.detectCollision();
-                }
-            });
-        };
+
+var Game = function () {
+    function Game(scenes) {
+        var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+        _classCallCheck(this, Game);
 
         //Param Validations
         if (!Array.isArray(scenes)) {
-            console.log("CYL:[Exception]Game requires an array of scenes");
+            console.error("CYL:[Exception]Game requires an array of scenes");
             return;
         }
         if (scene === 0) {
-            console.log("CYL:Default initial scene with index 0 is being loaded");
+            console.warn("CYL:Default initial scene with index 0 is being loaded");
         }
         //Props
         this.scenes = scenes;
@@ -666,6 +781,8 @@ var Game = function () {
         this.shouldUpdate = true;
         //Init Mehtods:
         this.setActiveScene();
+        //Bind run method - animation request frame call back
+        this.run = this.run.bind(this);
     }
 
     _createClass(Game, [{
@@ -677,8 +794,115 @@ var Game = function () {
             this.activeScene = this.scenes[this.active];
         }
     }, {
+        key: "run",
+        value: function run() {
+            if (this.shouldUpdate) {
+                this.activeScene.update();
+                this.detectContact();
+            }
+            window.requestAnimationFrame(this.run);
+        }
+    }, {
+        key: "pause",
+        value: function pause() {
+            if (this.shouldUpdate) {
+                this.shouldUpdate = false;
+            } else {
+                this.shouldUpdate = true;
+            }
+        }
+    }, {
+        key: "spriteNamed",
+        value: function spriteNamed(name) {
+            var _iteratorNormalCompletion8 = true;
+            var _didIteratorError8 = false;
+            var _iteratorError8 = undefined;
+
+            try {
+                for (var _iterator8 = this.activeScene.sprites[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                    var sprite = _step8.value;
+
+                    if (name === sprite.name) {
+                        return sprite;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError8 = true;
+                _iteratorError8 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                        _iterator8.return();
+                    }
+                } finally {
+                    if (_didIteratorError8) {
+                        throw _iteratorError8;
+                    }
+                }
+            }
+        }
+    }, {
+        key: "detectContact",
+        value: function detectContact() {
+            //set your contact logic
+            var contact = this.spriteNamed("player").inContactWith(this.spriteNamed("enemy"));
+            if (contact.inContact) {
+                console.log(contact.contactWith);
+            }
+        }
+    }, {
         key: "detectCollision",
-        value: function detectCollision() {}
+        value: function detectCollision() {
+            //set your collision logic
+            var collision = this.spriteNamed("player").inCollisionWith(this.spriteNamed("enemy")).inCollision;
+            if (collision.inCollision) {
+                console.log(collision.collisionWith);
+            }
+        }
+    }, {
+        key: "mouseClick",
+        value: function mouseClick() {
+            var _this2 = this;
+
+            document.getElementById("game").addEventListener("click", function (e) {
+                //handle click events...
+                _this2.spriteNamed("cat").x = e.clientX;
+                _this2.spriteNamed("cat").y = e.clientY;
+            });
+        }
+    }, {
+        key: "keyDown",
+        value: function keyDown() {
+            var _this3 = this;
+
+            window.addEventListener("keydown", function (e) {
+                //handle click events...
+                if (e.key === "ArrowLeft") {
+                    _this3.spriteNamed("player").x = _this3.spriteNamed("player").x - 30;
+                }
+                if (e.key === "ArrowRight") {
+                    _this3.spriteNamed("player").x = _this3.spriteNamed("player").x + 30;
+                }
+                if (e.key === "ArrowUp") {
+                    _this3.spriteNamed("player").y = _this3.spriteNamed("player").y - 30;
+                }
+                if (e.key === "ArrowDown") {
+                    _this3.spriteNamed("player").y = _this3.spriteNamed("player").y + 30;
+                }
+                if (e.key === "a") {
+                    _this3.spriteNamed("player").setAnimation("moving");
+                }
+                if (e.key === "s") {
+                    _this3.spriteNamed("player").setAnimation("idle");
+                }
+                if (e.key === " ") {
+                    _this3.activeScene.detectCollision();
+                }
+                if (e.key === "p") {
+                    _this3.pause();
+                }
+            });
+        }
     }, {
         key: "assets",
         get: function get() {
@@ -698,21 +922,13 @@ var Game = function () {
  * _underscore for pseudo private methods 
  */
 
-//Lib Imports
+//Lib Concatenation
 //@prepros-prepend ./lib/utils.js
+//@prepros-prepend ./lib/config.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
+//@prepros-prepend ./lib/bitmap-sprite.js
 //@prepros-prepend ./lib/game.js
-
-//Scene Config 
-
-
-var pixelSize = 10;
-
-var screenSize = {
-    "width": "100%",
-    "height": "100%"
-};
 
 var idle1 = {
     "set": "idle",
@@ -739,17 +955,29 @@ var player = new ShapeSprite("player", [idle1, idle2, moving1, moving2], 4, 20, 
 
 var eIdle1 = {
     "set": "idle",
-    "shape": ["orange", "red", "red", "orange", "orange", "red", "red", "orange", "red", "orange", "orange", "red", "red", "red", "red", "red", "red", "red", "red", "red"]
+    "shape": ["orange", "transparent", "transparent", "orange", "orange", "transparent", "transparent", "orange", "transparent", "orange", "orange", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent"]
 };
 
 var eIdle2 = {
     "set": "idle",
-    "shape": ["red", "red", "red", "red", "red", "red", "red", "red", "red", "orange", "orange", "red", "orange", "red", "red", "orange", "orange", "red", "red", "orange"]
+    "shape": ["transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "orange", "orange", "transparent", "orange", "transparent", "transparent", "orange", "orange", "transparent", "transparent", "orange"]
 };
 
 var enemy = new ShapeSprite("enemy", [eIdle1, eIdle2], 4, 10, "A");
 
-var scene = new Scene([player, enemy], pixelSize, screenSize);
+var catImg = {
+    "set": "idle",
+    "src": "assets/cat-bat.png"
+};
+
+var catImg2 = {
+    "set": "idle",
+    "src": "assets/cat-bat-alt.png"
+};
+
+var cat = new BitmapSprite("cat", [catImg, catImg2], 100, 100);
+
+var scene = new Scene([player, enemy, cat]);
 
 player.x = scene.frame.width / 2;
 player.y = scene.frame.height / 2;
@@ -757,10 +985,9 @@ player.y = scene.frame.height / 2;
 enemy.x = scene.frame.width / 3;
 enemy.y = scene.frame.height / 3;
 
-docReady(function () {
-    var game = new Game([scene]);
-    game.mouseClick();
-    game.keyPress();
-    game.run();
-});
-//# sourceMappingURL=crayola.build.js.map
+cat.x = scene.frame.width * .7;
+cat.y = scene.frame.height / 3;
+var game = new Game([scene]);
+game.mouseClick();
+game.keyDown();
+game.run();

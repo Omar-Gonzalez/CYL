@@ -5,19 +5,13 @@
  * _underscore for pseudo private methods 
  */
 
-//Lib Imports
+//Lib Concatenation
 //@prepros-prepend ./lib/utils.js
+//@prepros-prepend ./lib/config.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
+//@prepros-prepend ./lib/bitmap-sprite.js
 //@prepros-prepend ./lib/game.js
-
-//Scene Config 
-let pixelSize = 10;
-
-let screenSize = {
-    "width": "100%",
-    "height": "100%"
-};
 
 let idle1 = {
     "set": "idle",
@@ -71,22 +65,22 @@ let player = new ShapeSprite(
 let eIdle1 = {
     "set": "idle",
     "shape": [
-        "orange", "red", "red", "orange",
-        "orange", "red", "red", "orange",
-        "red", "orange", "orange", "red",
-        "red", "red", "red", "red",
-        "red", "red", "red", "red",
+        "orange", "transparent", "transparent", "orange",
+        "orange", "transparent", "transparent", "orange",
+        "transparent", "orange", "orange", "transparent",
+        "transparent", "transparent", "transparent", "transparent",
+        "transparent", "transparent", "transparent", "transparent",
     ]
 }
 
 let eIdle2 = {
     "set": "idle",
     "shape": [
-        "red", "red", "red", "red",
-        "red", "red", "red", "red",
-        "red", "orange", "orange", "red",
-        "orange", "red", "red", "orange",
-        "orange", "red", "red", "orange",
+        "transparent", "transparent", "transparent", "transparent",
+        "transparent", "transparent", "transparent", "transparent",
+        "transparent", "orange", "orange", "transparent",
+        "orange", "transparent", "transparent", "orange",
+        "orange", "transparent", "transparent", "orange",
     ]
 }
 
@@ -94,7 +88,23 @@ let enemy = new ShapeSprite(
     "enemy", [eIdle1, eIdle2], 4, 10, "A"
 )
 
-let scene = new Scene([player, enemy], pixelSize, screenSize);
+let catImg = {
+    "set": "idle",
+    "src": "assets/cat-bat.png"
+}
+
+let catImg2 = {
+    "set": "idle",
+    "src": "assets/cat-bat-alt.png"
+}
+
+let cat = new BitmapSprite(
+    "cat", [catImg, catImg2],
+    100,
+    100
+)
+
+let scene = new Scene([player, enemy, cat]);
 
 player.x = scene.frame.width / 2;
 player.y = scene.frame.height / 2;
@@ -102,9 +112,9 @@ player.y = scene.frame.height / 2;
 enemy.x = scene.frame.width / 3;
 enemy.y = scene.frame.height / 3;
 
-docReady(function() {
-    let game = new Game([scene]);
-    game.mouseClick();
-    game.keyPress();
-    game.run();
-});
+cat.x = scene.frame.width * .7
+cat.y = scene.frame.height / 3
+let game = new Game([scene]);
+game.mouseClick();
+game.keyDown();
+game.run();

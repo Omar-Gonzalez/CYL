@@ -1,2 +1,2 @@
-body,html{height:100%;background-color:#282C34;margin:0px}#screen{width:640px;height:480px;background-color:#21252B;margin-left:auto;margin-right:auto;display:block}@media (min-width:768px) and (max-width:1200px){#screen{margin-top:0rem}}@media (min-width:1200px){#screen{margin-top:0rem}}
+body,html{height:100%;background-color:#1B1D23;margin:0px;overflow:hidden}#screen{width:640px;height:480px;background-color:#21252B;margin-left:auto;margin-right:auto;display:block}
 /*# sourceMappingURL=crayola.min.css.map */
