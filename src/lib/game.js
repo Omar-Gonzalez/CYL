@@ -53,11 +53,9 @@ class Game {
     }
 
     spriteNamed = (name) => {
-        for (let sprite of this.activeScene.sprites){
-            if(name = sprite.name){
-                return sprite;
-            }
-        }
+        return this.activeScene.sprites.filter(function(sprite) {
+            return sprite.name === name;
+        })[0];
     }
 
     detectCollision(){
