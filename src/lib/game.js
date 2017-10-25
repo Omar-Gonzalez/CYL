@@ -20,6 +20,9 @@ class Game {
         this.shouldUpdate = true;
         //Init Mehtods:
         this.setActiveScene();
+
+        //Bind run method - animation request frame call back
+        this.run = this.run.bind(this);
     }
 
     setActiveScene(active) {
@@ -36,14 +39,14 @@ class Game {
         }
     }
 
-    run = () => {
+    run() {
         if (this.shouldUpdate) {
             this.activeScene.update();
         }
         window.requestAnimationFrame(this.run);
     }
 
-    pause = () => {
+    pause() {
         if (this.shouldUpdate) {
             this.shouldUpdate = false;
         } else {
@@ -51,7 +54,7 @@ class Game {
         }
     }
 
-    spriteNamed = (name) => {
+    spriteNamed(name) {
         for (let sprite of this.activeScene.sprites) {
             if (name === sprite.name) {
                 return sprite;
@@ -75,7 +78,7 @@ class Game {
         }
     }
 
-    mouseClick = () =>  {
+    mouseClick() {
         document.getElementById("game").addEventListener("click", (e) => {
             //handle click events... 
             this.spriteNamed("cat").x = e.clientX;
@@ -83,7 +86,7 @@ class Game {
         });
     }
 
-    keyPress = () => {
+    keyPress() {
         window.addEventListener("keydown", (e) => {
             //handle click events... 
             if (e.key === "ArrowLeft") {
@@ -106,6 +109,9 @@ class Game {
             }
             if (e.key === " ") {
                 this.activeScene.detectCollision();
+            }
+            if (e.key === "p") {
+                this.pause();
             }
         });
     }
