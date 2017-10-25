@@ -74,11 +74,17 @@ class Scene {
 
     clear() {
         this.ctx.clearRect(0, 0, this.frame.width, this.frame.height);
+        for (let sprite of this.sprites) {
+            sprite.renderedX = [];
+            sprite.renderedY = [];
+        }
     }
 
     _renderPixel(sprite, pixel, x = 0, y = 0) {
         this.ctx.fillStyle = pixel.color;
         this.ctx.fillRect(pixel.x + x, pixel.y + y, this.pixelSize, this.pixelSize);
+        sprite.renderedX.push(pixel.x + x);
+        sprite.renderedY.push(pixel.y + y);
     }
 
     _renderShapeWith(sprite) {
@@ -102,7 +108,7 @@ class Scene {
     }
 
     _renderBitmapFrame(sprite) {
-        this.ctx.drawImage(sprite.currentFrame, sprite.x , sprite.y , sprite.currentFrame.width, sprite.currentFrame.height)
+        this.ctx.drawImage(sprite.currentFrame, sprite.x, sprite.y, sprite.currentFrame.width, sprite.currentFrame.height)
     }
 
     _sortBitmapFrameWith(sprite) {
@@ -115,7 +121,7 @@ class Scene {
             }
         }
         sprite.tickCounter++;
-        this._renderBitmapFrame(sprite);   
+        this._renderBitmapFrame(sprite);
     }
 
     update() {

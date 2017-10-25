@@ -110,8 +110,8 @@ class ShapeSprite {
         this.spriteFrames.push(frame);
     }
 
-    get bounds() {
-        return {
+    get bounds () {
+            return {
             "maxX": this.renderedX.max(),
             "minX": this.renderedX.min(),
             "maxY": this.renderedY.max(),

@@ -126,6 +126,6 @@ cat.y = scene.frame.height / 3
 docReady(function() {
     let game = new Game([scene]);
     game.mouseClick();
-    game.keyPress();
+    game.keyDown();
     game.run();
 });
