@@ -7,6 +7,7 @@
 
 //Lib Concatenation
 //@prepros-prepend ./lib/utils.js
+//@prepros-prepend ./lib/config.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
 //@prepros-prepend ./lib/bitmap-sprite.js
