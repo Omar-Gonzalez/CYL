@@ -690,34 +690,63 @@ var BitmapSprite = function () {
 
 var Game = function () {
     function Game(scenes) {
-        var _this2 = this;
-
         var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
         _classCallCheck(this, Game);
 
-        this.run = function () {
-            if (_this2.shouldUpdate) {
-                _this2.activeScene.update();
-            }
-            window.requestAnimationFrame(_this2.run);
-        };
+        //Param Validations
+        if (!Array.isArray(scenes)) {
+            console.error("CYL:[Exception]Game requires an array of scenes");
+            return;
+        }
+        if (scene === 0) {
+            console.warn("CYL:Default initial scene with index 0 is being loaded");
+        }
+        //Props
+        this.scenes = scenes;
+        this.active = active;
+        this.shouldUpdate = true;
+        //Init Mehtods:
+        this.setActiveScene();
 
-        this.pause = function () {
-            if (_this2.shouldUpdate) {
-                _this2.shouldUpdate = false;
+        //Bind run method - animation request frame call back
+        this.run = this.run.bind(this);
+    }
+
+    _createClass(Game, [{
+        key: "setActiveScene",
+        value: function setActiveScene(active) {
+            if (active !== undefined) {
+                this.active = active;
+            }
+            this.activeScene = this.scenes[this.active];
+        }
+    }, {
+        key: "run",
+        value: function run() {
+            if (this.shouldUpdate) {
+                this.activeScene.update();
+            }
+            window.requestAnimationFrame(this.run);
+        }
+    }, {
+        key: "pause",
+        value: function pause() {
+            if (this.shouldUpdate) {
+                this.shouldUpdate = false;
             } else {
-                _this2.shouldUpdate = true;
+                this.shouldUpdate = true;
             }
-        };
-
-        this.spriteNamed = function (name) {
+        }
+    }, {
+        key: "spriteNamed",
+        value: function spriteNamed(name) {
             var _iteratorNormalCompletion7 = true;
             var _didIteratorError7 = false;
             var _iteratorError7 = undefined;
 
             try {
-                for (var _iterator7 = _this2.activeScene.sprites[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                for (var _iterator7 = this.activeScene.sprites[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
                     var sprite = _step7.value;
 
                     if (name === sprite.name) {
@@ -738,66 +767,6 @@ var Game = function () {
                     }
                 }
             }
-        };
-
-        this.mouseClick = function () {
-            document.getElementById("game").addEventListener("click", function (e) {
-                //handle click events... 
-                _this2.spriteNamed("cat").x = e.clientX;
-                _this2.spriteNamed("cat").y = e.clientY;
-            });
-        };
-
-        this.keyPress = function () {
-            window.addEventListener("keydown", function (e) {
-                //handle click events... 
-                if (e.key === "ArrowLeft") {
-                    _this2.spriteNamed("player").x = _this2.spriteNamed("player").x - 30;
-                }
-                if (e.key === "ArrowRight") {
-                    _this2.spriteNamed("player").x = _this2.spriteNamed("player").x + 30;
-                }
-                if (e.key === "ArrowUp") {
-                    _this2.spriteNamed("player").y = _this2.spriteNamed("player").y - 30;
-                }
-                if (e.key === "ArrowDown") {
-                    _this2.spriteNamed("player").y = _this2.spriteNamed("player").y + 30;
-                }
-                if (e.key === "a") {
-                    _this2.spriteNamed("player").setAnimation("moving");
-                }
-                if (e.key === "s") {
-                    _this2.spriteNamed("player").setAnimation("idle");
-                }
-                if (e.key === " ") {
-                    _this2.activeScene.detectCollision();
-                }
-            });
-        };
-
-        //Param Validations
-        if (!Array.isArray(scenes)) {
-            console.error("CYL:[Exception]Game requires an array of scenes");
-            return;
-        }
-        if (scene === 0) {
-            console.warn("CYL:Default initial scene with index 0 is being loaded");
-        }
-        //Props
-        this.scenes = scenes;
-        this.active = active;
-        this.shouldUpdate = true;
-        //Init Mehtods:
-        this.setActiveScene();
-    }
-
-    _createClass(Game, [{
-        key: "setActiveScene",
-        value: function setActiveScene(active) {
-            if (active !== undefined) {
-                this.active = active;
-            }
-            this.activeScene = this.scenes[this.active];
         }
     }, {
         key: "detectContact",
@@ -816,6 +785,50 @@ var Game = function () {
             if (collision.inCollision) {
                 console.log(collision.collisionWith);
             }
+        }
+    }, {
+        key: "mouseClick",
+        value: function mouseClick() {
+            var _this2 = this;
+
+            document.getElementById("game").addEventListener("click", function (e) {
+                //handle click events... 
+                _this2.spriteNamed("cat").x = e.clientX;
+                _this2.spriteNamed("cat").y = e.clientY;
+            });
+        }
+    }, {
+        key: "keyPress",
+        value: function keyPress() {
+            var _this3 = this;
+
+            window.addEventListener("keydown", function (e) {
+                //handle click events... 
+                if (e.key === "ArrowLeft") {
+                    _this3.spriteNamed("player").x = _this3.spriteNamed("player").x - 30;
+                }
+                if (e.key === "ArrowRight") {
+                    _this3.spriteNamed("player").x = _this3.spriteNamed("player").x + 30;
+                }
+                if (e.key === "ArrowUp") {
+                    _this3.spriteNamed("player").y = _this3.spriteNamed("player").y - 30;
+                }
+                if (e.key === "ArrowDown") {
+                    _this3.spriteNamed("player").y = _this3.spriteNamed("player").y + 30;
+                }
+                if (e.key === "a") {
+                    _this3.spriteNamed("player").setAnimation("moving");
+                }
+                if (e.key === "s") {
+                    _this3.spriteNamed("player").setAnimation("idle");
+                }
+                if (e.key === " ") {
+                    _this3.activeScene.detectCollision();
+                }
+                if (e.key === "p") {
+                    _this3.pause();
+                }
+            });
         }
     }, {
         key: "assets",
