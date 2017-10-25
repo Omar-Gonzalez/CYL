@@ -47,12 +47,10 @@ class Game {
             this.shouldUpdate = true;
         }
     }
-    spriteNamed(name) {
-        for (let sprite of this.activeScene.sprites) {
-            if (name === sprite.name) {
-                return sprite;
-            }
-        }
+    spriteNamed = (name) => {
+        return this.activeScene.sprites.filter(function(sprite) {
+            return sprite.name === name;
+        })[0];
     }
     detectContact() {
         //set your contact logic
