@@ -47,7 +47,7 @@ class Game {
             this.shouldUpdate = true;
         }
     }
-    spriteNamed = (name) => {
+    spriteNamed(name){
         return this.activeScene.sprites.filter(function(sprite) {
             return sprite.name === name;
         })[0];
