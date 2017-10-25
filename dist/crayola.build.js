@@ -112,16 +112,10 @@ var Scene = function () {
     /**
      * Scene Properties
      * @param sprites - array with sprites to load into scene
-     * @param pixelSize - taken from CONFIG.pixelSize global
-     * @param Screen Size - W x H - defaults to 100% 
+     * @param Screen Size - W x H - defaults to 100%
      */
     function Scene() {
         var sprites = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-        var pixelSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 5;
-        var screenSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {
-            "width": "100%",
-            "height": "100%"
-        };
 
         _classCallCheck(this, Scene);
 
@@ -134,18 +128,9 @@ var Scene = function () {
             console.error("CYL:[Exception]Need at least one sprite to initialize a scene");
             return;
         }
-        if (pixelSize.isInteger === false) {
-            console.error("CYL:[Exception]PixelSize must be a interger");
-            return;
-        }
-        if (pixelSize === 5) {
-            console.warn("CYL:Scene pixel size default of 5");
-        }
         //Props
         this.screen = document.getElementById("screen");
         this.canvas = document.getElementById("game");
-        this.screenSize = screenSize;
-        this.pixelSize = pixelSize;
         this.ctx = this.canvas.getContext("2d");
         this.sprites = sprites;
         //Init Methods
@@ -157,15 +142,16 @@ var Scene = function () {
         value: function _defineCanvasDimensions() {
             var _this = this;
 
-            this.screen.style.width = this.screenSize.width;
-            this.screen.style.height = this.screenSize.height;
+            this.screen.style.width = CONFIG().screen.width;
+            this.screen.style.height = CONFIG().screen.height;
             this.canvas.width = this.screen.offsetWidth;
             this.canvas.height = this.screen.offsetHeight;
 
             window.addEventListener("resize", function () {
+                _this.screen.style.width = CONFIG().screen.width;
+                _this.screen.style.height = CONFIG().screen.height;
                 _this.canvas.width = _this.screen.offsetWidth;
                 _this.canvas.height = _this.screen.offsetHeight;
-                console.log("CYL: Canvas resize: " + _this.canvas.width);
             });
         }
     }, {
@@ -198,6 +184,10 @@ var Scene = function () {
                 }
             }
         }
+        /**
+        *Shapre srite render methods
+        */
+
     }, {
         key: "_renderPixel",
         value: function _renderPixel(sprite, pixel) {
@@ -205,7 +195,7 @@ var Scene = function () {
             var y = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
             this.ctx.fillStyle = pixel.color;
-            this.ctx.fillRect(pixel.x + x, pixel.y + y, this.pixelSize, this.pixelSize);
+            this.ctx.fillRect(pixel.x + x, pixel.y + y, CONFIG().pixelSize, CONFIG().pixelSize);
             sprite.renderedX.push(pixel.x + x);
             sprite.renderedY.push(pixel.y + y);
         }
@@ -252,6 +242,10 @@ var Scene = function () {
             //Render currentFrame
             this._renderShapeWith(sprite);
         }
+        /**
+        * Bitam sprites render methods
+        */
+
     }, {
         key: "_renderBitmapFrame",
         value: function _renderBitmapFrame(sprite) {
@@ -271,6 +265,10 @@ var Scene = function () {
             sprite.tickCounter++;
             this._renderBitmapFrame(sprite);
         }
+        /**
+        *Scene Update, sort sprite kind for render
+        */
+
     }, {
         key: "update",
         value: function update() {
@@ -339,6 +337,7 @@ var Scene = function () {
  * Omar Gonzalez Rocha - Copyright MIT license 2017
  */
 
+
 var ShapeSprite = function () {
     /**
      * Sprite Properties
@@ -374,10 +373,6 @@ var ShapeSprite = function () {
             console.error("CYL:[Exception]Shape object must be an array");
             return;
         }
-        if (pixelSize === undefined) {
-            console.error("CYL:[Exception]Please define global pixelSize value");
-            return;
-        }
         //Props Definition
         this.kind = "shape";
         this.name = name;
@@ -395,7 +390,6 @@ var ShapeSprite = function () {
         this.renderedX = [];
         this.renderedY = [];
         this.contactGroup = contactGroup;
-
         //Init Methods
         this.setAnimation();
     }
@@ -452,7 +446,6 @@ var ShapeSprite = function () {
             var relativeX = 0;
             var relativeY = 0;
             var index = 0;
-
             //Iterate Build Shape
             var _iteratorNormalCompletion5 = true;
             var _didIteratorError5 = false;
@@ -467,10 +460,10 @@ var ShapeSprite = function () {
                         y: relativeY,
                         color: colorCode
                     });
-                    relativeX = relativeX + pixelSize;
+                    relativeX = relativeX + CONFIG().pixelSize;
                     index++;
                     if (index === this.width) {
-                        relativeY = relativeY + pixelSize;
+                        relativeY = relativeY + CONFIG().pixelSize;
                         relativeX = 0;
                         index = 0;
                     }
@@ -566,6 +559,7 @@ var ShapeSprite = function () {
  * Omar Gonzalez Rocha - Copyright MIT license 2017
  */
 
+
 var BitmapSprite = function () {
     function BitmapSprite(name, bitmaps) {
         var width = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 50;
@@ -592,7 +586,6 @@ var BitmapSprite = function () {
         if (height === 50 && width === 50) {
             console.warn("CYL:Warning, bitmap sprite dimensions set to default 50x50");
         }
-
         //Props Definition:
         this.kind = "bitmap";
         this.name = name;
@@ -608,7 +601,6 @@ var BitmapSprite = function () {
         this.currentFrameIndex = 0;
         //Contact detection props
         this.contactGroup = contactGroup;
-
         this.setAnimation();
     }
 
@@ -622,7 +614,6 @@ var BitmapSprite = function () {
                 this.activeAnimation = named;
             }
             var activeCount = 0;
-
             var _iteratorNormalCompletion6 = true;
             var _didIteratorError6 = false;
             var _iteratorError6 = undefined;
@@ -715,6 +706,7 @@ var BitmapSprite = function () {
  * Omar Gonzalez Rocha - Copyright MIT license 2017
  */
 
+
 var Game = function () {
     function Game(scenes) {
         var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
@@ -735,7 +727,6 @@ var Game = function () {
         this.shouldUpdate = true;
         //Init Mehtods:
         this.setActiveScene();
-
         //Bind run method - animation request frame call back
         this.run = this.run.bind(this);
     }
@@ -820,7 +811,7 @@ var Game = function () {
             var _this2 = this;
 
             document.getElementById("game").addEventListener("click", function (e) {
-                //handle click events... 
+                //handle click events...
                 _this2.spriteNamed("cat").x = e.clientX;
                 _this2.spriteNamed("cat").y = e.clientY;
             });
@@ -831,7 +822,7 @@ var Game = function () {
             var _this3 = this;
 
             window.addEventListener("keydown", function (e) {
-                //handle click events... 
+                //handle click events...
                 if (e.key === "ArrowLeft") {
                     _this3.spriteNamed("player").x = _this3.spriteNamed("player").x - 30;
                 }
@@ -887,12 +878,54 @@ var Game = function () {
 //Scene Config 
 
 
-var pixelSize = 10;
+window.CONFIG = function () {
+    //Set Accordingily 
+    var pixelSize = 10;
+    var predefinedPixel = "L"; //S,M,L //set to null if you want a fixed dimension
+    var apectRatio = [16, 9];
+    var percentual = null; // [100, 70]; null or ser w % or h &
 
-var screenSize = {
-    "width": "100%",
-    "height": "100%"
+    if (predefinedPixel === "S") {
+        pixelSize = window.innerWidth / 200;
+    }
+    if (predefinedPixel === "M") {
+        pixelSize = window.innerWidth / 150;
+    }
+    if (predefinedPixel === "L") {
+        pixelSize = window.innerWidth / 100;
+    }
+
+    var width;
+    var height;
+
+    if (percentual) {
+        var verticalMargin = (100 - percentual[1]) / 2;
+        document.getElementById('screen').style.marginTop = verticalMargin + "%";
+        width = percentual[0] + "%";
+        height = percentual[1] + "%";
+    }
+
+    if (apectRatio) {
+        width = window.innerWidth;
+        height = parseFloat(width / apectRatio[0] * apectRatio[1]);
+        var _verticalMargin = (window.innerHeight - height) / 2;
+        document.getElementById('screen').style.marginTop = _verticalMargin + "px";
+        width = width + "px";
+        height = height + "px";
+    }
+
+    return {
+        'pixelSize': pixelSize,
+        'screen': {
+            'width': width,
+            'height': height
+        }
+    };
 };
+
+window.addEventListener("resize", function () {
+    window.CONFIG();
+});
 
 var idle1 = {
     "set": "idle",
@@ -941,7 +974,7 @@ var catImg2 = {
 
 var cat = new BitmapSprite("cat", [catImg, catImg2], 100, 100);
 
-var scene = new Scene([player, enemy, cat], pixelSize, screenSize);
+var scene = new Scene([player, enemy, cat]);
 
 player.x = scene.frame.width / 2;
 player.y = scene.frame.height / 2;
@@ -951,10 +984,7 @@ enemy.y = scene.frame.height / 3;
 
 cat.x = scene.frame.width * .7;
 cat.y = scene.frame.height / 3;
-
-docReady(function () {
-    var game = new Game([scene]);
-    game.mouseClick();
-    game.keyDown();
-    game.run();
-});
+var game = new Game([scene]);
+game.mouseClick();
+game.keyDown();
+game.run();

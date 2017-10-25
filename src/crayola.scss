@@ -1,13 +1,8 @@
 //Style Global Settings 
 
 //Colors:
-$theme-dark-1:#282C34;
+$theme-dark-1:#1B1D23;
 $theme-dark-2:#21252B;
-
-//BreakPoints:
-$bp-mobile:768px;
-$bp-large:1200px;
-$game-margin-top:0rem;
 
 body,html{
     height: 100%;
@@ -23,19 +18,4 @@ body,html{
     margin-left: auto;
     margin-right: auto;
     display: block;
-
-    //Small-Mobile
-    @media (max-width: $bp-mobile){
-
-    }
-
-    //Medium Desktop
-    @media (min-width: $bp-mobile) and (max-width: $bp-large){
-
-    }
-
-    //Large Desktop
-    @media (min-width: $bp-large){
-
-    }
 }

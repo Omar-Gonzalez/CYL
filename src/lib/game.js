@@ -2,9 +2,7 @@
  * Crayola - Game
  * Omar Gonzalez Rocha - Copyright MIT license 2017
  */
-
 class Game {
-
     constructor(scenes, active = 0) {
         //Param Validations
         if (!(Array.isArray(scenes))) {
@@ -20,25 +18,21 @@ class Game {
         this.shouldUpdate = true;
         //Init Mehtods:
         this.setActiveScene();
-
         //Bind run method - animation request frame call back
         this.run = this.run.bind(this);
     }
-
     setActiveScene(active) {
         if (active !== undefined) {
             this.active = active
         }
         this.activeScene = this.scenes[this.active];
     }
-
     get assets() {
         return {
             'scenes': this.scenes,
             'activeScene': this.activeScene
         }
     }
-
     run() {
         if (this.shouldUpdate) {
             this.activeScene.update();
@@ -46,7 +40,6 @@ class Game {
         }
         window.requestAnimationFrame(this.run);
     }
-
     pause() {
         if (this.shouldUpdate) {
             this.shouldUpdate = false;
@@ -54,7 +47,6 @@ class Game {
             this.shouldUpdate = true;
         }
     }
-
     spriteNamed(name) {
         for (let sprite of this.activeScene.sprites) {
             if (name === sprite.name) {
@@ -62,7 +54,6 @@ class Game {
             }
         }
     }
-
     detectContact() {
         //set your contact logic
         let contact = this.spriteNamed("player").inContactWith(this.spriteNamed("enemy"));
@@ -70,7 +61,6 @@ class Game {
             console.log(contact.contactWith);
         }
     }
-
     detectCollision() {
         //set your collision logic
         let collision = this.spriteNamed("player").inCollisionWith(this.spriteNamed("enemy")).inCollision;
@@ -78,18 +68,16 @@ class Game {
             console.log(collision.collisionWith);
         }
     }
-
     mouseClick() {
         document.getElementById("game").addEventListener("click", (e) => {
-            //handle click events... 
+            //handle click events...
             this.spriteNamed("cat").x = e.clientX;
             this.spriteNamed("cat").y = e.clientY;
         });
     }
-
     keyDown() {
         window.addEventListener("keydown", (e) => {
-            //handle click events... 
+            //handle click events...
             if (e.key === "ArrowLeft") {
                 this.spriteNamed("player").x = this.spriteNamed("player").x - 30;
             }

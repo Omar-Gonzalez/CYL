@@ -2,7 +2,6 @@
  * Crayola - Shape Sprite
  * Omar Gonzalez Rocha - Copyright MIT license 2017
  */
-
 class ShapeSprite {
     /**
      * Sprite Properties
@@ -38,10 +37,6 @@ class ShapeSprite {
             console.error("CYL:[Exception]Shape object must be an array");
             return;
         }
-        if (pixelSize === undefined) {
-            console.error("CYL:[Exception]Please define global pixelSize value");
-            return;
-        }
         //Props Definition
         this.kind = "shape";
         this.name = name;
@@ -59,11 +54,9 @@ class ShapeSprite {
         this.renderedX = [];
         this.renderedY = [];
         this.contactGroup = contactGroup;
-
         //Init Methods
         this.setAnimation();
     }
-
     setAnimation(named) {
         this.spriteFrames = []; //clean active frames before setting them again
         if (named === undefined) {
@@ -85,13 +78,11 @@ class ShapeSprite {
         }
         this.frameCount = activeCount;
     }
-
     mapFrameWith(shape) {
         let frame = [];
         let relativeX = 0;
         let relativeY = 0;
         let index = 0;
-
         //Iterate Build Shape
         for (let colorCode of shape) {
             frame.push({
@@ -99,26 +90,24 @@ class ShapeSprite {
                 y: relativeY,
                 color: colorCode
             });
-            relativeX = relativeX + pixelSize;
+            relativeX = relativeX + CONFIG().pixelSize;
             index++;
             if (index === this.width) {
-                relativeY = relativeY + pixelSize;
+                relativeY = relativeY + CONFIG().pixelSize;
                 relativeX = 0;
                 index = 0;
             }
         }
         this.spriteFrames.push(frame);
     }
-
-    get bounds () {
-            return {
+    get bounds() {
+        return {
             "maxX": this.renderedX.max(),
             "minX": this.renderedX.min(),
             "maxY": this.renderedY.max(),
             "minY": this.renderedY.min()
         }
     }
-
     inContactWith(sprite) {
         let xContact = false;
         let yContact = false;
@@ -141,7 +130,6 @@ class ShapeSprite {
             }
         }
     }
-
     inCollisionWith(sprite) {
         let xCollision = false;
         let yCollision = false;
@@ -165,11 +153,9 @@ class ShapeSprite {
             }
         }
     }
-
-    get currentFrame(){
+    get currentFrame() {
         return this.spriteFrames[this.currentFrameIndex];
     }
-
     get frames() {
         return this.spriteFrames;
     }

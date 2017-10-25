@@ -2,9 +2,7 @@
  * Crayola - Bitmap Sprite
  * Omar Gonzalez Rocha - Copyright MIT license 2017
  */
-
 class BitmapSprite {
-
     constructor(
         name,
         bitmaps,
@@ -30,7 +28,6 @@ class BitmapSprite {
         if (height === 50 && width === 50) {
             console.warn("CYL:Warning, bitmap sprite dimensions set to default 50x50");
         }
-
         //Props Definition:
         this.kind = "bitmap";
         this.name = name;
@@ -46,10 +43,8 @@ class BitmapSprite {
         this.currentFrameIndex = 0;
         //Contact detection props
         this.contactGroup = contactGroup;
-
         this.setAnimation()
     }
-
     setAnimation(named) {
         this.spriteFrames = []; //clean active frames before setting them again
         if (named === undefined) {
@@ -58,7 +53,6 @@ class BitmapSprite {
             this.activeAnimation = named;
         }
         let activeCount = 0;
-
         for (let bitmap of this.bitmaps) {
             if (bitmap.set === this.activeAnimation) {
                 let img = new Image();
@@ -75,7 +69,6 @@ class BitmapSprite {
         }
         this.frameCount = activeCount;
     }
-
     setDimension(x, y) {
         this.spriteFrames = [];
         for (let bitmap of this.bitmaps) {
@@ -88,13 +81,10 @@ class BitmapSprite {
             }
         }
     }
-
-    get currentFrame(){
+    get currentFrame() {
         return this.spriteFrames[this.currentFrameIndex];
     }
-
     get frames() {
         return this.spriteFrames;
     }
-
 }
