@@ -1,6 +1,6 @@
 /******
  * Crayola - Shape Sprite
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  */
 class ShapeSprite {
     /**
@@ -90,10 +90,10 @@ class ShapeSprite {
                 y: relativeY,
                 color: colorCode
             });
-            relativeX = relativeX + CONFIG().pixelSize;
+            relativeX = relativeX + SCREEN().pixelSize;
             index++;
             if (index === this.width) {
-                relativeY = relativeY + CONFIG().pixelSize;
+                relativeY = relativeY + SCREEN().pixelSize;
                 relativeX = 0;
                 index = 0;
             }

@@ -1,15 +1,15 @@
 /******
  * Crayola - Utilities
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  */
 
 //Scene Config 
-window.CONFIG = function() {
+window.SCREEN = function() {
     //Set Accordingily 
     let pixelSize = 10;
     let predefinedPixel = "L" //S,M,L //set to null if you want a fixed dimension
-    let apectRatio = [16, 9];
-    let percentual = null // [100, 70]; null or ser w % or h &
+    let apectRatio = null; //[16, 9];
+    let percentual = [100, 100]; //null or ser w % or h &
 
     if (predefinedPixel === "S") {
         pixelSize = window.innerWidth / 200;
@@ -50,5 +50,5 @@ window.CONFIG = function() {
 }
 
 window.addEventListener("resize", () => {
-    window.CONFIG();
+    window.SCREEN();
 });

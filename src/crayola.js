@@ -1,6 +1,6 @@
 /******
  * Crayola ES6 Game Dev Tools 
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  * Conventions: 
  * _underscore for pseudo private methods 
  */

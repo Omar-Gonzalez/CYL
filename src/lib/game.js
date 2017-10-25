@@ -1,6 +1,6 @@
 /******
  * Crayola - Game
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  */
 class Game {
     constructor(scenes, active = 0) {

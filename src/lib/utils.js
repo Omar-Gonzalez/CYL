@@ -1,6 +1,6 @@
 /******
  * Crayola - Utilities
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  */
 
 /**
