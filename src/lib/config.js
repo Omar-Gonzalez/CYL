@@ -21,8 +21,8 @@ window.SCREEN = function() {
         pixelSize = window.innerWidth / 100;
     }
 
-    var width;
-    var height;
+    let width;
+    let height;
 
     if (percentual) {
         let verticalMargin = (100 - percentual[1]) / 2;

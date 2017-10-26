@@ -6,7 +6,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /******
  * Crayola - Utilities
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  */
 
 /**
@@ -105,16 +105,16 @@ Number.prototype.between = function (min, max) {
 };
 /******
  * Crayola - Utilities
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  */
 
 //Scene Config 
-window.CONFIG = function () {
+window.SCREEN = function () {
     //Set Accordingily 
     var pixelSize = 10;
     var predefinedPixel = "L"; //S,M,L //set to null if you want a fixed dimension
-    var apectRatio = [16, 9];
-    var percentual = null; // [100, 70]; null or ser w % or h &
+    var apectRatio = null; //[16, 9];
+    var percentual = [100, 100]; //null or ser w % or h &
 
     if (predefinedPixel === "S") {
         pixelSize = window.innerWidth / 200;
@@ -126,8 +126,8 @@ window.CONFIG = function () {
         pixelSize = window.innerWidth / 100;
     }
 
-    var width;
-    var height;
+    var width = void 0;
+    var height = void 0;
 
     if (percentual) {
         var verticalMargin = (100 - percentual[1]) / 2;
@@ -155,11 +155,11 @@ window.CONFIG = function () {
 };
 
 window.addEventListener("resize", function () {
-    window.CONFIG();
+    window.SCREEN();
 });
 /******
  * Crayola - Shape Sprite
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  */
 
 var Scene = function () {
@@ -196,14 +196,14 @@ var Scene = function () {
         value: function _defineCanvasDimensions() {
             var _this = this;
 
-            this.screen.style.width = CONFIG().screen.width;
-            this.screen.style.height = CONFIG().screen.height;
+            this.screen.style.width = SCREEN().screen.width;
+            this.screen.style.height = SCREEN().screen.height;
             this.canvas.width = this.screen.offsetWidth;
             this.canvas.height = this.screen.offsetHeight;
 
             window.addEventListener("resize", function () {
-                _this.screen.style.width = CONFIG().screen.width;
-                _this.screen.style.height = CONFIG().screen.height;
+                _this.screen.style.width = SCREEN().screen.width;
+                _this.screen.style.height = SCREEN().screen.height;
                 _this.canvas.width = _this.screen.offsetWidth;
                 _this.canvas.height = _this.screen.offsetHeight;
             });
@@ -249,7 +249,7 @@ var Scene = function () {
             var y = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
             this.ctx.fillStyle = pixel.color;
-            this.ctx.fillRect(pixel.x + x, pixel.y + y, CONFIG().pixelSize, CONFIG().pixelSize);
+            this.ctx.fillRect(pixel.x + x, pixel.y + y, SCREEN().pixelSize, SCREEN().pixelSize);
             sprite.renderedX.push(pixel.x + x);
             sprite.renderedY.push(pixel.y + y);
         }
@@ -388,7 +388,7 @@ var Scene = function () {
 }();
 /******
  * Crayola - Shape Sprite
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  */
 
 
@@ -514,10 +514,10 @@ var ShapeSprite = function () {
                         y: relativeY,
                         color: colorCode
                     });
-                    relativeX = relativeX + CONFIG().pixelSize;
+                    relativeX = relativeX + SCREEN().pixelSize;
                     index++;
                     if (index === this.width) {
-                        relativeY = relativeY + CONFIG().pixelSize;
+                        relativeY = relativeY + SCREEN().pixelSize;
                         relativeX = 0;
                         index = 0;
                     }
@@ -610,7 +610,7 @@ var ShapeSprite = function () {
 }();
 /******
  * Crayola - Bitmap Sprite
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  */
 
 
@@ -707,6 +707,51 @@ var BitmapSprite = function () {
             this.frameCount = activeCount;
         }
     }, {
+        key: "inContactWith",
+        value: function inContactWith(sprite) {
+            var xContact = false;
+            var yContact = false;
+            if (this.bounds.maxX.between(sprite.bounds.minX, sprite.bounds.maxX) || this.bounds.minX.between(sprite.bounds.minX, sprite.bounds.maxX)) {
+                xContact = true;
+            }
+            if (this.bounds.maxY.between(sprite.bounds.minY, sprite.bounds.maxY) || this.bounds.minY.between(sprite.bounds.minY, sprite.bounds.maxY)) {
+                yContact = true;
+            }
+            if (xContact === true && yContact === true) {
+                return {
+                    'inContact': true,
+                    'contactWith': this.name + " in contact with " + sprite.name
+                };
+            } else {
+                return {
+                    'inContact': false
+                };
+            }
+        }
+    }, {
+        key: "inCollisionWith",
+        value: function inCollisionWith(sprite) {
+            var xCollision = false;
+            var yCollision = false;
+            if (this.bounds.maxX.between(sprite.bounds.minX, sprite.bounds.maxX) || this.bounds.minX.between(sprite.bounds.minX, sprite.bounds.maxX)) {
+                xCollision = true;
+            }
+            if (this.bounds.maxY.between(sprite.bounds.minY, sprite.bounds.maxY) || this.bounds.minY.between(sprite.bounds.minY, sprite.bounds.maxY)) {
+                yCollision = true;
+            }
+            if (xCollision === true && yCollision === true) {
+                //if in collision prevent futher movement
+                return {
+                    'inCollision': true,
+                    'collisionWith': this.name + " in collision with " + sprite.name
+                };
+            } else {
+                return {
+                    'inCollision': false
+                };
+            }
+        }
+    }, {
         key: "setDimension",
         value: function setDimension(x, y) {
             this.spriteFrames = [];
@@ -742,6 +787,16 @@ var BitmapSprite = function () {
             }
         }
     }, {
+        key: "bounds",
+        get: function get() {
+            return {
+                "maxX": this.width + this.x,
+                "minX": this.x,
+                "minY": this.y,
+                "maxY": this.height + this.y
+            };
+        }
+    }, {
         key: "currentFrame",
         get: function get() {
             return this.spriteFrames[this.currentFrameIndex];
@@ -757,7 +812,7 @@ var BitmapSprite = function () {
 }();
 /******
  * Crayola - Game
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  */
 
 
@@ -814,38 +869,15 @@ var Game = function () {
     }, {
         key: "spriteNamed",
         value: function spriteNamed(name) {
-            var _iteratorNormalCompletion8 = true;
-            var _didIteratorError8 = false;
-            var _iteratorError8 = undefined;
-
-            try {
-                for (var _iterator8 = this.activeScene.sprites[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-                    var sprite = _step8.value;
-
-                    if (name === sprite.name) {
-                        return sprite;
-                    }
-                }
-            } catch (err) {
-                _didIteratorError8 = true;
-                _iteratorError8 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion8 && _iterator8.return) {
-                        _iterator8.return();
-                    }
-                } finally {
-                    if (_didIteratorError8) {
-                        throw _iteratorError8;
-                    }
-                }
-            }
+            return this.activeScene.sprites.filter(function (sprite) {
+                return sprite.name === name;
+            })[0];
         }
     }, {
         key: "detectContact",
         value: function detectContact() {
             //set your contact logic
-            var contact = this.spriteNamed("player").inContactWith(this.spriteNamed("enemy"));
+            var contact = this.spriteNamed("cat").inContactWith(this.spriteNamed("enemy"));
             if (contact.inContact) {
                 console.log(contact.contactWith);
             }
@@ -917,7 +949,7 @@ var Game = function () {
 }();
 /******
  * Crayola ES6 Game Dev Tools 
- * Omar Gonzalez Rocha - Copyright MIT license 2017
+ * Copyright MIT license 2017
  * Conventions: 
  * _underscore for pseudo private methods 
  */
@@ -991,3 +1023,4 @@ var game = new Game([scene]);
 game.mouseClick();
 game.keyDown();
 game.run();
+//# sourceMappingURL=crayola.build.js.map

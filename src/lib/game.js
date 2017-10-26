@@ -54,7 +54,7 @@ class Game {
     }
     detectContact() {
         //set your contact logic
-        let contact = this.spriteNamed("player").inContactWith(this.spriteNamed("enemy"));
+        let contact = this.spriteNamed("cat").inContactWith(this.spriteNamed("enemy"));
         if (contact.inContact) {
             console.log(contact.contactWith);
         }
