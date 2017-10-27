@@ -4,8 +4,33 @@
  */
 
 /**
+ * Key Browser Features Check
+ * - check for canvas
+ * - check for addEventListener
+ * - check for requestAnimationFrame
+ */
+
+(function() {
+    let canvasSupport = !!window.CanvasRenderingContext2D;
+    if (canvasSupport === false) {
+        alert("Your browser doesn't suppor Canvas 2D rendering context - Please, get a recent version of Firefox, Chrome or Safari");
+        console.error("Your browser doesn't suppor Canvas 2D rendering context. Please consider get a recent version of Firefox, Chrome or Safari");
+    }
+    if (!window.requestAnimationFrame) {
+        alert("Your browser doesn't suppor the requestAnimationFrame API - Please, get a recent version of Firefox, Chrome or Safari");
+        console.error("Your browser doesn't suppor equestAnimationFrame API. Please consider get a recent version of Firefox, Chrome or Safari");
+    }
+    if (!window.addEventListener) {
+        alert("Your browser doesn't suppor the addEventListener API - Please, get a recent version of Firefox, Chrome or Safari");
+        console.error("Your browser doesn't suppor addEventListener API - Please consider get a recent version of Firefox, Chrome or Safari");
+    }
+}());
+
+console.log(requestAnimationFrame);
+
+/**
  * Custom Document Ready Credits to : jfriend00 - https://stackoverflow.com/questions/9899372/pure-javascript-equivalent-of-jquerys-ready-how-to-call-a-function-when-t
- */ 
+ */
 (function(funcName, baseObj) {
     funcName = funcName || "docReady";
     baseObj = baseObj || window;
@@ -94,6 +119,6 @@ Array.prototype.max = function(evaluate) {
 
 //Number Range Prototype - credits to jbabey - https://stackoverflow.com/questions/12806304/shortest-code-to-check-if-a-number-is-in-a-range-in-javascript
 
-Number.prototype.between = function (min, max) {
+Number.prototype.between = function(min, max) {
     return this > min && this < max;
 }

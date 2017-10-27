@@ -10,6 +10,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 
 /**
+ * Key Browser Features Check
+ * - check for canvas
+ * - check for addEventListener
+ * - check for requestAnimationFrame
+ */
+
+(function () {
+    var canvasSupport = !!window.CanvasRenderingContext2D;
+    if (canvasSupport === false) {
+        alert("Your browser doesn't suppor Canvas 2D rendering context - Please, get a recent version of Firefox, Chrome or Safari");
+        console.error("Your browser doesn't suppor Canvas 2D rendering context. Please consider get a recent version of Firefox, Chrome or Safari");
+    }
+    if (!window.requestAnimationFrame) {
+        alert("Your browser doesn't suppor the requestAnimationFrame API - Please, get a recent version of Firefox, Chrome or Safari");
+        console.error("Your browser doesn't suppor equestAnimationFrame API. Please consider get a recent version of Firefox, Chrome or Safari");
+    }
+    if (!window.addEventListener) {
+        alert("Your browser doesn't suppor the addEventListener API - Please, get a recent version of Firefox, Chrome or Safari");
+        console.error("Your browser doesn't suppor addEventListener API - Please consider get a recent version of Firefox, Chrome or Safari");
+    }
+})();
+
+console.log(requestAnimationFrame);
+
+/**
  * Custom Document Ready Credits to : jfriend00 - https://stackoverflow.com/questions/9899372/pure-javascript-equivalent-of-jquerys-ready-how-to-call-a-function-when-t
  */
 (function (funcName, baseObj) {
@@ -104,7 +129,7 @@ Number.prototype.between = function (min, max) {
     return this > min && this < max;
 };
 /******
- * Crayola - Utilities
+ * Crayola - Config Globals
  * Copyright MIT license 2017
  */
 
@@ -158,9 +183,232 @@ window.addEventListener("resize", function () {
     window.SCREEN();
 });
 /******
+ * Crayola - Class Input + Event Polyfills
+ * Copyright MIT license 2017
+ */
+
+var Input = function () {
+    function Input() {
+        _classCallCheck(this, Input);
+
+        this._registerKeyDown();
+    }
+
+    _createClass(Input, [{
+        key: "_registerKeyDown",
+        value: function _registerKeyDown() {
+            var self = this;
+            window.addEventListener("keydown", function (e) {
+                return self._filterKeyDown(e);
+            });
+            window.addEventListener("click", function (e) {
+                return self.click(null, e);
+            });
+        }
+    }, {
+        key: "click",
+        value: function click(action, e) {
+            /**
+             * Mouse - Touchpad Event  
+             */
+            if (action) {
+                this.mouseAction = action;
+            }
+            if (typeof this.mouseAction === "function" && e !== undefined) {
+                this.mouseAction(e);
+            } else {
+                console.warn("CYL: Click action must be a function");
+            }
+        }
+    }, {
+        key: "_filterKeyDown",
+        value: function _filterKeyDown(e) {
+            /**
+             * KeyDown Event Polyfill 
+             */
+            //Arrow Keys
+            if (e.key === "ArrowUp" || e.code === "ArrowUp" || e.keyCode === 38) {
+                this.arrowUp();
+            }
+            if (e.key === "ArrowDown" || e.code === "ArrowDown" || e.keyCode === 40) {
+                this.arrowDown();
+            }
+            if (e.key === "ArrowLeft" || e.code === "ArrowLeft" || e.keyCode === 37) {
+                this.arrowLeft();
+            }
+            if (e.key === "ArrowRight" || e.code === "ArrowRight" || e.keyCode === 39) {
+                this.arrowRight();
+            }
+            //Escape + Space 
+            if (e.key === " " || e.code === "Space" || e.keyCode === 32) {
+                this.spaceBar();
+            }
+            if (e.key === "Escape" || e.code === "Escape" || e.keyCode === 27) {
+                this.escape();
+            }
+            //Characters
+            if (e.key === "a" || e.key === "A" || e.code === "KeyA" || e.keyCode === 65) {
+                this.a();
+            }
+            if (e.key === "s" || e.key === "S" || e.code === "KeyS" || e.keyCode === 83) {
+                this.s();
+            }
+            if (e.key === "d" || e.key === "D" || e.code === "KeyD" || e.keyCode === 68) {
+                this.d();
+            }
+            if (e.key === "f" || e.key === "F" || e.code === "KeyF" || e.keyCode === 70) {
+                this.f();
+            }
+            if (e.key === "p" || e.key === "P" || e.code === "KeyP" || e.keyCode === 80) {
+                this.p();
+            }
+        }
+    }, {
+        key: "p",
+        value: function p(keyAction) {
+            if (keyAction) {
+                this.pAction = keyAction;
+            }
+            if (typeof this.pAction === "function") {
+                this.pAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "f",
+        value: function f(keyAction) {
+            if (keyAction) {
+                this.fAction = keyAction;
+            }
+            if (typeof this.fAction === "function") {
+                this.fAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "d",
+        value: function d(keyAction) {
+            if (keyAction) {
+                this.dAction = keyAction;
+            }
+            if (typeof this.dAction === "function") {
+                this.dAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "s",
+        value: function s(keyAction) {
+            if (keyAction) {
+                this.sAction = keyAction;
+            }
+            if (typeof this.sAction === "function") {
+                this.sAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "a",
+        value: function a(keyAction) {
+            if (keyAction) {
+                this.aAction = keyAction;
+            }
+            if (typeof this.aAction === "function") {
+                this.aAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "escape",
+        value: function escape(keyAction) {
+            if (keyAction) {
+                this.escapeAction = keyAction;
+            }
+            if (typeof this.escapeAction === "function") {
+                this.escapeAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "spaceBar",
+        value: function spaceBar(keyAction) {
+            if (keyAction) {
+                this.spaceBarAction = keyAction;
+            }
+            if (typeof this.spaceBarAction === "function") {
+                this.spaceBarAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "arrowUp",
+        value: function arrowUp(keyAction) {
+            if (keyAction) {
+                this.arrowUpAction = keyAction;
+            }
+            if (typeof this.arrowUpAction === "function") {
+                this.arrowUpAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "arrowDown",
+        value: function arrowDown(keyAction) {
+            if (keyAction) {
+                this.keyDownAction = keyAction;
+            }
+            if (typeof this.keyDownAction === "function") {
+                this.keyDownAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "arrowLeft",
+        value: function arrowLeft(keyAction) {
+            if (keyAction) {
+                this.keyLeftAction = keyAction;
+            }
+            if (typeof this.keyLeftAction === "function") {
+                this.keyLeftAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "arrowRight",
+        value: function arrowRight(keyAction) {
+            if (keyAction) {
+                this.keyRightAction = keyAction;
+            }
+            if (typeof this.keyRightAction === "function") {
+                this.keyRightAction();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "_callBackTypeError",
+        value: function _callBackTypeError() {
+            console.warn("CYL: Input action requires a function");
+        }
+    }]);
+
+    return Input;
+}();
+/******
  * Crayola - Shape Sprite
  * Copyright MIT license 2017
  */
+
 
 var Scene = function () {
     /**
@@ -488,7 +736,7 @@ var ShapeSprite = function () {
             }
 
             if (activeCount === 0) {
-                console.log("CYL:[Exception]No active sets in srite");
+                console.error("CYL:[Exception]No active sets in srite");
                 return;
             }
             this.frameCount = activeCount;
@@ -892,50 +1140,6 @@ var Game = function () {
             }
         }
     }, {
-        key: "mouseClick",
-        value: function mouseClick() {
-            var _this2 = this;
-
-            document.getElementById("game").addEventListener("click", function (e) {
-                //handle click events...
-                _this2.spriteNamed("cat").x = e.clientX;
-                _this2.spriteNamed("cat").y = e.clientY;
-            });
-        }
-    }, {
-        key: "keyDown",
-        value: function keyDown() {
-            var _this3 = this;
-
-            window.addEventListener("keydown", function (e) {
-                //handle click events...
-                if (e.key === "ArrowLeft") {
-                    _this3.spriteNamed("player").x = _this3.spriteNamed("player").x - 30;
-                }
-                if (e.key === "ArrowRight") {
-                    _this3.spriteNamed("player").x = _this3.spriteNamed("player").x + 30;
-                }
-                if (e.key === "ArrowUp") {
-                    _this3.spriteNamed("player").y = _this3.spriteNamed("player").y - 30;
-                }
-                if (e.key === "ArrowDown") {
-                    _this3.spriteNamed("player").y = _this3.spriteNamed("player").y + 30;
-                }
-                if (e.key === "a") {
-                    _this3.spriteNamed("player").setAnimation("moving");
-                }
-                if (e.key === "s") {
-                    _this3.spriteNamed("player").setAnimation("idle");
-                }
-                if (e.key === " ") {
-                    _this3.activeScene.detectCollision();
-                }
-                if (e.key === "p") {
-                    _this3.pause();
-                }
-            });
-        }
-    }, {
         key: "assets",
         get: function get() {
             return {
@@ -957,6 +1161,7 @@ var Game = function () {
 //Lib Concatenation
 //@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/config.js
+//@prepros-prepend ./lib/input.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
 //@prepros-prepend ./lib/bitmap-sprite.js
@@ -1019,8 +1224,58 @@ enemy.y = scene.frame.height / 3;
 
 cat.x = scene.frame.width * .7;
 cat.y = scene.frame.height / 3;
+
 var game = new Game([scene]);
-game.mouseClick();
-game.keyDown();
 game.run();
+
+var input = new Input();
+
+input.click(function (e) {
+    game.spriteNamed("cat").x = e.clientX;
+    game.spriteNamed("cat").y = e.clientY;
+});
+
+input.arrowUp(function () {
+    game.spriteNamed("player").y = game.spriteNamed("player").y - 20;
+});
+
+input.arrowDown(function () {
+    game.spriteNamed("player").y = game.spriteNamed("player").y + 20;
+});
+
+input.arrowLeft(function () {
+    game.spriteNamed("player").x = game.spriteNamed("player").x - 20;
+});
+
+input.arrowRight(function () {
+    game.spriteNamed("player").x = game.spriteNamed("player").x + 20;
+});
+
+input.spaceBar(function () {
+    console.log("space bar");
+});
+
+input.escape(function () {
+    console.log("escape");
+});
+
+input.a(function () {
+    console.log("a key");
+});
+
+input.s(function () {
+    console.log("s key");
+});
+
+input.d(function () {
+    console.log("d key");
+});
+
+input.f(function () {
+    console.log("f key");
+});
+
+input.p(function () {
+    console.log("p key");
+});
 //# sourceMappingURL=crayola.build.js.map

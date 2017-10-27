@@ -8,6 +8,7 @@
 //Lib Concatenation
 //@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/config.js
+//@prepros-prepend ./lib/input.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
 //@prepros-prepend ./lib/bitmap-sprite.js
@@ -114,7 +115,57 @@ enemy.y = scene.frame.height / 3;
 
 cat.x = scene.frame.width * .7
 cat.y = scene.frame.height / 3
+
 let game = new Game([scene]);
-game.mouseClick();
-game.keyDown();
 game.run();
+
+let input = new Input()
+
+input.click(function(e) {
+    game.spriteNamed("cat").x = e.clientX;
+    game.spriteNamed("cat").y = e.clientY;
+});
+
+input.arrowUp(function() {
+    game.spriteNamed("player").y = game.spriteNamed("player").y - 20;
+});
+
+input.arrowDown(function() {
+    game.spriteNamed("player").y = game.spriteNamed("player").y + 20;
+});
+
+input.arrowLeft(function() {
+    game.spriteNamed("player").x = game.spriteNamed("player").x - 20;
+});
+
+input.arrowRight(function() {
+    game.spriteNamed("player").x = game.spriteNamed("player").x + 20;
+});
+
+input.spaceBar(function() {
+    console.log("space bar");
+});
+
+input.escape(function() {
+    console.log("escape");
+});
+
+input.a(function() {
+    console.log("a key")
+});
+
+input.s(function() {
+    console.log("s key")
+});
+
+input.d(function() {
+    console.log("d key")
+});
+
+input.f(function() {
+    console.log("f key")
+});
+
+input.p(function() {
+    console.log("p key")
+});

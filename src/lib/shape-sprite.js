@@ -73,7 +73,7 @@ class ShapeSprite {
             }
         }
         if (activeCount === 0) {
-            console.log("CYL:[Exception]No active sets in srite");
+            console.error("CYL:[Exception]No active sets in srite");
             return;
         }
         this.frameCount = activeCount;

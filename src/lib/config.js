@@ -1,5 +1,5 @@
 /******
- * Crayola - Utilities
+ * Crayola - Config Globals
  * Copyright MIT license 2017
  */
 
