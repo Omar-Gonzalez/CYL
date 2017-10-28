@@ -486,9 +486,10 @@ var Scene = function () {
                 }
             }
         }
+
         /**
-        *Shapre srite render methods
-        */
+         *Shapre srite render methods
+         */
 
     }, {
         key: "_renderPixel",
@@ -544,9 +545,10 @@ var Scene = function () {
             //Render currentFrame
             this._renderShapeWith(sprite);
         }
+
         /**
-        * Bitam sprites render methods
-        */
+         * Bitam sprites render methods
+         */
 
     }, {
         key: "_renderBitmapFrame",
@@ -567,21 +569,23 @@ var Scene = function () {
             sprite.tickCounter++;
             this._renderBitmapFrame(sprite);
         }
+
         /**
-        * Label sprite render methods
-        */
+         * Label sprite render methods
+         */
 
     }, {
         key: "_renderLabelSprite",
-        value: function _renderLabelSprite() {
-            this.ctx.font = "30px Comic Sans MS";
-            this.ctx.fillStyle = "red";
-            this.ctx.textAlign = "center";
-            this.ctx.fillText("Hello World", 200, 200);
+        value: function _renderLabelSprite(sprite) {
+            this.ctx.font = sprite.ctxFont;
+            this.ctx.fillStyle = sprite.color;
+            sprite.width = this.ctx.measureText(sprite.text).width;
+            this.ctx.fillText(sprite.text, sprite.x, sprite.y);
         }
+
         /**
-        *Scene Update, sort sprite kind for render
-        */
+         *Scene Update, sort sprite kind for render
+         */
 
     }, {
         key: "update",
@@ -600,6 +604,9 @@ var Scene = function () {
                     }
                     if (sprite.kind === "bitmap") {
                         this._sortBitmapFrameWith(sprite);
+                    }
+                    if (sprite.kind === "label") {
+                        this._renderLabelSprite(sprite);
                     }
                 }
             } catch (err) {
@@ -1071,6 +1078,59 @@ var BitmapSprite = function () {
     return BitmapSprite;
 }();
 /******
+ * CYL - Label Sprite
+ * Copyright MIT license 2017
+ */
+
+var LabelSprite = function () {
+    function LabelSprite(text) {
+        var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "Verdana";
+        var size = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "25px";
+        var weight = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "normal";
+        var color = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "white";
+        var textAligment = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : "centered";
+        var x = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 5;
+        var y = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 30;
+
+        _classCallCheck(this, LabelSprite);
+
+        //Param Validations
+        if (text === undefined) {
+            console.error("CYL:[Exception] You need a string to initalize a label sprite");
+        }
+
+        this.kind = "label";
+        //Font properties
+        this.text = text;
+        this.font = font;
+        this.size = size;
+        this.weight = weight;
+        this.color = color;
+        //Container properties
+        this.width;
+        this.x = x;
+        this.y = y;
+    }
+
+    _createClass(LabelSprite, [{
+        key: "ctxFont",
+        get: function get() {
+            return this.weight + " " + this.size + " " + this.font;
+        }
+    }, {
+        key: "frame",
+        get: function get() {
+            return {
+                'width': this.width,
+                'height': parseInt(this.size)
+            };
+        }
+    }]);
+
+    return LabelSprite;
+}();
+
+/******
  * CYL - Game
  * Copyright MIT license 2017
  */
@@ -1177,6 +1237,8 @@ var Game = function () {
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
 //@prepros-prepend ./lib/bitmap-sprite.js
+//@prepros-prepend ./lib/label-sprite.js
+//@prepros-prepend ./lib/dialogue.js
 //@prepros-prepend ./lib/game.js
 
 var idle1 = {
@@ -1226,7 +1288,9 @@ var catImg2 = {
 
 var cat = new BitmapSprite("cat", [catImg, catImg2], 100, 100);
 
-var scene = new Scene([player, enemy, cat]);
+var title = new LabelSprite("CYL:Game Development Interface");
+
+var scene = new Scene([player, enemy, cat, title]);
 
 player.x = scene.frame.width / 2;
 player.y = scene.frame.height / 2;

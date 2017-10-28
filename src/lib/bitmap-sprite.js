@@ -45,6 +45,7 @@ class BitmapSprite {
         this.contactGroup = contactGroup;
         this.setAnimation()
     }
+
     setAnimation(named) {
         this.spriteFrames = []; //clean active frames before setting them again
         if (named === undefined) {
@@ -69,6 +70,7 @@ class BitmapSprite {
         }
         this.frameCount = activeCount;
     }
+
     get bounds() {
         return {
             "maxX": this.width + this.x,
@@ -77,6 +79,7 @@ class BitmapSprite {
             "maxY": this.height + this.y
         }
     }
+
     inContactWith(sprite) {
         let xContact = false;
         let yContact = false;
@@ -99,6 +102,7 @@ class BitmapSprite {
             }
         }
     }
+
     inCollisionWith(sprite) {
         let xCollision = false;
         let yCollision = false;
@@ -122,6 +126,7 @@ class BitmapSprite {
             }
         }
     }
+
     setDimension(x, y) {
         this.spriteFrames = [];
         for (let bitmap of this.bitmaps) {
@@ -134,9 +139,11 @@ class BitmapSprite {
             }
         }
     }
+
     get currentFrame() {
         return this.spriteFrames[this.currentFrameIndex];
     }
+    
     get frames() {
         return this.spriteFrames;
     }

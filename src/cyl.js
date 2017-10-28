@@ -12,6 +12,8 @@
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
 //@prepros-prepend ./lib/bitmap-sprite.js
+//@prepros-prepend ./lib/label-sprite.js
+//@prepros-prepend ./lib/dialogue.js
 //@prepros-prepend ./lib/game.js
 
 let idle1 = {
@@ -105,7 +107,9 @@ let cat = new BitmapSprite(
     100
 )
 
-let scene = new Scene([player, enemy, cat]);
+let title = new LabelSprite("CYL:Game Development Interface");
+
+let scene = new Scene([player, enemy, cat, title]);
 
 player.x = scene.frame.width / 2;
 player.y = scene.frame.height / 2;

@@ -57,6 +57,7 @@ class ShapeSprite {
         //Init Methods
         this.setAnimation();
     }
+
     setAnimation(named) {
         this.spriteFrames = []; //clean active frames before setting them again
         if (named === undefined) {
@@ -78,6 +79,7 @@ class ShapeSprite {
         }
         this.frameCount = activeCount;
     }
+
     mapFrameWith(shape) {
         let frame = [];
         let relativeX = 0;
@@ -100,6 +102,7 @@ class ShapeSprite {
         }
         this.spriteFrames.push(frame);
     }
+
     get bounds() {
         return {
             "maxX": this.renderedX.max(),
@@ -108,6 +111,7 @@ class ShapeSprite {
             "minY": this.renderedY.min()
         }
     }
+
     inContactWith(sprite) {
         let xContact = false;
         let yContact = false;
@@ -130,6 +134,7 @@ class ShapeSprite {
             }
         }
     }
+
     inCollisionWith(sprite) {
         let xCollision = false;
         let yCollision = false;
@@ -153,9 +158,11 @@ class ShapeSprite {
             }
         }
     }
+
     get currentFrame() {
         return this.spriteFrames[this.currentFrameIndex];
     }
+    
     get frames() {
         return this.spriteFrames;
     }

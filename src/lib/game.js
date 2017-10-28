@@ -21,18 +21,21 @@ class Game {
         //Bind run method - animation request frame call back
         this.run = this.run.bind(this);
     }
+
     setActiveScene(active) {
         if (active !== undefined) {
             this.active = active
         }
         this.activeScene = this.scenes[this.active];
     }
+
     get assets() {
         return {
             'scenes': this.scenes,
             'activeScene': this.activeScene
         }
     }
+
     run() {
         if (this.shouldUpdate) {
             this.activeScene.update();
@@ -40,6 +43,7 @@ class Game {
         }
         window.requestAnimationFrame(this.run);
     }
+
     pause() {
         if (this.shouldUpdate) {
             this.shouldUpdate = false;
@@ -47,11 +51,13 @@ class Game {
             this.shouldUpdate = true;
         }
     }
+
     spriteNamed(name){
         return this.activeScene.sprites.filter(function(sprite) {
             return sprite.name === name;
         })[0];
     }
+
     detectContact() {
         //set your contact logic
         let contact = this.spriteNamed("cat").inContactWith(this.spriteNamed("enemy"));
@@ -59,6 +65,7 @@ class Game {
             console.log(contact.contactWith);
         }
     }
+    
     detectCollision() {
         //set your collision logic
         let collision = this.spriteNamed("player").inCollisionWith(this.spriteNamed("enemy")).inCollision;

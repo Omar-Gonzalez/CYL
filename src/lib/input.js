@@ -7,6 +7,7 @@ class Input {
     constructor() {
         this._registerKeyDown();
     }
+
     _registerKeyDown() {
         let self = this;
         window.addEventListener("keydown", function(e) {
@@ -16,6 +17,7 @@ class Input {
             return self.click(null,e);
         });
     }
+
     click(action,e) {
         /**
          * Mouse - Touchpad Event  
@@ -29,6 +31,7 @@ class Input {
             console.warn("CYL: Click action must be a function");
         }
     }
+
     _filterKeyDown(e) {
         /**
          * KeyDown Event Polyfill 
@@ -80,6 +83,7 @@ class Input {
             this.p();
         }
     }
+
     p(keyAction) {
         if (keyAction) {
             this.pAction = keyAction;
@@ -90,6 +94,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+
     f(keyAction) {
         if (keyAction) {
             this.fAction = keyAction;
@@ -100,6 +105,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+
     d(keyAction) {
         if (keyAction) {
             this.dAction = keyAction;
@@ -110,6 +116,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+
     s(keyAction) {
         if (keyAction) {
             this.sAction = keyAction;
@@ -120,6 +127,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+
     a(keyAction) {
         if (keyAction) {
             this.aAction = keyAction;
@@ -130,6 +138,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+
     escape(keyAction) {
         if (keyAction) {
             this.escapeAction = keyAction;
@@ -140,6 +149,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+
     spaceBar(keyAction) {
         if (keyAction) {
             this.spaceBarAction = keyAction;
@@ -150,6 +160,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+
     arrowUp(keyAction) {
         if (keyAction) {
             this.arrowUpAction = keyAction;
@@ -160,6 +171,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+
     arrowDown(keyAction) {
         if (keyAction) {
             this.keyDownAction = keyAction;
@@ -170,6 +182,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+
     arrowLeft(keyAction) {
         if (keyAction) {
             this.keyLeftAction = keyAction;
@@ -180,6 +193,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+
     arrowRight(keyAction) {
         if (keyAction) {
             this.keyRightAction = keyAction;
@@ -190,6 +204,7 @@ class Input {
             this._callBackTypeError()
         }
     }
+    
     _callBackTypeError() {
         console.warn("CYL: Input action requires a function");
     }

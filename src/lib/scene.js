@@ -28,18 +28,21 @@ class Scene {
         //Init Methods
         this._defineCanvasDimensions();
     }
+
     get frame() {
         return {
             "width": this.canvas.width,
             "height": this.canvas.height
         }
     }
+
     get assets() {
         return {
             "spriteCount": this.sprites.length,
             "sprites": this.sprites
         }
     }
+
     _defineCanvasDimensions() {
         this.screen.style.width = SCREEN().screen.width;
         this.screen.style.height = SCREEN().screen.height;
@@ -53,6 +56,7 @@ class Scene {
             this.canvas.height = this.screen.offsetHeight;
         });
     }
+
     clear() {
         this.ctx.clearRect(0, 0, this.frame.width, this.frame.height);
         for (let sprite of this.sprites) {
@@ -60,20 +64,24 @@ class Scene {
             sprite.renderedY = [];
         }
     }
+
     /**
-    *Shapre srite render methods
-    */
+     *Shapre srite render methods
+     */
+
     _renderPixel(sprite, pixel, x = 0, y = 0) {
         this.ctx.fillStyle = pixel.color;
-        this.ctx.fillRect(pixel.x + x, pixel.y + y, SCREEN().pixelSize , SCREEN().pixelSize);
+        this.ctx.fillRect(pixel.x + x, pixel.y + y, SCREEN().pixelSize, SCREEN().pixelSize);
         sprite.renderedX.push(pixel.x + x);
         sprite.renderedY.push(pixel.y + y);
     }
+
     _renderShapeWith(sprite) {
         for (let pixel of sprite.currentFrame) {
             this._renderPixel(sprite, pixel, sprite.x, sprite.y);
         }
     }
+
     _sortShapeFrameWith(sprite) {
         //Update frame to render on update
         if (sprite.tickCounter > sprite.tick) {
@@ -87,12 +95,15 @@ class Scene {
         //Render currentFrame
         this._renderShapeWith(sprite);
     }
+
     /**
-    * Bitam sprites render methods
-    */
+     * Bitam sprites render methods
+     */
+
     _renderBitmapFrame(sprite) {
         this.ctx.drawImage(sprite.currentFrame, sprite.x, sprite.y, sprite.currentFrame.width, sprite.currentFrame.height)
     }
+
     _sortBitmapFrameWith(sprite) {
         //Update frame to render on update
         if (sprite.tickCounter > sprite.tick) {
@@ -105,18 +116,22 @@ class Scene {
         sprite.tickCounter++;
         this._renderBitmapFrame(sprite);
     }
+
     /**
-    * Label sprite render methods
-    */
-    _renderLabelSprite(){
-        this.ctx.font = "30px Comic Sans MS";
-        this.ctx.fillStyle = "red";
-        this.ctx.textAlign = "center";
-        this.ctx.fillText("Hello World", 200,200);
+     * Label sprite render methods
+     */
+
+    _renderLabelSprite(sprite) {
+        this.ctx.font = sprite.ctxFont;
+        this.ctx.fillStyle = sprite.color;
+        sprite.width = this.ctx.measureText(sprite.text).width;
+        this.ctx.fillText(sprite.text, sprite.x, sprite.y);
     }
+
     /**
-    *Scene Update, sort sprite kind for render
-    */
+     *Scene Update, sort sprite kind for render
+     */
+
     update() {
         this.clear();
         for (let sprite of this.sprites) {
@@ -126,8 +141,12 @@ class Scene {
             if (sprite.kind === "bitmap") {
                 this._sortBitmapFrameWith(sprite);
             }
+            if (sprite.kind === "label") {
+                this._renderLabelSprite(sprite);
+            }
         }
     }
+
     setSprites(sprites) {
         if (!(Array.isArray(sprites))) {
             console.error("CYL:[Exception]Update method requires an array of sprites");
