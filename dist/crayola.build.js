@@ -568,6 +568,18 @@ var Scene = function () {
             this._renderBitmapFrame(sprite);
         }
         /**
+        * Label sprite render methods
+        */
+
+    }, {
+        key: "_renderLabelSprite",
+        value: function _renderLabelSprite() {
+            this.ctx.font = "30px Comic Sans MS";
+            this.ctx.fillStyle = "red";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText("Hello World", 200, 200);
+        }
+        /**
         *Scene Update, sort sprite kind for render
         */
 
