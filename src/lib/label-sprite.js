@@ -1,5 +1,5 @@
 /******
- * Crayola - Label Sprite
+ * CYL - Label Sprite
  * Copyright MIT license 2017
  */
 

@@ -5,7 +5,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /******
- * Crayola - Utilities
+ * CYL - Utilities
  * Copyright MIT license 2017
  */
 
@@ -129,7 +129,7 @@ Number.prototype.between = function (min, max) {
     return this > min && this < max;
 };
 /******
- * Crayola - Config Globals
+ * CYL - Config Globals
  * Copyright MIT license 2017
  */
 
@@ -183,7 +183,7 @@ window.addEventListener("resize", function () {
     window.SCREEN();
 });
 /******
- * Crayola - Class Input + Event Polyfills
+ * CYL - Class Input + Event Polyfills
  * Copyright MIT license 2017
  */
 
@@ -405,7 +405,7 @@ var Input = function () {
     return Input;
 }();
 /******
- * Crayola - Shape Sprite
+ * CYL - Shape Sprite
  * Copyright MIT license 2017
  */
 
@@ -647,7 +647,7 @@ var Scene = function () {
     return Scene;
 }();
 /******
- * Crayola - Shape Sprite
+ * CYL - Shape Sprite
  * Copyright MIT license 2017
  */
 
@@ -869,7 +869,7 @@ var ShapeSprite = function () {
     return ShapeSprite;
 }();
 /******
- * Crayola - Bitmap Sprite
+ * CYL - Bitmap Sprite
  * Copyright MIT license 2017
  */
 
@@ -1071,7 +1071,7 @@ var BitmapSprite = function () {
     return BitmapSprite;
 }();
 /******
- * Crayola - Game
+ * CYL - Game
  * Copyright MIT license 2017
  */
 
@@ -1164,7 +1164,7 @@ var Game = function () {
     return Game;
 }();
 /******
- * Crayola ES6 Game Dev Tools 
+ * CYL ES6 Game Dev Tools 
  * Copyright MIT license 2017
  * Conventions: 
  * _underscore for pseudo private methods 
@@ -1290,4 +1290,4 @@ input.f(function () {
 input.p(function () {
     console.log("p key");
 });
-//# sourceMappingURL=crayola.build.js.map
+//# sourceMappingURL=cyl.build.js.map

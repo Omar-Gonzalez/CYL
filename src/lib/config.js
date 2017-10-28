@@ -1,5 +1,5 @@
 /******
- * Crayola - Config Globals
+ * CYL - Config Globals
  * Copyright MIT license 2017
  */
 

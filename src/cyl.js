@@ -1,5 +1,5 @@
 /******
- * Crayola ES6 Game Dev Tools 
+ * CYL ES6 Game Dev Tools 
  * Copyright MIT license 2017
  * Conventions: 
  * _underscore for pseudo private methods 

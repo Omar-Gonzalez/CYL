@@ -1,5 +1,5 @@
 /******
- * Crayola - Shape Sprite
+ * CYL - Shape Sprite
  * Copyright MIT license 2017
  */
 class ShapeSprite {

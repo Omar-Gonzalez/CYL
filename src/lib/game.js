@@ -1,5 +1,5 @@
 /******
- * Crayola - Game
+ * CYL - Game
  * Copyright MIT license 2017
  */
 class Game {

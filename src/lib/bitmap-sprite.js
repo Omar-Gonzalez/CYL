@@ -1,5 +1,5 @@
 /******
- * Crayola - Bitmap Sprite
+ * CYL - Bitmap Sprite
  * Copyright MIT license 2017
  */
 class BitmapSprite {

@@ -1,5 +1,5 @@
 /******
- * Crayola - Class Input + Event Polyfills
+ * CYL - Class Input + Event Polyfills
  * Copyright MIT license 2017
  */
 
