@@ -107,9 +107,15 @@ let cat = new BitmapSprite(
     100
 )
 
-let title = new LabelSprite("CYL:Game Development Interface");
+let title = new LabelSprite("CYL:Game Development Interface",17);
+let newGame = new LabelSprite("New Game");
+let start = new LabelSprite("Start");
+let options = new LabelSprite("Options");
+let dialogue = new Dialogue([newGame, start, options]);
+let scene = new Scene([player, enemy, cat, title, dialogue]);
 
-let scene = new Scene([player, enemy, cat, title]);
+let game = new Game([scene]);
+game.run();
 
 player.x = scene.frame.width / 2;
 player.y = scene.frame.height / 2;
@@ -120,10 +126,9 @@ enemy.y = scene.frame.height / 3;
 cat.x = scene.frame.width * .7
 cat.y = scene.frame.height / 3
 
-let game = new Game([scene]);
-game.run();
+title.x = scene.frame.width / 2 - title.frame.width / 2
 
-let input = new Input()
+let input = new Input();
 
 input.click(function(e) {
     game.spriteNamed("cat").x = e.clientX;
@@ -132,10 +137,12 @@ input.click(function(e) {
 
 input.arrowUp(function() {
     game.spriteNamed("player").y = game.spriteNamed("player").y - 20;
+    game.spriteNamed("menu").focusUp()
 });
 
 input.arrowDown(function() {
     game.spriteNamed("player").y = game.spriteNamed("player").y + 20;
+    game.spriteNamed("menu").focusDown()
 });
 
 input.arrowLeft(function() {
@@ -144,32 +151,4 @@ input.arrowLeft(function() {
 
 input.arrowRight(function() {
     game.spriteNamed("player").x = game.spriteNamed("player").x + 20;
-});
-
-input.spaceBar(function() {
-    console.log("space bar");
-});
-
-input.escape(function() {
-    console.log("escape");
-});
-
-input.a(function() {
-    console.log("a key")
-});
-
-input.s(function() {
-    console.log("s key")
-});
-
-input.d(function() {
-    console.log("d key")
-});
-
-input.f(function() {
-    console.log("f key")
-});
-
-input.p(function() {
-    console.log("p key")
 });

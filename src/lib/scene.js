@@ -31,8 +31,8 @@ class Scene {
 
     get frame() {
         return {
-            "width": this.canvas.width,
-            "height": this.canvas.height
+            "width": parseInt(this.canvas.width),
+            "height": parseInt(this.canvas.height)
         }
     }
 
@@ -128,6 +128,12 @@ class Scene {
         this.ctx.fillText(sprite.text, sprite.x, sprite.y);
     }
 
+    _renderDialogue(sprite){
+        for(let i = 0; i < sprite.options.length; i++){
+            this._renderLabelSprite(sprite.options[i]);
+        }
+    }
+
     /**
      *Scene Update, sort sprite kind for render
      */
@@ -143,6 +149,9 @@ class Scene {
             }
             if (sprite.kind === "label") {
                 this._renderLabelSprite(sprite);
+            }
+            if (sprite.kind === "dialogue") {
+                this._renderDialogue(sprite);
             }
         }
     }

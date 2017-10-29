@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 (function () {
     var canvasSupport = !!window.CanvasRenderingContext2D;
     if (canvasSupport === false) {
-        alert("Your browser doesn't suppor Canvas 2D rendering context - Please, get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor Canvas 2D rendering context - Please consider get a recent version of Firefox, Chrome or Safari");
         console.error("Your browser doesn't suppor Canvas 2D rendering context. Please consider get a recent version of Firefox, Chrome or Safari");
     }
     if (!window.requestAnimationFrame) {
@@ -582,6 +582,13 @@ var Scene = function () {
             sprite.width = this.ctx.measureText(sprite.text).width;
             this.ctx.fillText(sprite.text, sprite.x, sprite.y);
         }
+    }, {
+        key: "_renderDialogue",
+        value: function _renderDialogue(sprite) {
+            for (var i = 0; i < sprite.options.length; i++) {
+                this._renderLabelSprite(sprite.options[i]);
+            }
+        }
 
         /**
          *Scene Update, sort sprite kind for render
@@ -607,6 +614,9 @@ var Scene = function () {
                     }
                     if (sprite.kind === "label") {
                         this._renderLabelSprite(sprite);
+                    }
+                    if (sprite.kind === "dialogue") {
+                        this._renderDialogue(sprite);
                     }
                 }
             } catch (err) {
@@ -637,8 +647,8 @@ var Scene = function () {
         key: "frame",
         get: function get() {
             return {
-                "width": this.canvas.width,
-                "height": this.canvas.height
+                "width": parseInt(this.canvas.width),
+                "height": parseInt(this.canvas.height)
             };
         }
     }, {
@@ -1084,8 +1094,8 @@ var BitmapSprite = function () {
 
 var LabelSprite = function () {
     function LabelSprite(text) {
-        var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "Verdana";
-        var size = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "25px";
+        var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 25;
+        var font = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "Verdana";
         var weight = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "normal";
         var color = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "white";
         var textAligment = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : "centered";
@@ -1103,7 +1113,7 @@ var LabelSprite = function () {
         //Font properties
         this.text = text;
         this.font = font;
-        this.size = size;
+        this.size = size + "px";
         this.weight = weight;
         this.color = color;
         //Container properties
@@ -1121,7 +1131,7 @@ var LabelSprite = function () {
         key: "frame",
         get: function get() {
             return {
-                'width': this.width,
+                'width': parseInt(this.width),
                 'height': parseInt(this.size)
             };
         }
@@ -1129,7 +1139,104 @@ var LabelSprite = function () {
 
     return LabelSprite;
 }();
+/******
+ * CYL - Dialogue Class
+ * Copyright MIT license 2017
+ */
 
+var Dialogue = function () {
+    function Dialogue(labels) {
+        var lineSpace = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 55;
+        var name = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "menu";
+        var focusColor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "orange";
+        var defaultColor = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "white";
+        var focusZoom = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 2;
+        var x = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 50;
+        var y = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 300;
+
+        _classCallCheck(this, Dialogue);
+
+        //Param Validation
+        if (!Array.isArray(labels)) {
+            console.error("CYL:[Exception]Labbels object must be an array of LabelSprites");
+            return;
+        }
+        this.name = name;
+        this.kind = "dialogue";
+        this.x = x;
+        this.y = y;
+        this.lineSpace = lineSpace;
+        this.labels = labels;
+        this.focusIndex = 0;
+        this.focusSize = parseInt(labels[0].size) * focusZoom + "px";
+        this.focusColor = focusColor;
+        this.defaultFontSize = labels[0].size;
+        this.defaultColor = defaultColor;
+
+        this._placeGrid();
+    }
+
+    _createClass(Dialogue, [{
+        key: "_placeGrid",
+        value: function _placeGrid() {
+            for (var i = 0; i < this.labels.length; i++) {
+                this.labels[i].y = this.y + this.lineSpace + parseInt(i * this.lineSpace);
+                this.labels[i].x = this.labels[i].x + this.x;
+            }
+            this._processFocus();
+        }
+    }, {
+        key: "_processFocus",
+        value: function _processFocus() {
+            for (var i = 0; i < this.labels.length; i++) {
+                if (i === this.focusIndex) {
+                    this.labels[i].size = this.focusSize;
+                    this.labels[i].color = this.focusColor;
+                } else {
+                    this.labels[i].size = this.defaultFontSize;
+                    this.labels[i].color = this.defaultColor;
+                }
+            }
+        }
+    }, {
+        key: "setFocus",
+        value: function setFocus(index) {
+            if (index < 0 || index > this.labels.length) {
+                console.warn("CYL:[Warning] - The focus you are setting is out of range");
+                return;
+            }
+            this.focusIndex = index;
+            this._processFocus();
+        }
+    }, {
+        key: "focusDown",
+        value: function focusDown() {
+            if (this.focusIndex >= this.labels.length - 1) {
+                this.focusIndex = 0;
+            } else {
+                this.focusIndex++;
+            }
+            this._processFocus();
+        }
+    }, {
+        key: "focusUp",
+        value: function focusUp() {
+            if (0 >= this.focusIndex) {
+                this.focusIndex = this.labels.length - 1;
+            } else {
+                this.focusIndex--;
+            }
+            this._processFocus();
+        }
+    }, {
+        key: "options",
+        get: function get() {
+            return this.labels;
+        }
+    }]);
+
+    return Dialogue;
+}();
 /******
  * CYL - Game
  * Copyright MIT license 2017
@@ -1288,9 +1395,15 @@ var catImg2 = {
 
 var cat = new BitmapSprite("cat", [catImg, catImg2], 100, 100);
 
-var title = new LabelSprite("CYL:Game Development Interface");
+var title = new LabelSprite("CYL:Game Development Interface", 17);
+var newGame = new LabelSprite("New Game");
+var start = new LabelSprite("Start");
+var options = new LabelSprite("Options");
+var dialogue = new Dialogue([newGame, start, options]);
+var scene = new Scene([player, enemy, cat, title, dialogue]);
 
-var scene = new Scene([player, enemy, cat, title]);
+var game = new Game([scene]);
+game.run();
 
 player.x = scene.frame.width / 2;
 player.y = scene.frame.height / 2;
@@ -1301,8 +1414,7 @@ enemy.y = scene.frame.height / 3;
 cat.x = scene.frame.width * .7;
 cat.y = scene.frame.height / 3;
 
-var game = new Game([scene]);
-game.run();
+title.x = scene.frame.width / 2 - title.frame.width / 2;
 
 var input = new Input();
 
@@ -1313,10 +1425,12 @@ input.click(function (e) {
 
 input.arrowUp(function () {
     game.spriteNamed("player").y = game.spriteNamed("player").y - 20;
+    game.spriteNamed("menu").focusUp();
 });
 
 input.arrowDown(function () {
     game.spriteNamed("player").y = game.spriteNamed("player").y + 20;
+    game.spriteNamed("menu").focusDown();
 });
 
 input.arrowLeft(function () {
@@ -1325,33 +1439,5 @@ input.arrowLeft(function () {
 
 input.arrowRight(function () {
     game.spriteNamed("player").x = game.spriteNamed("player").x + 20;
-});
-
-input.spaceBar(function () {
-    console.log("space bar");
-});
-
-input.escape(function () {
-    console.log("escape");
-});
-
-input.a(function () {
-    console.log("a key");
-});
-
-input.s(function () {
-    console.log("s key");
-});
-
-input.d(function () {
-    console.log("d key");
-});
-
-input.f(function () {
-    console.log("f key");
-});
-
-input.p(function () {
-    console.log("p key");
 });
 //# sourceMappingURL=cyl.build.js.map

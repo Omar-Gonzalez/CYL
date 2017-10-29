@@ -13,7 +13,7 @@
 (function() {
     let canvasSupport = !!window.CanvasRenderingContext2D;
     if (canvasSupport === false) {
-        alert("Your browser doesn't suppor Canvas 2D rendering context - Please, get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor Canvas 2D rendering context - Please consider get a recent version of Firefox, Chrome or Safari");
         console.error("Your browser doesn't suppor Canvas 2D rendering context. Please consider get a recent version of Firefox, Chrome or Safari");
     }
     if (!window.requestAnimationFrame) {

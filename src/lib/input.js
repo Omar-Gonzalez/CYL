@@ -204,7 +204,7 @@ class Input {
             this._callBackTypeError()
         }
     }
-    
+
     _callBackTypeError() {
         console.warn("CYL: Input action requires a function");
     }

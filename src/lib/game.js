@@ -65,7 +65,7 @@ class Game {
             console.log(contact.contactWith);
         }
     }
-    
+
     detectCollision() {
         //set your collision logic
         let collision = this.spriteNamed("player").inCollisionWith(this.spriteNamed("enemy")).inCollision;

@@ -4,9 +4,10 @@
  */
 
 class LabelSprite {
-    constructor(text,
+    constructor(
+        text,
+        size = 25,
         font = "Verdana",
-        size = "25px",
         weight = "normal",
         color = "white",
         textAligment = "centered",
@@ -22,7 +23,7 @@ class LabelSprite {
         //Font properties
         this.text = text;
         this.font = font;
-        this.size = size;
+        this.size = size + "px";
         this.weight = weight;
         this.color = color;
         //Container properties
@@ -37,7 +38,7 @@ class LabelSprite {
 
     get frame() {
         return {
-            'width': this.width,
+            'width': parseInt(this.width),
             'height': parseInt(this.size)
         }
     }
