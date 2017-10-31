@@ -147,4 +147,9 @@ class BitmapSprite {
     get frames() {
         return this.spriteFrames;
     }
+
+    updatePos(x, y) {
+        this.x = x;
+        this.y = y;
+    }
 }

@@ -109,6 +109,13 @@ class ShapeSprite {
         }
     }
 
+    get frame() {
+        return {
+            "width": parseInt(this.renderedX.max() - this.renderedX.min()),
+            "height": parseInt(this.renderedY.max() - this.renderedY.min())
+        }
+    }
+
     inContactWith(sprite) {
         let xContact = false;
         let yContact = false;
@@ -162,5 +169,10 @@ class ShapeSprite {
 
     get frames() {
         return this.spriteFrames;
+    }
+
+    updatePos(x, y) {
+        this.x = x;
+        this.y = y;
     }
 }

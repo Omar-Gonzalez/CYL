@@ -9,12 +9,12 @@ class Game {
             console.error("CYL:[Exception]Game requires an array of scenes");
             return;
         }
-        if (scene === 0) {
+        if (scenes.length === 0) {
             console.warn("CYL:Default initial scene with index 0 is being loaded");
         }
         //Props
-        this.scenes = scenes
-        this.active = active
+        this.scenes = scenes;
+        this.active = active;
         this.shouldUpdate = true;
         //Init Mehtods:
         this.setActiveScene();
@@ -24,7 +24,7 @@ class Game {
 
     setActiveScene(active) {
         if (active !== undefined) {
-            this.active = active
+            this.active = active;
         }
         this.activeScene = this.scenes[this.active];
     }
@@ -66,19 +66,19 @@ class Game {
         });
     }
 
+    spritesWithKind(kind){
+        return this.activeScene.sprites.filter(function(sprite) {
+            return sprite.kind === kind;
+        });
+    }
+
     detectContact() {
         //set your contact logic
-        let contact = this.spriteNamed("cat").inContactWith(this.spriteNamed("enemy"));
-        if (contact.inContact) {
-            console.log(contact.contactWith);
-        }
+
     }
 
     detectCollision() {
         //set your collision logic
-        let collision = this.spriteNamed("player").inCollisionWith(this.spriteNamed("enemy")).inCollision;
-        if (collision.inCollision) {
-            console.log(collision.collisionWith);
-        }
+
     }
 }

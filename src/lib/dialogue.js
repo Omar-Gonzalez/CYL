@@ -8,11 +8,11 @@ class Dialogue  {
         labels,
         lineSpace = 55,
         name = "menu",
-        focusColor = "orange",
+        focusColor = "#6A1B9A",
         defaultColor = "white",
-        focusZoom = 2,
-        x = 50,
-        y = 300
+        focusZoom = 1.5,
+        x = 10,
+        y = 10
     ) {
         //Param Validation
         if (!(Array.isArray(labels))) {
@@ -83,5 +83,11 @@ class Dialogue  {
 
     get options() {
         return this.labels;
+    }
+
+    updatePos(x,y){
+        this.x = x;
+        this.y = y;
+        this._placeGrid();
     }
 }

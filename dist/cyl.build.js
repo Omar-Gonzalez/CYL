@@ -752,6 +752,12 @@ var ShapeSprite = function () {
             }
         }
     }, {
+        key: "updatePos",
+        value: function updatePos(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }, {
         key: "bounds",
         get: function get() {
             return {
@@ -759,6 +765,14 @@ var ShapeSprite = function () {
                 "minX": this.renderedX.min(),
                 "maxY": this.renderedY.max(),
                 "minY": this.renderedY.min()
+            };
+        }
+    }, {
+        key: "frame",
+        get: function get() {
+            return {
+                "width": parseInt(this.renderedX.max() - this.renderedX.min()),
+                "height": parseInt(this.renderedY.max() - this.renderedY.min())
             };
         }
     }, {
@@ -911,6 +925,12 @@ var BitmapSprite = function () {
             }
         }
     }, {
+        key: "updatePos",
+        value: function updatePos(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }, {
         key: "bounds",
         get: function get() {
             return {
@@ -970,6 +990,12 @@ var LabelSprite = function () {
     }
 
     _createClass(LabelSprite, [{
+        key: "updatePos",
+        value: function updatePos(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }, {
         key: "ctxFont",
         get: function get() {
             return this.weight + " " + this.size + " " + this.font;
@@ -995,11 +1021,11 @@ var Dialogue = function () {
     function Dialogue(labels) {
         var lineSpace = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 55;
         var name = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "menu";
-        var focusColor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "orange";
+        var focusColor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "#6A1B9A";
         var defaultColor = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "white";
-        var focusZoom = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 2;
-        var x = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 50;
-        var y = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 300;
+        var focusZoom = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1.5;
+        var x = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 10;
+        var y = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 10;
 
         _classCallCheck(this, Dialogue);
 
@@ -1076,6 +1102,13 @@ var Dialogue = function () {
             this._processFocus();
         }
     }, {
+        key: "updatePos",
+        value: function updatePos(x, y) {
+            this.x = x;
+            this.y = y;
+            this._placeGrid();
+        }
+    }, {
         key: "options",
         get: function get() {
             return this.labels;
@@ -1101,7 +1134,7 @@ var Game = function () {
             console.error("CYL:[Exception]Game requires an array of scenes");
             return;
         }
-        if (scene === 0) {
+        if (scenes.length === 0) {
             console.warn("CYL:Default initial scene with index 0 is being loaded");
         }
         //Props
@@ -1157,22 +1190,23 @@ var Game = function () {
             });
         }
     }, {
+        key: "spritesWithKind",
+        value: function spritesWithKind(kind) {
+            return this.activeScene.sprites.filter(function (sprite) {
+                return sprite.kind === kind;
+            });
+        }
+    }, {
         key: "detectContact",
         value: function detectContact() {
             //set your contact logic
-            var contact = this.spriteNamed("cat").inContactWith(this.spriteNamed("enemy"));
-            if (contact.inContact) {
-                console.log(contact.contactWith);
-            }
+
         }
     }, {
         key: "detectCollision",
         value: function detectCollision() {
             //set your collision logic
-            var collision = this.spriteNamed("player").inCollisionWith(this.spriteNamed("enemy")).inCollision;
-            if (collision.inCollision) {
-                console.log(collision.collisionWith);
-            }
+
         }
     }, {
         key: "assets",
@@ -1204,96 +1238,71 @@ var Game = function () {
 //@prepros-prepend ./lib/dialogue.js
 //@prepros-prepend ./lib/game.js
 
+/***
+ __      _____| |__   (_)_ ____   ____ _  __| | ___ _ __ ___ 
+ \ \ /\ / / _ \ '_ \  | | '_ \ \ / / _` |/ _` |/ _ \ '__/ __|
+  \ V  V /  __/ |_) | | | | | \ V / (_| | (_| |  __/ |  \__ \
+   \_/\_/ \___|_.__/  |_|_| |_|\_/ \__,_|\__,_|\___|_|  |___/ 
+   -----
+   Sample Game:
+*/
+
+// 1 - Initialize components
+
+var c = {
+    t: "transparent",
+    p: "#6A1B9A"
+};
+
 var idle1 = {
     "set": "idle",
-    "shape": ["transparent", "white", "white", "transparent", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "transparent", "white", "white", "transparent"]
+    "shape": [c.t, c.p, c.t, c.t, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.t, c.t, c.p, c.t, c.p]
 };
 
 var idle2 = {
     "set": "idle",
-    "shape": ["transparent", "white", "white", "transparent", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "transparent", "white", "white", "transparent"]
-
+    "shape": [c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p, c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.t, c.t, c.p, c.p, c.p]
 };
 
-var moving1 = {
-    "set": "moving",
-    "shape": ["transparent", "white", "white", "transparent", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "white", "white", "white"]
-};
-
-var moving2 = {
-    "set": "moving",
-    "shape": ["white", "white", "white", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "transparent", "white", "white", "transparent"]
-};
-
-var player = new ShapeSprite("player", [idle1, idle2, moving1, moving2], 4, 20, "A");
-
-var eIdle1 = {
-    "set": "idle",
-    "shape": ["orange", "transparent", "transparent", "orange", "orange", "transparent", "transparent", "orange", "transparent", "orange", "orange", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent"]
-};
-
-var eIdle2 = {
-    "set": "idle",
-    "shape": ["transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "orange", "orange", "transparent", "orange", "transparent", "transparent", "orange", "orange", "transparent", "transparent", "orange"]
-};
-
-var enemy = new ShapeSprite("enemy", [eIdle1, eIdle2], 4, 10, "A");
-
-var catImg = {
-    "set": "idle",
-    "src": "assets/cat-bat.png"
-};
-
-var catImg2 = {
-    "set": "idle",
-    "src": "assets/cat-bat-alt.png"
-};
-
-var cat = new BitmapSprite("cat", [catImg, catImg2], 100, 100);
-
-var title = new LabelSprite("CYL:Game Development Tools", 17);
-var newGame = new LabelSprite("New Game");
-var start = new LabelSprite("Start");
-var options = new LabelSprite("Options");
-var dialogue = new Dialogue([newGame, start, options]);
-var scene = new Scene([player, enemy, cat, title, dialogue]);
-
-var game = new Game([scene]);
+var invader = new ShapeSprite("invadder", [idle1, idle2], 8, 15);
+var notice = new LabelSprite("CYL:Game Development Tools 2017", 15);
+var title = new LabelSprite("WEB INVADERS", 60);
+var start = new LabelSprite("Start", 30);
+var topScores = new LabelSprite("Top Scores", 30);
+var dialogue = new Dialogue([start, topScores]);
+var menu = new Scene([invader, notice, title, dialogue]);
+var level = new Scene([notice]);
+var game = new Game([menu, level]);
 game.run();
 
-player.x = scene.frame.width / 2;
-player.y = scene.frame.height / 2;
+// 2 - Set up scene
+notice.y = menu.frame.height - 50;
+notice.x = menu.frame.width / 2 - notice.frame.width / 2;
+title.y = menu.frame.height / 2;
+title.x = menu.frame.width / 2 - title.frame.width / 2;
+invader.y = menu.frame.height / 2 - invader.frame.height;
+invader.x = title.x - 140;
+dialogue.updatePos(title.x, menu.frame.height / 2);
 
-enemy.x = scene.frame.width / 3;
-enemy.y = scene.frame.height / 3;
-
-cat.x = scene.frame.width * .7;
-cat.y = scene.frame.height / 3;
-
-title.x = scene.frame.width / 2 - title.frame.width / 2;
-
+//3- Set Input 
 var input = new Input();
 
-input.click(function (e) {
-    game.spriteNamed("cat").x = e.clientX;
-    game.spriteNamed("cat").y = e.clientY;
-});
-
 input.arrowUp(function () {
-    game.spriteNamed("player").y = game.spriteNamed("player").y - 20;
-    game.spriteNamed("menu").focusUp();
+    dialogue.focusUp();
 });
 
 input.arrowDown(function () {
-    game.spriteNamed("player").y = game.spriteNamed("player").y + 20;
-    game.spriteNamed("menu").focusDown();
+    dialogue.focusDown();
 });
 
-input.arrowLeft(function () {
-    game.spriteNamed("player").x = game.spriteNamed("player").x - 20;
-});
-
-input.arrowRight(function () {
-    game.spriteNamed("player").x = game.spriteNamed("player").x + 20;
+input.spaceBar(function () {
+    if (dialogue.focusIndex === 0) {
+        //game start
+        alert("Not yet implemented ;)");
+    }
+    if (dialogue.focusIndex === 1) {
+        //show top scores
+        alert("Not yet implemented ;)");
+    }
 });
 //# sourceMappingURL=cyl.build.js.map

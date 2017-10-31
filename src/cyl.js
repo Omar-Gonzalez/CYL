@@ -16,139 +16,89 @@
 //@prepros-prepend ./lib/dialogue.js
 //@prepros-prepend ./lib/game.js
 
+/***
+ __      _____| |__   (_)_ ____   ____ _  __| | ___ _ __ ___ 
+ \ \ /\ / / _ \ '_ \  | | '_ \ \ / / _` |/ _` |/ _ \ '__/ __|
+  \ V  V /  __/ |_) | | | | | \ V / (_| | (_| |  __/ |  \__ \
+   \_/\_/ \___|_.__/  |_|_| |_|\_/ \__,_|\__,_|\___|_|  |___/ 
+   -----
+   Sample Game:
+*/
+
+// 1 - Initialize components
+
+let c = {
+    t: "transparent",
+    p: "#6A1B9A"
+};
+
 let idle1 = {
     "set": "idle",
     "shape": [
-        "transparent", "white", "white", "transparent",
-        "red", "white", "red", "white",
-        "white", "white", "white", "white",
-        "red", "red", "red", "white",
-        "transparent", "white", "white", "transparent",
+        c.t, c.p, c.t, c.t, c.t, c.t, c.p, c.t,
+        c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t,
+        c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t,
+        c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p,
+        c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p,
+        c.p, c.t, c.p, c.p, c.p, c.p, c.t, c.p,
+        c.p, c.t, c.p, c.t, c.t, c.p, c.t, c.p,
     ]
-}
+};
 
 let idle2 = {
     "set": "idle",
     "shape": [
-        "transparent", "white", "white", "transparent",
-        "white", "red", "white", "red",
-        "white", "white", "white", "white",
-        "white", "red", "red", "red",
-        "transparent", "white", "white", "transparent",
+        c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p,
+        c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t,
+        c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t,
+        c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p,
+        c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p,
+        c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p,
+        c.p, c.p, c.p, c.t, c.t, c.p, c.p, c.p,
     ]
+};
 
-}
 
-let moving1 = {
-    "set": "moving",
-    "shape": [
-        "transparent", "white", "white", "transparent",
-        "white", "red", "white", "red",
-        "white", "white", "white", "white",
-        "white", "red", "red", "red",
-        "white", "white", "white", "white",
-    ]
-}
-
-let moving2 = {
-    "set": "moving",
-    "shape": [
-        "white", "white", "white", "white",
-        "red", "white", "red", "white",
-        "white", "white", "white", "white",
-        "red", "red", "red", "white",
-        "transparent", "white", "white", "transparent",
-    ]
-}
-
-let player = new ShapeSprite(
-    "player", [idle1, idle2, moving1, moving2], 4, 20, "A"
-)
-
-let eIdle1 = {
-    "set": "idle",
-    "shape": [
-        "orange", "transparent", "transparent", "orange",
-        "orange", "transparent", "transparent", "orange",
-        "transparent", "orange", "orange", "transparent",
-        "transparent", "transparent", "transparent", "transparent",
-        "transparent", "transparent", "transparent", "transparent",
-    ]
-}
-
-let eIdle2 = {
-    "set": "idle",
-    "shape": [
-        "transparent", "transparent", "transparent", "transparent",
-        "transparent", "transparent", "transparent", "transparent",
-        "transparent", "orange", "orange", "transparent",
-        "orange", "transparent", "transparent", "orange",
-        "orange", "transparent", "transparent", "orange",
-    ]
-}
-
-let enemy = new ShapeSprite(
-    "enemy", [eIdle1, eIdle2], 4, 10, "A"
-)
-
-let catImg = {
-    "set": "idle",
-    "src": "assets/cat-bat.png"
-}
-
-let catImg2 = {
-    "set": "idle",
-    "src": "assets/cat-bat-alt.png"
-}
-
-let cat = new BitmapSprite(
-    "cat", [catImg, catImg2],
-    100,
-    100
-)
-
-let title = new LabelSprite("CYL:Game Development Tools",17);
-let newGame = new LabelSprite("New Game");
-let start = new LabelSprite("Start");
-let options = new LabelSprite("Options");
-let dialogue = new Dialogue([newGame, start, options]);
-let scene = new Scene([player, enemy, cat, title, dialogue]);
-
-let game = new Game([scene]);
+let invader = new ShapeSprite("invadder", [idle1, idle2], 8, 15);
+let notice = new LabelSprite("CYL:Game Development Tools 2017", 15);
+let title = new LabelSprite("WEB INVADERS", 60);
+let start = new LabelSprite("Start", 30);
+let topScores = new LabelSprite("Top Scores", 30);
+let dialogue = new Dialogue([start,topScores]);
+let menu = new Scene([invader, notice, title,dialogue]);
+let level = new Scene([notice]);
+let game = new Game([menu,level]);
 game.run();
 
-player.x = scene.frame.width / 2;
-player.y = scene.frame.height / 2;
+// 2 - Set up scene
+notice.y = menu.frame.height - 50;
+notice.x = menu.frame.width / 2 - notice.frame.width / 2;
+title.y = menu.frame.height / 2;
+title.x = menu.frame.width / 2 - title.frame.width / 2;
+invader.y = menu.frame.height / 2 - invader.frame.height;
+invader.x = title.x - 140;
+dialogue.updatePos(title.x, menu.frame.height / 2 );
 
-enemy.x = scene.frame.width / 3;
-enemy.y = scene.frame.height / 3;
-
-cat.x = scene.frame.width * .7
-cat.y = scene.frame.height / 3
-
-title.x = scene.frame.width / 2 - title.frame.width / 2
-
+//3- Set Input 
 let input = new Input();
 
-input.click(function(e) {
-    game.spriteNamed("cat").x = e.clientX;
-    game.spriteNamed("cat").y = e.clientY;
+input.arrowUp(function(){
+    dialogue.focusUp();
 });
 
-input.arrowUp(function() {
-    game.spriteNamed("player").y = game.spriteNamed("player").y - 20;
-    game.spriteNamed("menu").focusUp()
+input.arrowDown(function(){
+    dialogue.focusDown();
 });
 
-input.arrowDown(function() {
-    game.spriteNamed("player").y = game.spriteNamed("player").y + 20;
-    game.spriteNamed("menu").focusDown()
+input.spaceBar(function(){
+    if (dialogue.focusIndex === 0){
+        //game start
+        alert("Not yet implemented ;)");
+    }
+    if (dialogue.focusIndex === 1){
+        //show top scores
+        alert("Not yet implemented ;)");
+    }
 });
 
-input.arrowLeft(function() {
-    game.spriteNamed("player").x = game.spriteNamed("player").x - 20;
-});
 
-input.arrowRight(function() {
-    game.spriteNamed("player").x = game.spriteNamed("player").x + 20;
-});

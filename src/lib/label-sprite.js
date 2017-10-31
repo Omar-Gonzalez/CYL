@@ -42,4 +42,9 @@ class LabelSprite {
             'height': parseInt(this.size)
         }
     }
+
+    updatePos(x, y) {
+        this.x = x;
+        this.y = y;
+    }
 }
