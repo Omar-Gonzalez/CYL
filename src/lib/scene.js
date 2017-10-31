@@ -9,7 +9,7 @@ class Scene {
      * @param Screen Size - W x H - defaults to 100%
      */
     constructor(
-        sprites = [],
+        sprites = []
     ) {
         //Param Validation
         if (!(Array.isArray(sprites))) {
@@ -59,9 +59,9 @@ class Scene {
 
     clear() {
         this.ctx.clearRect(0, 0, this.frame.width, this.frame.height);
-        for (let sprite of this.sprites) {
-            sprite.renderedX = [];
-            sprite.renderedY = [];
+        for (let i = 0; i < this.sprites.length; i++) {
+            this.sprites[i].renderedX = [];
+            this.sprites[i].renderedY = [];
         }
     }
 
@@ -77,8 +77,8 @@ class Scene {
     }
 
     _renderShapeWith(sprite) {
-        for (let pixel of sprite.currentFrame) {
-            this._renderPixel(sprite, pixel, sprite.x, sprite.y);
+        for (let i = 0; i < sprite.framePixels.length; i++) {
+            this._renderPixel(sprite, sprite.framePixels[i], sprite.x, sprite.y);
         }
     }
 
@@ -140,18 +140,18 @@ class Scene {
 
     update() {
         this.clear();
-        for (let sprite of this.sprites) {
-            if (sprite.kind === "shape") {
-                this._sortShapeFrameWith(sprite);
+        for (let i = 0; i < this.sprites.length; i++) {
+            if (this.sprites[i].kind === "shape") {
+                this._sortShapeFrameWith(this.sprites[i]);
             }
-            if (sprite.kind === "bitmap") {
-                this._sortBitmapFrameWith(sprite);
+            if (this.sprites[i].kind === "bitmap") {
+                this._sortBitmapFrameWith(this.sprites[i]);
             }
-            if (sprite.kind === "label") {
-                this._renderLabelSprite(sprite);
+            if (this.sprites[i].kind === "label") {
+                this._renderLabelSprite(this.sprites[i]);
             }
-            if (sprite.kind === "dialogue") {
-                this._renderDialogue(sprite);
+            if (this.sprites[i].kind === "dialogue") {
+                this._renderDialogue(this.sprites[i]);
             }
         }
     }

@@ -54,10 +54,10 @@ class BitmapSprite {
             this.activeAnimation = named;
         }
         let activeCount = 0;
-        for (let bitmap of this.bitmaps) {
-            if (bitmap.set === this.activeAnimation) {
+        for (let i = 0; i < this.bitmaps.length; i++) {
+            if (this.bitmaps[i].set === this.activeAnimation) {
                 let img = new Image();
-                img.src = bitmap.src;
+                img.src = this.bitmaps[i].src;
                 img.width = this.width;
                 img.height = this.height;
                 this.spriteFrames.push(img);
@@ -129,10 +129,10 @@ class BitmapSprite {
 
     setDimension(x, y) {
         this.spriteFrames = [];
-        for (let bitmap of this.bitmaps) {
-            if (bitmap.set === this.activeAnimation) {
+        for (let i = 0; i < this.bitmaps.length; i++) {
+            if (this.bitmaps[i].set === this.activeAnimation) {
                 let img = new Image();
-                img.src = bitmap.src;
+                img.src = this.bitmaps[i].src;
                 img.width = x;
                 img.height = x;
                 this.spriteFrames.push(img);

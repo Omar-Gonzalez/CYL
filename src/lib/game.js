@@ -52,10 +52,18 @@ class Game {
         }
     }
 
-    spriteNamed(name){
+    spriteNamed(name) {
+        for (let i = 0; i < this.activeScene.sprites.length; i++) {
+            if (this.activeScene.sprites[i].name === name) {
+                return this.activeScene.sprites[i];
+            }
+        }
+    }
+
+    spritesNamed(name) {
         return this.activeScene.sprites.filter(function(sprite) {
             return sprite.name === name;
-        })[0];
+        });
     }
 
     detectContact() {

@@ -107,7 +107,7 @@ let cat = new BitmapSprite(
     100
 )
 
-let title = new LabelSprite("CYL:Game Development Interface",17);
+let title = new LabelSprite("CYL:Game Development Tools",17);
 let newGame = new LabelSprite("New Game");
 let start = new LabelSprite("Start");
 let options = new LabelSprite("Options");
