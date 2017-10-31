@@ -67,9 +67,9 @@ class ShapeSprite {
         }
         let activeCount = 0;
         //Iterate map active frames with shapes
-        for (let shape of this.shapes) {
-            if (shape.set === this.activeAnimation) {
-                this.mapFrameWith(shape.shape);
+        for (let i = 0; i < this.shapes.length; i++) {
+            if (this.shapes[i].set === this.activeAnimation) {
+                this.mapFrameWith(this.shapes[i].shape);
                 activeCount++;
             }
         }
@@ -84,20 +84,17 @@ class ShapeSprite {
         let frame = [];
         let relativeX = 0;
         let relativeY = 0;
-        let index = 0;
         //Iterate Build Shape
-        for (let colorCode of shape) {
+        for (let i = 0; i < shape.length; i++) {
             frame.push({
                 x: relativeX,
                 y: relativeY,
-                color: colorCode
+                color: shape[i]
             });
             relativeX = relativeX + SCREEN().pixelSize;
-            index++;
-            if (index === this.width) {
+            if ((i + 1) % this.width === 0) {
                 relativeY = relativeY + SCREEN().pixelSize;
                 relativeX = 0;
-                index = 0;
             }
         }
         this.spriteFrames.push(frame);
@@ -109,6 +106,13 @@ class ShapeSprite {
             "minX": this.renderedX.min(),
             "maxY": this.renderedY.max(),
             "minY": this.renderedY.min()
+        }
+    }
+
+    get frame() {
+        return {
+            "width": parseInt(this.renderedX.max() - this.renderedX.min()),
+            "height": parseInt(this.renderedY.max() - this.renderedY.min())
         }
     }
 
@@ -159,11 +163,16 @@ class ShapeSprite {
         }
     }
 
-    get currentFrame() {
+    get framePixels() {
         return this.spriteFrames[this.currentFrameIndex];
     }
-    
+
     get frames() {
         return this.spriteFrames;
+    }
+
+    updatePos(x, y) {
+        this.x = x;
+        this.y = y;
     }
 }

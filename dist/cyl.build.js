@@ -460,30 +460,9 @@ var Scene = function () {
         key: "clear",
         value: function clear() {
             this.ctx.clearRect(0, 0, this.frame.width, this.frame.height);
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-                for (var _iterator = this.sprites[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var sprite = _step.value;
-
-                    sprite.renderedX = [];
-                    sprite.renderedY = [];
-                }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
+            for (var i = 0; i < this.sprites.length; i++) {
+                this.sprites[i].renderedX = [];
+                this.sprites[i].renderedY = [];
             }
         }
 
@@ -505,29 +484,8 @@ var Scene = function () {
     }, {
         key: "_renderShapeWith",
         value: function _renderShapeWith(sprite) {
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
-
-            try {
-                for (var _iterator2 = sprite.currentFrame[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    var pixel = _step2.value;
-
-                    this._renderPixel(sprite, pixel, sprite.x, sprite.y);
-                }
-            } catch (err) {
-                _didIteratorError2 = true;
-                _iteratorError2 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                        _iterator2.return();
-                    }
-                } finally {
-                    if (_didIteratorError2) {
-                        throw _iteratorError2;
-                    }
-                }
+            for (var i = 0; i < sprite.framePixels.length; i++) {
+                this._renderPixel(sprite, sprite.framePixels[i], sprite.x, sprite.y);
             }
         }
     }, {
@@ -598,39 +556,18 @@ var Scene = function () {
         key: "update",
         value: function update() {
             this.clear();
-            var _iteratorNormalCompletion3 = true;
-            var _didIteratorError3 = false;
-            var _iteratorError3 = undefined;
-
-            try {
-                for (var _iterator3 = this.sprites[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                    var sprite = _step3.value;
-
-                    if (sprite.kind === "shape") {
-                        this._sortShapeFrameWith(sprite);
-                    }
-                    if (sprite.kind === "bitmap") {
-                        this._sortBitmapFrameWith(sprite);
-                    }
-                    if (sprite.kind === "label") {
-                        this._renderLabelSprite(sprite);
-                    }
-                    if (sprite.kind === "dialogue") {
-                        this._renderDialogue(sprite);
-                    }
+            for (var i = 0; i < this.sprites.length; i++) {
+                if (this.sprites[i].kind === "shape") {
+                    this._sortShapeFrameWith(this.sprites[i]);
                 }
-            } catch (err) {
-                _didIteratorError3 = true;
-                _iteratorError3 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                        _iterator3.return();
-                    }
-                } finally {
-                    if (_didIteratorError3) {
-                        throw _iteratorError3;
-                    }
+                if (this.sprites[i].kind === "bitmap") {
+                    this._sortBitmapFrameWith(this.sprites[i]);
+                }
+                if (this.sprites[i].kind === "label") {
+                    this._renderLabelSprite(this.sprites[i]);
+                }
+                if (this.sprites[i].kind === "dialogue") {
+                    this._renderDialogue(this.sprites[i]);
                 }
             }
         }
@@ -736,34 +673,12 @@ var ShapeSprite = function () {
             }
             var activeCount = 0;
             //Iterate map active frames with shapes
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-                for (var _iterator4 = this.shapes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var shape = _step4.value;
-
-                    if (shape.set === this.activeAnimation) {
-                        this.mapFrameWith(shape.shape);
-                        activeCount++;
-                    }
-                }
-            } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
-                    }
-                } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
-                    }
+            for (var i = 0; i < this.shapes.length; i++) {
+                if (this.shapes[i].set === this.activeAnimation) {
+                    this.mapFrameWith(this.shapes[i].shape);
+                    activeCount++;
                 }
             }
-
             if (activeCount === 0) {
                 console.error("CYL:[Exception]No active sets in srite");
                 return;
@@ -776,44 +691,19 @@ var ShapeSprite = function () {
             var frame = [];
             var relativeX = 0;
             var relativeY = 0;
-            var index = 0;
             //Iterate Build Shape
-            var _iteratorNormalCompletion5 = true;
-            var _didIteratorError5 = false;
-            var _iteratorError5 = undefined;
-
-            try {
-                for (var _iterator5 = shape[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                    var colorCode = _step5.value;
-
-                    frame.push({
-                        x: relativeX,
-                        y: relativeY,
-                        color: colorCode
-                    });
-                    relativeX = relativeX + SCREEN().pixelSize;
-                    index++;
-                    if (index === this.width) {
-                        relativeY = relativeY + SCREEN().pixelSize;
-                        relativeX = 0;
-                        index = 0;
-                    }
-                }
-            } catch (err) {
-                _didIteratorError5 = true;
-                _iteratorError5 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                        _iterator5.return();
-                    }
-                } finally {
-                    if (_didIteratorError5) {
-                        throw _iteratorError5;
-                    }
+            for (var i = 0; i < shape.length; i++) {
+                frame.push({
+                    x: relativeX,
+                    y: relativeY,
+                    color: shape[i]
+                });
+                relativeX = relativeX + SCREEN().pixelSize;
+                if ((i + 1) % this.width === 0) {
+                    relativeY = relativeY + SCREEN().pixelSize;
+                    relativeX = 0;
                 }
             }
-
             this.spriteFrames.push(frame);
         }
     }, {
@@ -862,6 +752,12 @@ var ShapeSprite = function () {
             }
         }
     }, {
+        key: "updatePos",
+        value: function updatePos(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }, {
         key: "bounds",
         get: function get() {
             return {
@@ -872,7 +768,15 @@ var ShapeSprite = function () {
             };
         }
     }, {
-        key: "currentFrame",
+        key: "frame",
+        get: function get() {
+            return {
+                "width": parseInt(this.renderedX.max() - this.renderedX.min()),
+                "height": parseInt(this.renderedY.max() - this.renderedY.min())
+            };
+        }
+    }, {
+        key: "framePixels",
         get: function get() {
             return this.spriteFrames[this.currentFrameIndex];
         }
@@ -945,38 +849,16 @@ var BitmapSprite = function () {
                 this.activeAnimation = named;
             }
             var activeCount = 0;
-            var _iteratorNormalCompletion6 = true;
-            var _didIteratorError6 = false;
-            var _iteratorError6 = undefined;
-
-            try {
-                for (var _iterator6 = this.bitmaps[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                    var bitmap = _step6.value;
-
-                    if (bitmap.set === this.activeAnimation) {
-                        var img = new Image();
-                        img.src = bitmap.src;
-                        img.width = this.width;
-                        img.height = this.height;
-                        this.spriteFrames.push(img);
-                        activeCount++;
-                    }
-                }
-            } catch (err) {
-                _didIteratorError6 = true;
-                _iteratorError6 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion6 && _iterator6.return) {
-                        _iterator6.return();
-                    }
-                } finally {
-                    if (_didIteratorError6) {
-                        throw _iteratorError6;
-                    }
+            for (var i = 0; i < this.bitmaps.length; i++) {
+                if (this.bitmaps[i].set === this.activeAnimation) {
+                    var img = new Image();
+                    img.src = this.bitmaps[i].src;
+                    img.width = this.width;
+                    img.height = this.height;
+                    this.spriteFrames.push(img);
+                    activeCount++;
                 }
             }
-
             if (activeCount === 0) {
                 console.error("CYL:[Exception]No active frames in srite");
                 return;
@@ -1032,36 +914,21 @@ var BitmapSprite = function () {
         key: "setDimension",
         value: function setDimension(x, y) {
             this.spriteFrames = [];
-            var _iteratorNormalCompletion7 = true;
-            var _didIteratorError7 = false;
-            var _iteratorError7 = undefined;
-
-            try {
-                for (var _iterator7 = this.bitmaps[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                    var bitmap = _step7.value;
-
-                    if (bitmap.set === this.activeAnimation) {
-                        var img = new Image();
-                        img.src = bitmap.src;
-                        img.width = x;
-                        img.height = x;
-                        this.spriteFrames.push(img);
-                    }
-                }
-            } catch (err) {
-                _didIteratorError7 = true;
-                _iteratorError7 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion7 && _iterator7.return) {
-                        _iterator7.return();
-                    }
-                } finally {
-                    if (_didIteratorError7) {
-                        throw _iteratorError7;
-                    }
+            for (var i = 0; i < this.bitmaps.length; i++) {
+                if (this.bitmaps[i].set === this.activeAnimation) {
+                    var img = new Image();
+                    img.src = this.bitmaps[i].src;
+                    img.width = x;
+                    img.height = x;
+                    this.spriteFrames.push(img);
                 }
             }
+        }
+    }, {
+        key: "updatePos",
+        value: function updatePos(x, y) {
+            this.x = x;
+            this.y = y;
         }
     }, {
         key: "bounds",
@@ -1123,6 +990,12 @@ var LabelSprite = function () {
     }
 
     _createClass(LabelSprite, [{
+        key: "updatePos",
+        value: function updatePos(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }, {
         key: "ctxFont",
         get: function get() {
             return this.weight + " " + this.size + " " + this.font;
@@ -1148,11 +1021,11 @@ var Dialogue = function () {
     function Dialogue(labels) {
         var lineSpace = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 55;
         var name = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "menu";
-        var focusColor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "orange";
+        var focusColor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "#6A1B9A";
         var defaultColor = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "white";
-        var focusZoom = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 2;
-        var x = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 50;
-        var y = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 300;
+        var focusZoom = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1.5;
+        var x = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 10;
+        var y = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 10;
 
         _classCallCheck(this, Dialogue);
 
@@ -1229,6 +1102,13 @@ var Dialogue = function () {
             this._processFocus();
         }
     }, {
+        key: "updatePos",
+        value: function updatePos(x, y) {
+            this.x = x;
+            this.y = y;
+            this._placeGrid();
+        }
+    }, {
         key: "options",
         get: function get() {
             return this.labels;
@@ -1254,7 +1134,7 @@ var Game = function () {
             console.error("CYL:[Exception]Game requires an array of scenes");
             return;
         }
-        if (scene === 0) {
+        if (scenes.length === 0) {
             console.warn("CYL:Default initial scene with index 0 is being loaded");
         }
         //Props
@@ -1296,27 +1176,37 @@ var Game = function () {
     }, {
         key: "spriteNamed",
         value: function spriteNamed(name) {
+            for (var i = 0; i < this.activeScene.sprites.length; i++) {
+                if (this.activeScene.sprites[i].name === name) {
+                    return this.activeScene.sprites[i];
+                }
+            }
+        }
+    }, {
+        key: "spritesNamed",
+        value: function spritesNamed(name) {
             return this.activeScene.sprites.filter(function (sprite) {
                 return sprite.name === name;
-            })[0];
+            });
+        }
+    }, {
+        key: "spritesWithKind",
+        value: function spritesWithKind(kind) {
+            return this.activeScene.sprites.filter(function (sprite) {
+                return sprite.kind === kind;
+            });
         }
     }, {
         key: "detectContact",
         value: function detectContact() {
             //set your contact logic
-            var contact = this.spriteNamed("cat").inContactWith(this.spriteNamed("enemy"));
-            if (contact.inContact) {
-                console.log(contact.contactWith);
-            }
+
         }
     }, {
         key: "detectCollision",
         value: function detectCollision() {
             //set your collision logic
-            var collision = this.spriteNamed("player").inCollisionWith(this.spriteNamed("enemy")).inCollision;
-            if (collision.inCollision) {
-                console.log(collision.collisionWith);
-            }
+
         }
     }, {
         key: "assets",
@@ -1348,96 +1238,71 @@ var Game = function () {
 //@prepros-prepend ./lib/dialogue.js
 //@prepros-prepend ./lib/game.js
 
+/***
+ __      _____| |__   (_)_ ____   ____ _  __| | ___ _ __ ___ 
+ \ \ /\ / / _ \ '_ \  | | '_ \ \ / / _` |/ _` |/ _ \ '__/ __|
+  \ V  V /  __/ |_) | | | | | \ V / (_| | (_| |  __/ |  \__ \
+   \_/\_/ \___|_.__/  |_|_| |_|\_/ \__,_|\__,_|\___|_|  |___/ 
+   -----
+   Sample Game:
+*/
+
+// 1 - Initialize components
+
+var c = {
+    t: "transparent",
+    p: "#6A1B9A"
+};
+
 var idle1 = {
     "set": "idle",
-    "shape": ["transparent", "white", "white", "transparent", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "transparent", "white", "white", "transparent"]
+    "shape": [c.t, c.p, c.t, c.t, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.t, c.t, c.p, c.t, c.p]
 };
 
 var idle2 = {
     "set": "idle",
-    "shape": ["transparent", "white", "white", "transparent", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "transparent", "white", "white", "transparent"]
-
+    "shape": [c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p, c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.t, c.t, c.p, c.p, c.p]
 };
 
-var moving1 = {
-    "set": "moving",
-    "shape": ["transparent", "white", "white", "transparent", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "white", "white", "white"]
-};
-
-var moving2 = {
-    "set": "moving",
-    "shape": ["white", "white", "white", "white", "red", "white", "red", "white", "white", "white", "white", "white", "red", "red", "red", "white", "transparent", "white", "white", "transparent"]
-};
-
-var player = new ShapeSprite("player", [idle1, idle2, moving1, moving2], 4, 20, "A");
-
-var eIdle1 = {
-    "set": "idle",
-    "shape": ["orange", "transparent", "transparent", "orange", "orange", "transparent", "transparent", "orange", "transparent", "orange", "orange", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent"]
-};
-
-var eIdle2 = {
-    "set": "idle",
-    "shape": ["transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "transparent", "orange", "orange", "transparent", "orange", "transparent", "transparent", "orange", "orange", "transparent", "transparent", "orange"]
-};
-
-var enemy = new ShapeSprite("enemy", [eIdle1, eIdle2], 4, 10, "A");
-
-var catImg = {
-    "set": "idle",
-    "src": "assets/cat-bat.png"
-};
-
-var catImg2 = {
-    "set": "idle",
-    "src": "assets/cat-bat-alt.png"
-};
-
-var cat = new BitmapSprite("cat", [catImg, catImg2], 100, 100);
-
-var title = new LabelSprite("CYL:Game Development Interface", 17);
-var newGame = new LabelSprite("New Game");
-var start = new LabelSprite("Start");
-var options = new LabelSprite("Options");
-var dialogue = new Dialogue([newGame, start, options]);
-var scene = new Scene([player, enemy, cat, title, dialogue]);
-
-var game = new Game([scene]);
+var invader = new ShapeSprite("invadder", [idle1, idle2], 8, 15);
+var notice = new LabelSprite("CYL:Game Development Tools 2017", 15);
+var title = new LabelSprite("WEB INVADERS", 60);
+var start = new LabelSprite("Start", 30);
+var topScores = new LabelSprite("Top Scores", 30);
+var dialogue = new Dialogue([start, topScores]);
+var menu = new Scene([invader, notice, title, dialogue]);
+var level = new Scene([notice]);
+var game = new Game([menu, level]);
 game.run();
 
-player.x = scene.frame.width / 2;
-player.y = scene.frame.height / 2;
+// 2 - Set up scene
+notice.y = menu.frame.height - 50;
+notice.x = menu.frame.width / 2 - notice.frame.width / 2;
+title.y = menu.frame.height / 2;
+title.x = menu.frame.width / 2 - title.frame.width / 2;
+invader.y = menu.frame.height / 2 - invader.frame.height;
+invader.x = title.x - 140;
+dialogue.updatePos(title.x, menu.frame.height / 2);
 
-enemy.x = scene.frame.width / 3;
-enemy.y = scene.frame.height / 3;
-
-cat.x = scene.frame.width * .7;
-cat.y = scene.frame.height / 3;
-
-title.x = scene.frame.width / 2 - title.frame.width / 2;
-
+//3- Set Input 
 var input = new Input();
 
-input.click(function (e) {
-    game.spriteNamed("cat").x = e.clientX;
-    game.spriteNamed("cat").y = e.clientY;
-});
-
 input.arrowUp(function () {
-    game.spriteNamed("player").y = game.spriteNamed("player").y - 20;
-    game.spriteNamed("menu").focusUp();
+    dialogue.focusUp();
 });
 
 input.arrowDown(function () {
-    game.spriteNamed("player").y = game.spriteNamed("player").y + 20;
-    game.spriteNamed("menu").focusDown();
+    dialogue.focusDown();
 });
 
-input.arrowLeft(function () {
-    game.spriteNamed("player").x = game.spriteNamed("player").x - 20;
-});
-
-input.arrowRight(function () {
-    game.spriteNamed("player").x = game.spriteNamed("player").x + 20;
+input.spaceBar(function () {
+    if (dialogue.focusIndex === 0) {
+        //game start
+        alert("Not yet implemented ;)");
+    }
+    if (dialogue.focusIndex === 1) {
+        //show top scores
+        alert("Not yet implemented ;)");
+    }
 });
 //# sourceMappingURL=cyl.build.js.map
