@@ -183,6 +183,140 @@ window.addEventListener("resize", function () {
     window.SCREEN();
 });
 /******
+ * CYL - Action Sprite
+ * Copyright MIT license 2017
+ */
+
+var Action = function () {
+    function Action() {
+        var kind = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "default";
+
+        _classCallCheck(this, Action);
+
+        //Param Validation
+        if (kind === "default") {
+            console.warn("CYL:Warning, Initialicing Action with default parameter");
+        }
+        this.kind = kind;
+        //Animation Cycle 
+        this.cycleX = true;
+        this.cycleY = true;
+        //Acceleration 
+        this.accelRatio = 1.25;
+        this.xCurrentSpeed = 0;
+        this.yCurrentSpeed = 0;
+    }
+
+    _createClass(Action, [{
+        key: "computeX",
+        value: function computeX(x) {
+            /***
+             * Default Vector X displacement x + value 
+             */
+            if (this.kind === "default") {
+                return x;
+            }
+
+            /***
+             * Linear Acceleration X
+             */
+
+            if (this.kind === "accel") {
+                if (this.xCurrentSpeed.between(-Math.abs(x * 10), x * 10)) {
+                    //TODO
+                } else {
+                        //TODO
+                    }
+                this.xCurrentSpeed = this.xCurrentSpeed + x * this.accelRatio;
+                return this.xCurrentSpeed;
+            }
+
+            /***
+             * Shake X - random displacement  
+             */
+
+            if (this.kind === "shake") {
+                if (this.cycleX) {
+                    this.cycleX = false;
+                    return -Math.abs(this._shake(x));
+                } else {
+                    this.cycleX = true;
+                    return this._shake(x);
+                }
+            }
+
+            /***
+             * Vertical Shake X - random displacement  
+             */
+
+            if (this.kind === "shake-vertical") {
+                return 0;
+            }
+        }
+    }, {
+        key: "computeY",
+        value: function computeY(y) {
+            /***
+             * Default Vector U displacement y + value 
+             */
+            if (this.kind === "default") {
+                return y;
+            }
+
+            /***
+             * Linear Acceleration Y
+             */
+
+            if (this.kind === "accel") {
+                this.yCurrentSpeed = this.yCurrentSpeed + y * this.accelRatio;
+                return this.yCurrentSpeed;
+            }
+
+            /***
+             * Shake Y - random displacement  
+             */
+
+            if (this.kind === "shake") {
+                if (this.cycleY) {
+                    this.cycleY = false;
+                    return this._shake(y);
+                } else {
+                    this.cycleY = true;
+                    return -Math.abs(this._shake(y));
+                }
+            }
+
+            /***
+             * Vertical Shake Y - random displacement  
+             */
+
+            if (this.kind === "shake-vertical") {
+                if (this.cycleY) {
+                    this.cycleY = false;
+                    return this._shake(y);
+                } else {
+                    this.cycleY = true;
+                    return -Math.abs(this._shake(y));
+                }
+            }
+        }
+
+        /**
+         * Complementary Methods
+         */
+
+    }, {
+        key: "_shake",
+        value: function _shake() {
+            var max = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 20;
+
+            return Math.floor(Math.random() * max) + 1;
+        }
+    }]);
+
+    return Action;
+}();
+/******
  * CYL - Class Input + Event Polyfills
  * Copyright MIT license 2017
  */
@@ -197,12 +331,12 @@ var Input = function () {
     _createClass(Input, [{
         key: "_registerKeyDown",
         value: function _registerKeyDown() {
-            var self = this;
+            var _this = this;
             window.addEventListener("keydown", function (e) {
-                return self._filterKeyDown(e);
+                return _this._filterKeyDown(e);
             });
             window.addEventListener("click", function (e) {
-                return self.click(null, e);
+                return _this.click(null, e);
             });
         }
     }, {
@@ -442,7 +576,7 @@ var Scene = function () {
     _createClass(Scene, [{
         key: "_defineCanvasDimensions",
         value: function _defineCanvasDimensions() {
-            var _this = this;
+            var _this2 = this;
 
             this.screen.style.width = SCREEN().screen.width;
             this.screen.style.height = SCREEN().screen.height;
@@ -450,10 +584,10 @@ var Scene = function () {
             this.canvas.height = this.screen.offsetHeight;
 
             window.addEventListener("resize", function () {
-                _this.screen.style.width = SCREEN().screen.width;
-                _this.screen.style.height = SCREEN().screen.height;
-                _this.canvas.width = _this.screen.offsetWidth;
-                _this.canvas.height = _this.screen.offsetHeight;
+                _this2.screen.style.width = SCREEN().screen.width;
+                _this2.screen.style.height = SCREEN().screen.height;
+                _this2.canvas.width = _this2.screen.offsetWidth;
+                _this2.canvas.height = _this2.screen.offsetHeight;
             });
         }
     }, {
@@ -658,6 +792,8 @@ var ShapeSprite = function () {
         this.renderedX = [];
         this.renderedY = [];
         this.contactGroup = contactGroup;
+        //Sprite Actions 
+        this.action = null;
         //Init Methods
         this.setAnimation();
     }
@@ -756,6 +892,17 @@ var ShapeSprite = function () {
         value: function updatePos(x, y) {
             this.x = x;
             this.y = y;
+        }
+    }, {
+        key: "vector",
+        value: function vector(x, y) {
+            this.x = this.action.computeX(x) + this.x;
+            this.y = this.action.computeY(y) + this.y;
+        }
+    }, {
+        key: "setAction",
+        value: function setAction(action) {
+            this.action = action;
         }
     }, {
         key: "bounds",
@@ -1230,6 +1377,7 @@ var Game = function () {
 //Lib Concatenation
 //@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/config.js
+//@prepros-prepend ./lib/action.js
 //@prepros-prepend ./lib/input.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
@@ -1284,8 +1432,10 @@ invader.y = menu.frame.height / 2 - invader.frame.height;
 invader.x = title.x - 140;
 dialogue.updatePos(title.x, menu.frame.height / 2);
 
-//3- Set Input 
+//3- Set Input  + Actions
+var action = new Action("accel");
 var input = new Input();
+invader.setAction(action);
 
 input.arrowUp(function () {
     dialogue.focusUp();
@@ -1298,11 +1448,18 @@ input.arrowDown(function () {
 input.spaceBar(function () {
     if (dialogue.focusIndex === 0) {
         //game start
-        alert("Not yet implemented ;)");
     }
     if (dialogue.focusIndex === 1) {
         //show top scores
         alert("Not yet implemented ;)");
     }
+});
+
+input.arrowLeft(function () {
+    invader.vector(-3, 0);
+});
+
+input.arrowRight(function () {
+    invader.vector(3, 0);
 });
 //# sourceMappingURL=cyl.build.js.map

@@ -8,6 +8,7 @@
 //Lib Concatenation
 //@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/config.js
+//@prepros-prepend ./lib/action.js
 //@prepros-prepend ./lib/input.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
@@ -79,8 +80,10 @@ invader.y = menu.frame.height / 2 - invader.frame.height;
 invader.x = title.x - 140;
 dialogue.updatePos(title.x, menu.frame.height / 2 );
 
-//3- Set Input 
+//3- Set Input  + Actions
+let action = new Action("accel");
 let input = new Input();
+invader.setAction(action);
 
 input.arrowUp(function(){
     dialogue.focusUp();
@@ -93,12 +96,22 @@ input.arrowDown(function(){
 input.spaceBar(function(){
     if (dialogue.focusIndex === 0){
         //game start
-        alert("Not yet implemented ;)");
     }
     if (dialogue.focusIndex === 1){
         //show top scores
         alert("Not yet implemented ;)");
     }
 });
+
+input.arrowLeft(function(){
+    invader.vector(-3,0);
+});
+
+input.arrowRight(function(){
+    invader.vector(3,0);
+});
+
+
+
 
 

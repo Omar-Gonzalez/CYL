@@ -9,25 +9,25 @@ class Input {
     }
 
     _registerKeyDown() {
-        let self = this;
+        let _this = this;
         window.addEventListener("keydown", function(e) {
-            return self._filterKeyDown(e)
+            return _this._filterKeyDown(e);
         });
         window.addEventListener("click", function(e) {
-            return self.click(null,e);
+            return _this.click(null, e);
         });
     }
 
-    click(action,e) {
+    click(action, e) {
         /**
          * Mouse - Touchpad Event  
          */
-        if (action){
-            this.mouseAction = action
+        if (action) {
+            this.mouseAction = action;
         }
-        if(typeof this.mouseAction === "function" && e !== undefined){
+        if (typeof this.mouseAction === "function" && e !== undefined) {
             this.mouseAction(e);
-        }else{
+        } else {
             console.warn("CYL: Click action must be a function");
         }
     }
@@ -37,24 +37,24 @@ class Input {
          * KeyDown Event Polyfill 
          */
         //Arrow Keys
-        if (e.key === "ArrowUp" || e.code === "ArrowUp" || 
+        if (e.key === "ArrowUp" || e.code === "ArrowUp" ||
             e.keyCode === 38) {
             this.arrowUp();
         }
-        if (e.key === "ArrowDown" || e.code === "ArrowDown" || 
+        if (e.key === "ArrowDown" || e.code === "ArrowDown" ||
             e.keyCode === 40) {
             this.arrowDown();
         }
-        if (e.key === "ArrowLeft" || e.code === "ArrowLeft" || 
+        if (e.key === "ArrowLeft" || e.code === "ArrowLeft" ||
             e.keyCode === 37) {
             this.arrowLeft();
         }
-        if (e.key === "ArrowRight" || e.code === "ArrowRight" || 
+        if (e.key === "ArrowRight" || e.code === "ArrowRight" ||
             e.keyCode === 39) {
             this.arrowRight();
         }
         //Escape + Space 
-        if (e.key === " " || e.code === "Space" || 
+        if (e.key === " " || e.code === "Space" ||
             e.keyCode === 32) {
             this.spaceBar();
         }
@@ -62,23 +62,23 @@ class Input {
             this.escape();
         }
         //Characters
-        if (e.key === "a" || e.key === "A" || 
+        if (e.key === "a" || e.key === "A" ||
             e.code === "KeyA" || e.keyCode === 65) {
             this.a();
         }
-        if (e.key === "s" || e.key === "S" || 
+        if (e.key === "s" || e.key === "S" ||
             e.code === "KeyS" || e.keyCode === 83) {
             this.s();
         }
-        if (e.key === "d" || e.key === "D" || 
+        if (e.key === "d" || e.key === "D" ||
             e.code === "KeyD" || e.keyCode === 68) {
             this.d();
         }
-        if (e.key === "f" || e.key === "F" || 
+        if (e.key === "f" || e.key === "F" ||
             e.code === "KeyF" || e.keyCode === 70) {
             this.f();
         }
-        if (e.key === "p" || e.key === "P" || 
+        if (e.key === "p" || e.key === "P" ||
             e.code === "KeyP" || e.keyCode === 80) {
             this.p();
         }
@@ -91,7 +91,7 @@ class Input {
         if (typeof this.pAction === "function") {
             this.pAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
@@ -102,7 +102,7 @@ class Input {
         if (typeof this.fAction === "function") {
             this.fAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
@@ -113,7 +113,7 @@ class Input {
         if (typeof this.dAction === "function") {
             this.dAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
@@ -124,7 +124,7 @@ class Input {
         if (typeof this.sAction === "function") {
             this.sAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
@@ -135,7 +135,7 @@ class Input {
         if (typeof this.aAction === "function") {
             this.aAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
@@ -146,7 +146,7 @@ class Input {
         if (typeof this.escapeAction === "function") {
             this.escapeAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
@@ -157,7 +157,7 @@ class Input {
         if (typeof this.spaceBarAction === "function") {
             this.spaceBarAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
@@ -168,7 +168,7 @@ class Input {
         if (typeof this.arrowUpAction === "function") {
             this.arrowUpAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
@@ -179,7 +179,7 @@ class Input {
         if (typeof this.keyDownAction === "function") {
             this.keyDownAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
@@ -190,7 +190,7 @@ class Input {
         if (typeof this.keyLeftAction === "function") {
             this.keyLeftAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
@@ -201,7 +201,7 @@ class Input {
         if (typeof this.keyRightAction === "function") {
             this.keyRightAction();
         } else {
-            this._callBackTypeError()
+            this._callBackTypeError();
         }
     }
 
