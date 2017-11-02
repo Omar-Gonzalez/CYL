@@ -65,10 +65,10 @@ let notice = new LabelSprite("CYL:Game Development Tools 2017", 15);
 let title = new LabelSprite("WEB INVADERS", 60);
 let start = new LabelSprite("Start", 30);
 let topScores = new LabelSprite("Top Scores", 30);
-let dialogue = new Dialogue([start,topScores]);
-let menu = new Scene([invader, notice, title,dialogue]);
+let dialogue = new Dialogue([start, topScores]);
+let menu = new Scene([invader, notice, title, dialogue]);
 let level = new Scene([notice]);
-let game = new Game([menu,level]);
+let game = new Game([menu, level]);
 game.run();
 
 // 2 - Set up scene
@@ -78,41 +78,38 @@ title.y = menu.frame.height / 2;
 title.x = menu.frame.width / 2 - title.frame.width / 2;
 invader.y = menu.frame.height / 2 - invader.frame.height;
 invader.x = title.x - 140;
-dialogue.updatePos(title.x, menu.frame.height / 2 );
+dialogue.updatePos(title.x, menu.frame.height / 2);
 
 //3- Set Input  + Actions
 let action = new Action("shake");
 let input = new Input();
 invader.setAction(action);
 
-input.arrowLeft(function(){
+input.arrowLeft(function() {
     invader.actionWithVector();
 });
 
-input.arrowRight(function(){
+input.arrowRight(function() {
     invader.actionWithVector();
 });
 
-input.arrowUp(function(){
+input.arrowUp(function() {
     invader.actionWithVector();
     dialogue.focusUp();
 });
 
-input.arrowDown(function(){
+input.arrowDown(function() {
     dialogue.focusDown();
     invader.actionWithVector();
 });
 
-input.spaceBar(function(){
-    if (dialogue.focusIndex === 0){
+input.spaceBar(function() {
+    if (dialogue.focusIndex === 0) {
         //game start
+        alert("Not yet implemented ;)");
     }
-    if (dialogue.focusIndex === 1){
+    if (dialogue.focusIndex === 1) {
         //show top scores
         alert("Not yet implemented ;)");
     }
 });
-
-
-
-
