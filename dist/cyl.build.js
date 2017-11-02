@@ -91,7 +91,7 @@ console.log(requestAnimationFrame);
     };
 })("docReady", window);
 
-//Array Prototype Min - Max, credits to Chaospandion - https://stackoverflow.com/questions/1669190/find-the-min-max-element-of-an-array-in-javascript
+//Array Prototype Utility Methods
 
 Array.prototype.min = function (evaluate) {
 
@@ -108,6 +108,8 @@ Array.prototype.min = function (evaluate) {
     return v;
 };
 
+//Number Prototype Utility Methods
+
 Array.prototype.max = function (evaluate) {
 
     if (this.length === 0) return null;
@@ -123,10 +125,16 @@ Array.prototype.max = function (evaluate) {
     return v;
 };
 
-//Number Range Prototype - credits to jbabey - https://stackoverflow.com/questions/12806304/shortest-code-to-check-if-a-number-is-in-a-range-in-javascript
-
 Number.prototype.between = function (min, max) {
     return this > min && this < max;
+};
+
+Number.prototype.positivity = function () {
+    if (this > 0) {
+        return "positive";
+    } else {
+        return "negative";
+    }
 };
 /******
  * CYL - Config Globals
@@ -183,6 +191,168 @@ window.addEventListener("resize", function () {
     window.SCREEN();
 });
 /******
+ * CYL - Action Sprite
+ * Copyright MIT license 2017
+ */
+
+var Action = function () {
+    function Action() {
+        var kind = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "default";
+
+        _classCallCheck(this, Action);
+
+        //Param Validation
+        if (kind === "default") {
+            console.warn("CYL:Warning, Initialicing Action with default parameter");
+        }
+        this.kind = kind;
+        //Animation Cycle 
+        this.cycleX = true;
+        this.cycleY = true;
+        //Acceleration 
+        this.accelRatio = 1.7;
+        this.xCurrentSpeed = 0;
+        this.yCurrentSpeed = 0;
+        this.prevXSpeed = 0;
+        this.prevYSpeed = 0;
+        this.maxSpeedFactor = 12;
+    }
+
+    _createClass(Action, [{
+        key: "computeX",
+        value: function computeX(x) {
+            /***
+             * Default Vector X displacement x + value 
+             */
+            if (this.kind === "default") {
+                return x;
+            }
+
+            /***
+             * Linear Acceleration X
+             */
+
+            if (this.kind === "accel") {
+                if (x.positivity() !== this.prevXSpeed.positivity()) {
+                    this.xCurrentSpeed = 0;
+                }
+                this.prevXSpeed = x;
+                var max = void 0;
+                if (x.positivity() === "positive") {
+                    max = x * this.maxSpeedFactor;
+                    if (this.xCurrentSpeed < max) {
+                        this.xCurrentSpeed = this.xCurrentSpeed + x * this.accelRatio;
+                    }
+                } else {
+                    max = -Math.abs(x * this.maxSpeedFactor);
+                    if (this.xCurrentSpeed > max) {
+                        this.xCurrentSpeed = this.xCurrentSpeed + x * this.accelRatio;
+                    }
+                }
+                return this.xCurrentSpeed;
+            }
+
+            /***
+             * Shake X - random displacement  
+             */
+
+            if (this.kind === "shake") {
+                if (this.cycleX) {
+                    this.cycleX = false;
+                    return -Math.abs(this._shake(x));
+                } else {
+                    this.cycleX = true;
+                    return this._shake(x);
+                }
+            }
+
+            /***
+             * Vertical Shake X - random displacement  
+             */
+
+            if (this.kind === "shake-vertical") {
+                return 0;
+            }
+        }
+    }, {
+        key: "computeY",
+        value: function computeY(y) {
+            /***
+             * Default Vector Y displacement y + value 
+             */
+            if (this.kind === "default") {
+                return y;
+            }
+
+            /***
+             * Linear Acceleration Y
+             */
+
+            if (this.kind === "accel") {
+                if (y.positivity() !== this.prevYSpeed.positivity()) {
+                    this.yCurrentSpeed = 0;
+                }
+                this.prevYSpeed = y;
+                var max = void 0;
+                if (y.positivity() === "positive") {
+                    max = y * this.maxSpeedFactor;
+                    if (this.yCurrentSpeed < max) {
+                        this.yCurrentSpeed = this.yCurrentSpeed + y * this.accelRatio;
+                    }
+                } else {
+                    max = -Math.abs(y * this.maxSpeedFactor);
+                    if (this.yCurrentSpeed > max) {
+                        this.yCurrentSpeed = this.yCurrentSpeed + y * this.accelRatio;
+                    }
+                }
+                return this.yCurrentSpeed;
+            }
+
+            /***
+             * Shake Y - random displacement  
+             */
+
+            if (this.kind === "shake") {
+                if (this.cycleY) {
+                    this.cycleY = false;
+                    return this._shake(y);
+                } else {
+                    this.cycleY = true;
+                    return -Math.abs(this._shake(y));
+                }
+            }
+
+            /***
+             * Vertical Shake Y - random displacement  
+             */
+
+            if (this.kind === "shake-vertical") {
+                if (this.cycleY) {
+                    this.cycleY = false;
+                    return this._shake(y);
+                } else {
+                    this.cycleY = true;
+                    return -Math.abs(this._shake(y));
+                }
+            }
+        }
+
+        /**
+         * Complementary Methods
+         */
+
+    }, {
+        key: "_shake",
+        value: function _shake() {
+            var max = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 20;
+
+            return Math.floor(Math.random() * max) + 1;
+        }
+    }]);
+
+    return Action;
+}();
+/******
  * CYL - Class Input + Event Polyfills
  * Copyright MIT license 2017
  */
@@ -192,17 +362,18 @@ var Input = function () {
         _classCallCheck(this, Input);
 
         this._registerKeyDown();
+        this.events = 0;
     }
 
     _createClass(Input, [{
         key: "_registerKeyDown",
         value: function _registerKeyDown() {
-            var self = this;
+            var _this = this;
             window.addEventListener("keydown", function (e) {
-                return self._filterKeyDown(e);
+                return _this._filterKeyDown(e);
             });
             window.addEventListener("click", function (e) {
-                return self.click(null, e);
+                return _this.click(null, e);
             });
         }
     }, {
@@ -228,46 +399,49 @@ var Input = function () {
              */
             //Arrow Keys
             if (e.key === "ArrowUp" || e.code === "ArrowUp" || e.keyCode === 38) {
-                this.arrowUp();
+                this.arrowUp(null, true);
             }
             if (e.key === "ArrowDown" || e.code === "ArrowDown" || e.keyCode === 40) {
-                this.arrowDown();
+                this.arrowDown(null, true);
             }
             if (e.key === "ArrowLeft" || e.code === "ArrowLeft" || e.keyCode === 37) {
-                this.arrowLeft();
+                this.arrowLeft(null, true);
             }
             if (e.key === "ArrowRight" || e.code === "ArrowRight" || e.keyCode === 39) {
-                this.arrowRight();
+                this.arrowRight(null, true);
             }
             //Escape + Space 
             if (e.key === " " || e.code === "Space" || e.keyCode === 32) {
-                this.spaceBar();
+                this.spaceBar(null, true);
             }
             if (e.key === "Escape" || e.code === "Escape" || e.keyCode === 27) {
-                this.escape();
+                this.escape(null, true);
             }
             //Characters
             if (e.key === "a" || e.key === "A" || e.code === "KeyA" || e.keyCode === 65) {
-                this.a();
+                this.a(null, true);
             }
             if (e.key === "s" || e.key === "S" || e.code === "KeyS" || e.keyCode === 83) {
-                this.s();
+                this.s(null, true);
             }
             if (e.key === "d" || e.key === "D" || e.code === "KeyD" || e.keyCode === 68) {
-                this.d();
+                this.d(null, true);
             }
             if (e.key === "f" || e.key === "F" || e.code === "KeyF" || e.keyCode === 70) {
-                this.f();
+                this.f(null, true);
             }
             if (e.key === "p" || e.key === "P" || e.code === "KeyP" || e.keyCode === 80) {
-                this.p();
+                this.p(null, true);
             }
         }
     }, {
         key: "p",
-        value: function p(keyAction) {
+        value: function p(keyAction, shouldRun) {
             if (keyAction) {
                 this.pAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.pAction === "function") {
                 this.pAction();
@@ -277,9 +451,12 @@ var Input = function () {
         }
     }, {
         key: "f",
-        value: function f(keyAction) {
+        value: function f(keyAction, shouldRun) {
             if (keyAction) {
                 this.fAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.fAction === "function") {
                 this.fAction();
@@ -289,9 +466,12 @@ var Input = function () {
         }
     }, {
         key: "d",
-        value: function d(keyAction) {
+        value: function d(keyAction, shouldRun) {
             if (keyAction) {
                 this.dAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.dAction === "function") {
                 this.dAction();
@@ -301,9 +481,12 @@ var Input = function () {
         }
     }, {
         key: "s",
-        value: function s(keyAction) {
+        value: function s(keyAction, shouldRun) {
             if (keyAction) {
                 this.sAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.sAction === "function") {
                 this.sAction();
@@ -313,9 +496,12 @@ var Input = function () {
         }
     }, {
         key: "a",
-        value: function a(keyAction) {
+        value: function a(keyAction, shouldRun) {
             if (keyAction) {
                 this.aAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.aAction === "function") {
                 this.aAction();
@@ -325,9 +511,12 @@ var Input = function () {
         }
     }, {
         key: "escape",
-        value: function escape(keyAction) {
+        value: function escape(keyAction, shouldRun) {
             if (keyAction) {
                 this.escapeAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.escapeAction === "function") {
                 this.escapeAction();
@@ -337,9 +526,12 @@ var Input = function () {
         }
     }, {
         key: "spaceBar",
-        value: function spaceBar(keyAction) {
+        value: function spaceBar(keyAction, shouldRun) {
             if (keyAction) {
                 this.spaceBarAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.spaceBarAction === "function") {
                 this.spaceBarAction();
@@ -349,11 +541,15 @@ var Input = function () {
         }
     }, {
         key: "arrowUp",
-        value: function arrowUp(keyAction) {
+        value: function arrowUp(keyAction, shouldRun) {
             if (keyAction) {
                 this.arrowUpAction = keyAction;
             }
+            if (shouldRun === undefined) {
+                return;
+            }
             if (typeof this.arrowUpAction === "function") {
+                this.events++;
                 this.arrowUpAction();
             } else {
                 this._callBackTypeError();
@@ -361,11 +557,15 @@ var Input = function () {
         }
     }, {
         key: "arrowDown",
-        value: function arrowDown(keyAction) {
+        value: function arrowDown(keyAction, shouldRun) {
             if (keyAction) {
                 this.keyDownAction = keyAction;
             }
+            if (shouldRun === undefined) {
+                return;
+            }
             if (typeof this.keyDownAction === "function") {
+                this.events++;
                 this.keyDownAction();
             } else {
                 this._callBackTypeError();
@@ -373,9 +573,12 @@ var Input = function () {
         }
     }, {
         key: "arrowLeft",
-        value: function arrowLeft(keyAction) {
+        value: function arrowLeft(keyAction, shouldRun) {
             if (keyAction) {
                 this.keyLeftAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.keyLeftAction === "function") {
                 this.keyLeftAction();
@@ -385,9 +588,12 @@ var Input = function () {
         }
     }, {
         key: "arrowRight",
-        value: function arrowRight(keyAction) {
+        value: function arrowRight(keyAction, shouldRun) {
             if (keyAction) {
                 this.keyRightAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.keyRightAction === "function") {
                 this.keyRightAction();
@@ -442,7 +648,7 @@ var Scene = function () {
     _createClass(Scene, [{
         key: "_defineCanvasDimensions",
         value: function _defineCanvasDimensions() {
-            var _this = this;
+            var _this2 = this;
 
             this.screen.style.width = SCREEN().screen.width;
             this.screen.style.height = SCREEN().screen.height;
@@ -450,10 +656,10 @@ var Scene = function () {
             this.canvas.height = this.screen.offsetHeight;
 
             window.addEventListener("resize", function () {
-                _this.screen.style.width = SCREEN().screen.width;
-                _this.screen.style.height = SCREEN().screen.height;
-                _this.canvas.width = _this.screen.offsetWidth;
-                _this.canvas.height = _this.screen.offsetHeight;
+                _this2.screen.style.width = SCREEN().screen.width;
+                _this2.screen.style.height = SCREEN().screen.height;
+                _this2.canvas.width = _this2.screen.offsetWidth;
+                _this2.canvas.height = _this2.screen.offsetHeight;
             });
         }
     }, {
@@ -658,6 +864,8 @@ var ShapeSprite = function () {
         this.renderedX = [];
         this.renderedY = [];
         this.contactGroup = contactGroup;
+        //Sprite Actions 
+        this.action = null;
         //Init Methods
         this.setAnimation();
     }
@@ -756,6 +964,17 @@ var ShapeSprite = function () {
         value: function updatePos(x, y) {
             this.x = x;
             this.y = y;
+        }
+    }, {
+        key: "actionWithVector",
+        value: function actionWithVector(x, y) {
+            this.x = this.action.computeX(x) + this.x;
+            this.y = this.action.computeY(y) + this.y;
+        }
+    }, {
+        key: "setAction",
+        value: function setAction(action) {
+            this.action = action;
         }
     }, {
         key: "bounds",
@@ -1230,6 +1449,7 @@ var Game = function () {
 //Lib Concatenation
 //@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/config.js
+//@prepros-prepend ./lib/action.js
 //@prepros-prepend ./lib/input.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
@@ -1284,21 +1504,32 @@ invader.y = menu.frame.height / 2 - invader.frame.height;
 invader.x = title.x - 140;
 dialogue.updatePos(title.x, menu.frame.height / 2);
 
-//3- Set Input 
+//3- Set Input  + Actions
+var action = new Action("shake");
 var input = new Input();
+invader.setAction(action);
+
+input.arrowLeft(function () {
+    invader.actionWithVector();
+});
+
+input.arrowRight(function () {
+    invader.actionWithVector();
+});
 
 input.arrowUp(function () {
+    invader.actionWithVector();
     dialogue.focusUp();
 });
 
 input.arrowDown(function () {
     dialogue.focusDown();
+    invader.actionWithVector();
 });
 
 input.spaceBar(function () {
     if (dialogue.focusIndex === 0) {
         //game start
-        alert("Not yet implemented ;)");
     }
     if (dialogue.focusIndex === 1) {
         //show top scores

@@ -54,6 +54,8 @@ class ShapeSprite {
         this.renderedX = [];
         this.renderedY = [];
         this.contactGroup = contactGroup;
+        //Sprite Actions 
+        this.action = null;
         //Init Methods
         this.setAnimation();
     }
@@ -174,5 +176,14 @@ class ShapeSprite {
     updatePos(x, y) {
         this.x = x;
         this.y = y;
+    }
+
+    actionWithVector(x,y){
+        this.x = this.action.computeX(x) + this.x;
+        this.y = this.action.computeY(y) + this.y;
+    }
+
+    setAction(action){
+        this.action = action;
     }
 }
