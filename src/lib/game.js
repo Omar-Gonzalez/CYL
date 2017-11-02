@@ -33,7 +33,7 @@ class Game {
         return {
             'scenes': this.scenes,
             'activeScene': this.activeScene
-        }
+        };
     }
 
     run() {

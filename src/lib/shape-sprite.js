@@ -178,7 +178,7 @@ class ShapeSprite {
         this.y = y;
     }
 
-    vector(x,y){
+    actionWithVector(x,y){
         this.x = this.action.computeX(x) + this.x;
         this.y = this.action.computeY(y) + this.y;
     }

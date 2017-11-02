@@ -14,9 +14,12 @@ class Action {
         this.cycleX = true;
         this.cycleY = true;
         //Acceleration 
-        this.accelRatio = 1.25;
+        this.accelRatio = 1.7;
         this.xCurrentSpeed = 0;
         this.yCurrentSpeed = 0;
+        this.prevXSpeed = 0;
+        this.prevYSpeed = 0;
+        this.maxSpeedFactor = 12;
     }
 
     computeX(x) {
@@ -32,12 +35,22 @@ class Action {
          */
 
         if (this.kind === "accel") {
-            if(this.xCurrentSpeed.between(-Math.abs(x * 10),(x * 10))){
-                //TODO
-            }else{
-                //TODO
+            if (x.positivity() !== this.prevXSpeed.positivity()) {
+                this.xCurrentSpeed = 0;
             }
-            this.xCurrentSpeed = this.xCurrentSpeed + (x * this.accelRatio);
+            this.prevXSpeed = x;
+            let max;
+            if (x.positivity() === "positive") {
+                max = x * this.maxSpeedFactor;
+                if (this.xCurrentSpeed < max) {
+                    this.xCurrentSpeed = this.xCurrentSpeed + (x * this.accelRatio);
+                }
+            } else {
+                max = -Math.abs(x * this.maxSpeedFactor);
+                if (this.xCurrentSpeed > max) {
+                    this.xCurrentSpeed = this.xCurrentSpeed + (x * this.accelRatio);
+                }
+            }
             return this.xCurrentSpeed;
         }
 
@@ -66,7 +79,7 @@ class Action {
 
     computeY(y) {
         /***
-         * Default Vector U displacement y + value 
+         * Default Vector Y displacement y + value 
          */
         if (this.kind === "default") {
             return y;
@@ -77,7 +90,22 @@ class Action {
          */
 
         if (this.kind === "accel") {
-            this.yCurrentSpeed = this.yCurrentSpeed + (y * this.accelRatio);
+            if (y.positivity() !== this.prevYSpeed.positivity()) {
+                this.yCurrentSpeed = 0;
+            }
+            this.prevYSpeed = y;
+            let max;
+            if (y.positivity() === "positive") {
+                max = y * this.maxSpeedFactor;
+                if (this.yCurrentSpeed < max) {
+                    this.yCurrentSpeed = this.yCurrentSpeed + (y * this.accelRatio);
+                }
+            } else {
+                max = -Math.abs(y * this.maxSpeedFactor);
+                if (this.yCurrentSpeed > max) {
+                    this.yCurrentSpeed = this.yCurrentSpeed + (y * this.accelRatio);
+                }
+            }
             return this.yCurrentSpeed;
         }
 

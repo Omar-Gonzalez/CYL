@@ -91,7 +91,7 @@ console.log(requestAnimationFrame);
     };
 })("docReady", window);
 
-//Array Prototype Min - Max, credits to Chaospandion - https://stackoverflow.com/questions/1669190/find-the-min-max-element-of-an-array-in-javascript
+//Array Prototype Utility Methods
 
 Array.prototype.min = function (evaluate) {
 
@@ -108,6 +108,8 @@ Array.prototype.min = function (evaluate) {
     return v;
 };
 
+//Number Prototype Utility Methods
+
 Array.prototype.max = function (evaluate) {
 
     if (this.length === 0) return null;
@@ -123,10 +125,16 @@ Array.prototype.max = function (evaluate) {
     return v;
 };
 
-//Number Range Prototype - credits to jbabey - https://stackoverflow.com/questions/12806304/shortest-code-to-check-if-a-number-is-in-a-range-in-javascript
-
 Number.prototype.between = function (min, max) {
     return this > min && this < max;
+};
+
+Number.prototype.positivity = function () {
+    if (this > 0) {
+        return "positive";
+    } else {
+        return "negative";
+    }
 };
 /******
  * CYL - Config Globals
@@ -202,9 +210,12 @@ var Action = function () {
         this.cycleX = true;
         this.cycleY = true;
         //Acceleration 
-        this.accelRatio = 1.25;
+        this.accelRatio = 1.7;
         this.xCurrentSpeed = 0;
         this.yCurrentSpeed = 0;
+        this.prevXSpeed = 0;
+        this.prevYSpeed = 0;
+        this.maxSpeedFactor = 12;
     }
 
     _createClass(Action, [{
@@ -222,12 +233,22 @@ var Action = function () {
              */
 
             if (this.kind === "accel") {
-                if (this.xCurrentSpeed.between(-Math.abs(x * 10), x * 10)) {
-                    //TODO
-                } else {
-                        //TODO
+                if (x.positivity() !== this.prevXSpeed.positivity()) {
+                    this.xCurrentSpeed = 0;
+                }
+                this.prevXSpeed = x;
+                var max = void 0;
+                if (x.positivity() === "positive") {
+                    max = x * this.maxSpeedFactor;
+                    if (this.xCurrentSpeed < max) {
+                        this.xCurrentSpeed = this.xCurrentSpeed + x * this.accelRatio;
                     }
-                this.xCurrentSpeed = this.xCurrentSpeed + x * this.accelRatio;
+                } else {
+                    max = -Math.abs(x * this.maxSpeedFactor);
+                    if (this.xCurrentSpeed > max) {
+                        this.xCurrentSpeed = this.xCurrentSpeed + x * this.accelRatio;
+                    }
+                }
                 return this.xCurrentSpeed;
             }
 
@@ -257,7 +278,7 @@ var Action = function () {
         key: "computeY",
         value: function computeY(y) {
             /***
-             * Default Vector U displacement y + value 
+             * Default Vector Y displacement y + value 
              */
             if (this.kind === "default") {
                 return y;
@@ -268,7 +289,22 @@ var Action = function () {
              */
 
             if (this.kind === "accel") {
-                this.yCurrentSpeed = this.yCurrentSpeed + y * this.accelRatio;
+                if (y.positivity() !== this.prevYSpeed.positivity()) {
+                    this.yCurrentSpeed = 0;
+                }
+                this.prevYSpeed = y;
+                var max = void 0;
+                if (y.positivity() === "positive") {
+                    max = y * this.maxSpeedFactor;
+                    if (this.yCurrentSpeed < max) {
+                        this.yCurrentSpeed = this.yCurrentSpeed + y * this.accelRatio;
+                    }
+                } else {
+                    max = -Math.abs(y * this.maxSpeedFactor);
+                    if (this.yCurrentSpeed > max) {
+                        this.yCurrentSpeed = this.yCurrentSpeed + y * this.accelRatio;
+                    }
+                }
                 return this.yCurrentSpeed;
             }
 
@@ -326,6 +362,7 @@ var Input = function () {
         _classCallCheck(this, Input);
 
         this._registerKeyDown();
+        this.events = 0;
     }
 
     _createClass(Input, [{
@@ -362,46 +399,49 @@ var Input = function () {
              */
             //Arrow Keys
             if (e.key === "ArrowUp" || e.code === "ArrowUp" || e.keyCode === 38) {
-                this.arrowUp();
+                this.arrowUp(null, true);
             }
             if (e.key === "ArrowDown" || e.code === "ArrowDown" || e.keyCode === 40) {
-                this.arrowDown();
+                this.arrowDown(null, true);
             }
             if (e.key === "ArrowLeft" || e.code === "ArrowLeft" || e.keyCode === 37) {
-                this.arrowLeft();
+                this.arrowLeft(null, true);
             }
             if (e.key === "ArrowRight" || e.code === "ArrowRight" || e.keyCode === 39) {
-                this.arrowRight();
+                this.arrowRight(null, true);
             }
             //Escape + Space 
             if (e.key === " " || e.code === "Space" || e.keyCode === 32) {
-                this.spaceBar();
+                this.spaceBar(null, true);
             }
             if (e.key === "Escape" || e.code === "Escape" || e.keyCode === 27) {
-                this.escape();
+                this.escape(null, true);
             }
             //Characters
             if (e.key === "a" || e.key === "A" || e.code === "KeyA" || e.keyCode === 65) {
-                this.a();
+                this.a(null, true);
             }
             if (e.key === "s" || e.key === "S" || e.code === "KeyS" || e.keyCode === 83) {
-                this.s();
+                this.s(null, true);
             }
             if (e.key === "d" || e.key === "D" || e.code === "KeyD" || e.keyCode === 68) {
-                this.d();
+                this.d(null, true);
             }
             if (e.key === "f" || e.key === "F" || e.code === "KeyF" || e.keyCode === 70) {
-                this.f();
+                this.f(null, true);
             }
             if (e.key === "p" || e.key === "P" || e.code === "KeyP" || e.keyCode === 80) {
-                this.p();
+                this.p(null, true);
             }
         }
     }, {
         key: "p",
-        value: function p(keyAction) {
+        value: function p(keyAction, shouldRun) {
             if (keyAction) {
                 this.pAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.pAction === "function") {
                 this.pAction();
@@ -411,9 +451,12 @@ var Input = function () {
         }
     }, {
         key: "f",
-        value: function f(keyAction) {
+        value: function f(keyAction, shouldRun) {
             if (keyAction) {
                 this.fAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.fAction === "function") {
                 this.fAction();
@@ -423,9 +466,12 @@ var Input = function () {
         }
     }, {
         key: "d",
-        value: function d(keyAction) {
+        value: function d(keyAction, shouldRun) {
             if (keyAction) {
                 this.dAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.dAction === "function") {
                 this.dAction();
@@ -435,9 +481,12 @@ var Input = function () {
         }
     }, {
         key: "s",
-        value: function s(keyAction) {
+        value: function s(keyAction, shouldRun) {
             if (keyAction) {
                 this.sAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.sAction === "function") {
                 this.sAction();
@@ -447,9 +496,12 @@ var Input = function () {
         }
     }, {
         key: "a",
-        value: function a(keyAction) {
+        value: function a(keyAction, shouldRun) {
             if (keyAction) {
                 this.aAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.aAction === "function") {
                 this.aAction();
@@ -459,9 +511,12 @@ var Input = function () {
         }
     }, {
         key: "escape",
-        value: function escape(keyAction) {
+        value: function escape(keyAction, shouldRun) {
             if (keyAction) {
                 this.escapeAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.escapeAction === "function") {
                 this.escapeAction();
@@ -471,9 +526,12 @@ var Input = function () {
         }
     }, {
         key: "spaceBar",
-        value: function spaceBar(keyAction) {
+        value: function spaceBar(keyAction, shouldRun) {
             if (keyAction) {
                 this.spaceBarAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.spaceBarAction === "function") {
                 this.spaceBarAction();
@@ -483,11 +541,15 @@ var Input = function () {
         }
     }, {
         key: "arrowUp",
-        value: function arrowUp(keyAction) {
+        value: function arrowUp(keyAction, shouldRun) {
             if (keyAction) {
                 this.arrowUpAction = keyAction;
             }
+            if (shouldRun === undefined) {
+                return;
+            }
             if (typeof this.arrowUpAction === "function") {
+                this.events++;
                 this.arrowUpAction();
             } else {
                 this._callBackTypeError();
@@ -495,11 +557,15 @@ var Input = function () {
         }
     }, {
         key: "arrowDown",
-        value: function arrowDown(keyAction) {
+        value: function arrowDown(keyAction, shouldRun) {
             if (keyAction) {
                 this.keyDownAction = keyAction;
             }
+            if (shouldRun === undefined) {
+                return;
+            }
             if (typeof this.keyDownAction === "function") {
+                this.events++;
                 this.keyDownAction();
             } else {
                 this._callBackTypeError();
@@ -507,9 +573,12 @@ var Input = function () {
         }
     }, {
         key: "arrowLeft",
-        value: function arrowLeft(keyAction) {
+        value: function arrowLeft(keyAction, shouldRun) {
             if (keyAction) {
                 this.keyLeftAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.keyLeftAction === "function") {
                 this.keyLeftAction();
@@ -519,9 +588,12 @@ var Input = function () {
         }
     }, {
         key: "arrowRight",
-        value: function arrowRight(keyAction) {
+        value: function arrowRight(keyAction, shouldRun) {
             if (keyAction) {
                 this.keyRightAction = keyAction;
+            }
+            if (shouldRun === undefined) {
+                return;
             }
             if (typeof this.keyRightAction === "function") {
                 this.keyRightAction();
@@ -894,8 +966,8 @@ var ShapeSprite = function () {
             this.y = y;
         }
     }, {
-        key: "vector",
-        value: function vector(x, y) {
+        key: "actionWithVector",
+        value: function actionWithVector(x, y) {
             this.x = this.action.computeX(x) + this.x;
             this.y = this.action.computeY(y) + this.y;
         }
@@ -1433,16 +1505,26 @@ invader.x = title.x - 140;
 dialogue.updatePos(title.x, menu.frame.height / 2);
 
 //3- Set Input  + Actions
-var action = new Action("accel");
+var action = new Action("shake");
 var input = new Input();
 invader.setAction(action);
 
+input.arrowLeft(function () {
+    invader.actionWithVector();
+});
+
+input.arrowRight(function () {
+    invader.actionWithVector();
+});
+
 input.arrowUp(function () {
+    invader.actionWithVector();
     dialogue.focusUp();
 });
 
 input.arrowDown(function () {
     dialogue.focusDown();
+    invader.actionWithVector();
 });
 
 input.spaceBar(function () {
@@ -1453,13 +1535,5 @@ input.spaceBar(function () {
         //show top scores
         alert("Not yet implemented ;)");
     }
-});
-
-input.arrowLeft(function () {
-    invader.vector(-3, 0);
-});
-
-input.arrowRight(function () {
-    invader.vector(3, 0);
 });
 //# sourceMappingURL=cyl.build.js.map

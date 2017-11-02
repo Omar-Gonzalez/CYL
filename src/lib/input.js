@@ -6,6 +6,7 @@
 class Input {
     constructor() {
         this._registerKeyDown();
+        this.events = 0;
     }
 
     _registerKeyDown() {
@@ -39,54 +40,52 @@ class Input {
         //Arrow Keys
         if (e.key === "ArrowUp" || e.code === "ArrowUp" ||
             e.keyCode === 38) {
-            this.arrowUp();
+            this.arrowUp(null, true);
         }
         if (e.key === "ArrowDown" || e.code === "ArrowDown" ||
             e.keyCode === 40) {
-            this.arrowDown();
+            this.arrowDown(null, true);
         }
         if (e.key === "ArrowLeft" || e.code === "ArrowLeft" ||
             e.keyCode === 37) {
-            this.arrowLeft();
+            this.arrowLeft(null, true);
         }
         if (e.key === "ArrowRight" || e.code === "ArrowRight" ||
             e.keyCode === 39) {
-            this.arrowRight();
+            this.arrowRight(null, true);
         }
         //Escape + Space 
         if (e.key === " " || e.code === "Space" ||
             e.keyCode === 32) {
-            this.spaceBar();
+            this.spaceBar(null, true);
         }
         if (e.key === "Escape" || e.code === "Escape" || e.keyCode === 27) {
-            this.escape();
+            this.escape(null, true);
         }
         //Characters
-        if (e.key === "a" || e.key === "A" ||
-            e.code === "KeyA" || e.keyCode === 65) {
-            this.a();
+        if (e.key === "a" || e.key === "A" || e.code === "KeyA" || e.keyCode === 65) {
+            this.a(null, true);
         }
-        if (e.key === "s" || e.key === "S" ||
-            e.code === "KeyS" || e.keyCode === 83) {
-            this.s();
+        if (e.key === "s" || e.key === "S" || e.code === "KeyS" || e.keyCode === 83) {
+            this.s(null, true);
         }
-        if (e.key === "d" || e.key === "D" ||
-            e.code === "KeyD" || e.keyCode === 68) {
-            this.d();
+        if (e.key === "d" || e.key === "D" || e.code === "KeyD" || e.keyCode === 68) {
+            this.d(null, true);
         }
-        if (e.key === "f" || e.key === "F" ||
-            e.code === "KeyF" || e.keyCode === 70) {
-            this.f();
+        if (e.key === "f" || e.key === "F" || e.code === "KeyF" || e.keyCode === 70) {
+            this.f(null, true);
         }
-        if (e.key === "p" || e.key === "P" ||
-            e.code === "KeyP" || e.keyCode === 80) {
-            this.p();
+        if (e.key === "p" || e.key === "P" || e.code === "KeyP" || e.keyCode === 80) {
+            this.p(null, true);
         }
     }
 
-    p(keyAction) {
+    p(keyAction, shouldRun) {
         if (keyAction) {
             this.pAction = keyAction;
+        }
+        if (shouldRun === undefined) {
+            return;
         }
         if (typeof this.pAction === "function") {
             this.pAction();
@@ -95,9 +94,12 @@ class Input {
         }
     }
 
-    f(keyAction) {
+    f(keyAction, shouldRun) {
         if (keyAction) {
             this.fAction = keyAction;
+        }
+        if (shouldRun === undefined) {
+            return;
         }
         if (typeof this.fAction === "function") {
             this.fAction();
@@ -106,9 +108,12 @@ class Input {
         }
     }
 
-    d(keyAction) {
+    d(keyAction, shouldRun) {
         if (keyAction) {
             this.dAction = keyAction;
+        }
+        if (shouldRun === undefined) {
+            return;
         }
         if (typeof this.dAction === "function") {
             this.dAction();
@@ -117,9 +122,12 @@ class Input {
         }
     }
 
-    s(keyAction) {
+    s(keyAction, shouldRun) {
         if (keyAction) {
             this.sAction = keyAction;
+        }
+        if (shouldRun === undefined) {
+            return;
         }
         if (typeof this.sAction === "function") {
             this.sAction();
@@ -128,9 +136,12 @@ class Input {
         }
     }
 
-    a(keyAction) {
+    a(keyAction, shouldRun) {
         if (keyAction) {
             this.aAction = keyAction;
+        }
+        if (shouldRun === undefined) {
+            return;
         }
         if (typeof this.aAction === "function") {
             this.aAction();
@@ -139,9 +150,12 @@ class Input {
         }
     }
 
-    escape(keyAction) {
+    escape(keyAction, shouldRun) {
         if (keyAction) {
             this.escapeAction = keyAction;
+        }
+        if (shouldRun === undefined) {
+            return;
         }
         if (typeof this.escapeAction === "function") {
             this.escapeAction();
@@ -150,9 +164,12 @@ class Input {
         }
     }
 
-    spaceBar(keyAction) {
+    spaceBar(keyAction, shouldRun) {
         if (keyAction) {
             this.spaceBarAction = keyAction;
+        }
+        if (shouldRun === undefined) {
+            return;
         }
         if (typeof this.spaceBarAction === "function") {
             this.spaceBarAction();
@@ -161,31 +178,42 @@ class Input {
         }
     }
 
-    arrowUp(keyAction) {
+    arrowUp(keyAction, shouldRun) {
         if (keyAction) {
             this.arrowUpAction = keyAction;
         }
+        if (shouldRun === undefined) {
+            return;
+        }
         if (typeof this.arrowUpAction === "function") {
+            this.events++;
             this.arrowUpAction();
         } else {
             this._callBackTypeError();
         }
     }
 
-    arrowDown(keyAction) {
+    arrowDown(keyAction, shouldRun) {
         if (keyAction) {
             this.keyDownAction = keyAction;
         }
+        if (shouldRun === undefined) {
+            return;
+        }
         if (typeof this.keyDownAction === "function") {
+            this.events++;
             this.keyDownAction();
         } else {
             this._callBackTypeError();
         }
     }
 
-    arrowLeft(keyAction) {
+    arrowLeft(keyAction, shouldRun) {
         if (keyAction) {
             this.keyLeftAction = keyAction;
+        }
+        if (shouldRun === undefined) {
+            return;
         }
         if (typeof this.keyLeftAction === "function") {
             this.keyLeftAction();
@@ -194,9 +222,12 @@ class Input {
         }
     }
 
-    arrowRight(keyAction) {
+    arrowRight(keyAction, shouldRun) {
         if (keyAction) {
             this.keyRightAction = keyAction;
+        }
+        if (shouldRun === undefined) {
+            return;
         }
         if (typeof this.keyRightAction === "function") {
             this.keyRightAction();

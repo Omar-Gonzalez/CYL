@@ -81,16 +81,26 @@ invader.x = title.x - 140;
 dialogue.updatePos(title.x, menu.frame.height / 2 );
 
 //3- Set Input  + Actions
-let action = new Action("accel");
+let action = new Action("shake");
 let input = new Input();
 invader.setAction(action);
 
+input.arrowLeft(function(){
+    invader.actionWithVector();
+});
+
+input.arrowRight(function(){
+    invader.actionWithVector();
+});
+
 input.arrowUp(function(){
+    invader.actionWithVector();
     dialogue.focusUp();
 });
 
 input.arrowDown(function(){
     dialogue.focusDown();
+    invader.actionWithVector();
 });
 
 input.spaceBar(function(){
@@ -102,15 +112,6 @@ input.spaceBar(function(){
         alert("Not yet implemented ;)");
     }
 });
-
-input.arrowLeft(function(){
-    invader.vector(-3,0);
-});
-
-input.arrowRight(function(){
-    invader.vector(3,0);
-});
-
 
 
 

@@ -82,10 +82,10 @@ console.log(requestAnimationFrame);
             }
             readyEventHandlersInstalled = true;
         }
-    }
+    };
 })("docReady", window);
 
-//Array Prototype Min - Max, credits to Chaospandion - https://stackoverflow.com/questions/1669190/find-the-min-max-element-of-an-array-in-javascript
+//Array Prototype Utility Methods
 
 Array.prototype.min = function(evaluate) {
 
@@ -100,7 +100,9 @@ Array.prototype.min = function(evaluate) {
     }
 
     return v;
-}
+};
+
+//Number Prototype Utility Methods
 
 Array.prototype.max = function(evaluate) {
 
@@ -115,10 +117,16 @@ Array.prototype.max = function(evaluate) {
     }
 
     return v;
-}
-
-//Number Range Prototype - credits to jbabey - https://stackoverflow.com/questions/12806304/shortest-code-to-check-if-a-number-is-in-a-range-in-javascript
+};
 
 Number.prototype.between = function(min, max) {
     return this > min && this < max;
-}
+};
+
+Number.prototype.positivity = function() {
+    if (this > 0){
+        return "positive";
+    }else{
+        return "negative";
+    }
+};
