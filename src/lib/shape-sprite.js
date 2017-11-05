@@ -184,10 +184,9 @@ class ShapeSprite {
         this.y = this.action.computeY(y) + this.y;
     }
 
-    mouseActionWithClick(x, y) {
-        console.log(x + " " + y);
-        this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x);
-        this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y);
+    mouseActionWithClick(x, y, frame) {
+        this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x, this.frame);
+        this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y, this.frame);
 
         if (!(this.mouseAction.shouldKeepUpdating)){
             clearInterval(this.constantUpdateInterval);

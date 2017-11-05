@@ -19,7 +19,7 @@ class MouseAction {
         this.reachedTargetY = false;
     }
 
-    computeX(x, currentX) {
+    computeX(x, currentX, frame) {
         /***
          * Default X Click Render Pos 
          */
@@ -32,15 +32,15 @@ class MouseAction {
          */
         if (this.kind === "click-move") {
             //this.targetX = x;
-            console.log(" X : "+parseInt(x) + " -- " +parseInt(currentX));
-            if(currentX.between(x - 40, x + 40)){
+            if (currentX.between(x - frame.width / 2, x + frame.width / 2)) {
                 this.reachedTargetX = true;
+                return currentX;
             }
             return currentX.getCloseTo(x, this.movementRate);
         }
     }
 
-    computeY(y, currentY) {
+    computeY(y, currentY, frame) {
         /***
          * Default Y  Click Render Pos 
          */
@@ -54,20 +54,20 @@ class MouseAction {
 
         if (this.kind === "click-move") {
             //this.targetY = y;
-            console.log(" Y : "+parseInt(y) + " -- " +parseInt(currentY));
-            if(currentY.between(y - 40, y + 40)){
+            if (currentY.between(y - frame.height / 2, y + frame.height / 2)) {
                 this.reachedTargetY = true;
+                return currentY;
             }
             return currentY.getCloseTo(y, this.movementRate);
         }
     }
 
     get shouldKeepUpdating() {
-        if (this.reachedTargetX && this.reachedTargetY){
+        if (this.reachedTargetX && this.reachedTargetY) {
             this.reachedTargetX = false;
             this.reachedTargetY = false;
             return false;
         }
-        return true; 
+        return true;
     }
 }
