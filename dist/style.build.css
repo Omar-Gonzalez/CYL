@@ -3,6 +3,7 @@ body, html {
   background-color: #1B1D23;
   margin: 0px;
   overflow: hidden;
+  cursor: pointer;
 }
 
 #screen {

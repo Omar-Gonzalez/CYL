@@ -17,17 +17,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 
 (function () {
+    var consider = " - Please consider getting a recent version of Firefox, Chrome or Safari";
+    if (!(window.console.error && window.console.warn)) {
+        alert("Your browser doesn't suppor the console.error and console.warn debug tools" + consider);
+        console.error("Your browser doesn't suppor the console.error and console.warn debug tools" + consider);
+    }
     var canvasSupport = !!window.CanvasRenderingContext2D;
     if (canvasSupport === false) {
         alert("Your browser doesn't suppor Canvas 2D rendering context - Please consider get a recent version of Firefox, Chrome or Safari");
         console.error("Your browser doesn't suppor Canvas 2D rendering context. Please consider get a recent version of Firefox, Chrome or Safari");
     }
     if (!window.requestAnimationFrame) {
-        alert("Your browser doesn't suppor the requestAnimationFrame API - Please, get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor the requestAnimationFrame API - Please consider, get a recent version of Firefox, Chrome or Safari");
         console.error("Your browser doesn't suppor equestAnimationFrame API. Please consider get a recent version of Firefox, Chrome or Safari");
     }
     if (!window.addEventListener) {
-        alert("Your browser doesn't suppor the addEventListener API - Please, get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor the addEventListener API - Please consider, get a recent version of Firefox, Chrome or Safari");
         console.error("Your browser doesn't suppor addEventListener API - Please consider get a recent version of Firefox, Chrome or Safari");
     }
 })();
@@ -144,7 +149,6 @@ Number.prototype.getCloseTo = function (n, rate) {
         return this - rate;
     }
 };
-
 /******
  * CYL - Config Globals
  * Copyright MIT license 2017
@@ -960,6 +964,7 @@ var ShapeSprite = function () {
         //Sprite Actions 
         this.action = null;
         this.constantUpdateInterval = ";)";
+        this.actionStoppedCB = null;
         //Init Methods
         this.setAnimation();
     }
@@ -1059,6 +1064,11 @@ var ShapeSprite = function () {
             this.x = x;
             this.y = y;
         }
+
+        /**
+        * Action Methods 
+        */
+
     }, {
         key: "actionWithVector",
         value: function actionWithVector(x, y) {
@@ -1073,6 +1083,7 @@ var ShapeSprite = function () {
 
             if (!this.mouseAction.shouldKeepUpdating) {
                 clearInterval(this.constantUpdateInterval);
+                this.actionStopped(null, true);
             }
         }
     }, {
@@ -1085,6 +1096,21 @@ var ShapeSprite = function () {
             }, 40);
         }
     }, {
+        key: "actionStopped",
+        value: function actionStopped(cb, shouldRun) {
+            if (cb) {
+                this.actionStoppedCB = cb;
+            }
+            if (shouldRun === undefined) {
+                return;
+            }
+            if (typeof this.actionStoppedCB === "function") {
+                this.actionStoppedCB();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
         key: "setAction",
         value: function setAction(action) {
             this.action = action;
@@ -1093,6 +1119,11 @@ var ShapeSprite = function () {
         key: "setMouseAction",
         value: function setMouseAction(action) {
             this.mouseAction = action;
+        }
+    }, {
+        key: "_callBackTypeError",
+        value: function _callBackTypeError() {
+            console.warn("CYL: action cb requires a function");
         }
     }, {
         key: "bounds",
@@ -1266,6 +1297,67 @@ var BitmapSprite = function () {
         value: function updatePos(x, y) {
             this.x = x;
             this.y = y;
+        }
+
+        /**
+        * Action Methods 
+        */
+
+    }, {
+        key: "actionWithVector",
+        value: function actionWithVector(x, y) {
+            this.x = this.action.computeX(x) + this.x;
+            this.y = this.action.computeY(y) + this.y;
+        }
+    }, {
+        key: "mouseActionWithClick",
+        value: function mouseActionWithClick(x, y, frame) {
+            this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x, this.frame);
+            this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y, this.frame);
+
+            if (!this.mouseAction.shouldKeepUpdating) {
+                clearInterval(this.constantUpdateInterval);
+                this.actionStopped(null, true);
+            }
+        }
+    }, {
+        key: "mouseActionUpdate",
+        value: function mouseActionUpdate(x, y) {
+            clearInterval(this.constantUpdateInterval);
+            var _this = this;
+            this.constantUpdateInterval = setInterval(function () {
+                _this.mouseActionWithClick(x, y);
+            }, 40);
+        }
+    }, {
+        key: "actionStopped",
+        value: function actionStopped(cb, shouldRun) {
+            if (cb) {
+                this.actionStoppedCB = cb;
+            }
+            if (shouldRun === undefined) {
+                return;
+            }
+            if (typeof this.actionStoppedCB === "function") {
+                this.actionStoppedCB();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "setAction",
+        value: function setAction(action) {
+            this.action = action;
+        }
+    }, {
+        key: "setMouseAction",
+        value: function setMouseAction(action) {
+            this.mouseAction = action;
+        }
+    }, {
+        key: "_callBackTypeError",
+        value: function _callBackTypeError() {
+            console.warn("CYL: action cb requires a function");
         }
     }, {
         key: "bounds",
@@ -1590,7 +1682,8 @@ var Game = function () {
 
 var c = {
     t: "transparent",
-    p: "#6A1B9A"
+    p: "#6A1B9A",
+    o: "orange"
 };
 
 var idle1 = {
@@ -1603,7 +1696,17 @@ var idle2 = {
     "shape": [c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p, c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.t, c.t, c.p, c.p, c.p]
 };
 
-var invader = new ShapeSprite("invadder", [idle1, idle2], 8, 15);
+var moving1 = {
+    "set": "moving",
+    "shape": [c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p, c.t, c.p, c.t, c.t, c.t, c.t, c.p, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.o, c.p, c.p, c.o, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.t, c.t, c.p, c.t, c.p]
+};
+
+var moving2 = {
+    "set": "moving",
+    "shape": [c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p, c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.o, c.p, c.p, c.o, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.o, c.o, c.o, c.o, c.o, c.o, c.p, c.p, c.p, c.p, c.t, c.t, c.p, c.p, c.p]
+};
+
+var invader = new ShapeSprite("invadder", [idle1, idle2, moving1, moving2], 8, 15);
 var notice = new LabelSprite("CYL:Game Development Tools 2017", 15);
 var title = new LabelSprite("WEB INVADERS", 60);
 var start = new LabelSprite("Start", 30);
@@ -1665,5 +1768,10 @@ input.spaceBar(function () {
 
 input.click(function (e) {
     invader.mouseActionUpdate(e.x, e.y);
+    invader.setAnimation("moving");
+});
+
+invader.actionStopped(function () {
+    invader.setAnimation("idle");
 });
 //# sourceMappingURL=cyl.build.js.map

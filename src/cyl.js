@@ -31,7 +31,8 @@
 
 let c = {
     t: "transparent",
-    p: "#6A1B9A"
+    p: "#6A1B9A",
+    o: "orange"
 };
 
 let idle1 = {
@@ -60,8 +61,33 @@ let idle2 = {
     ]
 };
 
+let moving1 = {
+    "set": "moving",
+    "shape": [
+        c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p,
+        c.t, c.p, c.t, c.t, c.t, c.t, c.p, c.t,
+        c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t,
+        c.p, c.p, c.o, c.p, c.p, c.o, c.p, c.p,
+        c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p,
+        c.p, c.t, c.p, c.p, c.p, c.p, c.t, c.p,
+        c.p, c.t, c.p, c.t, c.t, c.p, c.t, c.p,
+    ]
+};
 
-let invader = new ShapeSprite("invadder", [idle1, idle2], 8, 15);
+let moving2 = {
+    "set": "moving",
+    "shape": [
+        c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p,
+        c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t,
+        c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t,
+        c.p, c.p, c.o, c.p, c.p, c.o, c.p, c.p,
+        c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p,
+        c.p, c.o, c.o, c.o, c.o, c.o, c.o, c.p,
+        c.p, c.p, c.p, c.t, c.t, c.p, c.p, c.p,
+    ]
+};
+
+let invader = new ShapeSprite("invadder", [idle1, idle2, moving1, moving2], 8, 15);
 let notice = new LabelSprite("CYL:Game Development Tools 2017", 15);
 let title = new LabelSprite("WEB INVADERS", 60);
 let start = new LabelSprite("Start", 30);
@@ -88,7 +114,7 @@ let mAction = new MouseAction("click-move");
 invader.setAction(action);
 invader.setMouseAction(mAction);
 
-input.click(function(e){
+input.click(function(e) {
     console.log("hey");
 });
 
@@ -122,5 +148,10 @@ input.spaceBar(function() {
 });
 
 input.click(function(e) {
-    invader.mouseActionUpdate(e.x,e.y);
+    invader.mouseActionUpdate(e.x, e.y);
+    invader.setAnimation("moving");
+});
+
+invader.actionStopped(function(){
+    invader.setAnimation("idle");
 });

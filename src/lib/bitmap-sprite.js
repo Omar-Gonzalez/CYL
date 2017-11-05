@@ -152,4 +152,58 @@ class BitmapSprite {
         this.x = x;
         this.y = y;
     }
+
+    /**
+    * Action Methods 
+    */
+
+    actionWithVector(x, y) {
+        this.x = this.action.computeX(x) + this.x;
+        this.y = this.action.computeY(y) + this.y;
+    }
+
+    mouseActionWithClick(x, y, frame) {
+        this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x, this.frame);
+        this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y, this.frame);
+
+        if (!(this.mouseAction.shouldKeepUpdating)){
+            clearInterval(this.constantUpdateInterval);
+            this.actionStopped(null,true);
+        }
+    }
+
+    mouseActionUpdate(x, y) {
+        clearInterval(this.constantUpdateInterval);
+        let _this = this;
+        this.constantUpdateInterval = setInterval(function() {
+            _this.mouseActionWithClick(x, y);
+        }, 40);
+
+    }
+
+    actionStopped(cb,shouldRun){
+        if (cb) {
+            this.actionStoppedCB = cb;
+        }
+        if (shouldRun === undefined) {
+            return;
+        }
+        if (typeof this.actionStoppedCB === "function") {
+            this.actionStoppedCB();
+        } else {
+            this._callBackTypeError();
+        }
+    }
+
+    setAction(action) {
+        this.action = action;
+    }
+
+    setMouseAction(action) {
+        this.mouseAction = action;
+    }
+
+    _callBackTypeError() {
+        console.warn("CYL: action cb requires a function");
+    }
 }

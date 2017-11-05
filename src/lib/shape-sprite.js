@@ -57,6 +57,7 @@ class ShapeSprite {
         //Sprite Actions 
         this.action = null;
         this.constantUpdateInterval = ";)";
+        this.actionStoppedCB = null;
         //Init Methods
         this.setAnimation();
     }
@@ -179,6 +180,10 @@ class ShapeSprite {
         this.y = y;
     }
 
+    /**
+    * Action Methods 
+    */
+
     actionWithVector(x, y) {
         this.x = this.action.computeX(x) + this.x;
         this.y = this.action.computeY(y) + this.y;
@@ -190,6 +195,7 @@ class ShapeSprite {
 
         if (!(this.mouseAction.shouldKeepUpdating)){
             clearInterval(this.constantUpdateInterval);
+            this.actionStopped(null,true);
         }
     }
 
@@ -202,11 +208,29 @@ class ShapeSprite {
 
     }
 
+    actionStopped(cb,shouldRun){
+        if (cb) {
+            this.actionStoppedCB = cb;
+        }
+        if (shouldRun === undefined) {
+            return;
+        }
+        if (typeof this.actionStoppedCB === "function") {
+            this.actionStoppedCB();
+        } else {
+            this._callBackTypeError();
+        }
+    }
+
     setAction(action) {
         this.action = action;
     }
 
     setMouseAction(action) {
         this.mouseAction = action;
+    }
+
+    _callBackTypeError() {
+        console.warn("CYL: action cb requires a function");
     }
 }

@@ -11,17 +11,22 @@
  */
 
 (function() {
+    let consider = " - Please consider getting a recent version of Firefox, Chrome or Safari";
+    if (!(window.console.error && window.console.warn)) {
+        alert("Your browser doesn't suppor the console.error and console.warn debug tools" + consider);
+        console.error("Your browser doesn't suppor the console.error and console.warn debug tools" + consider);
+    }
     let canvasSupport = !!window.CanvasRenderingContext2D;
     if (canvasSupport === false) {
         alert("Your browser doesn't suppor Canvas 2D rendering context - Please consider get a recent version of Firefox, Chrome or Safari");
         console.error("Your browser doesn't suppor Canvas 2D rendering context. Please consider get a recent version of Firefox, Chrome or Safari");
     }
     if (!window.requestAnimationFrame) {
-        alert("Your browser doesn't suppor the requestAnimationFrame API - Please, get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor the requestAnimationFrame API - Please consider, get a recent version of Firefox, Chrome or Safari");
         console.error("Your browser doesn't suppor equestAnimationFrame API. Please consider get a recent version of Firefox, Chrome or Safari");
     }
     if (!window.addEventListener) {
-        alert("Your browser doesn't suppor the addEventListener API - Please, get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor the addEventListener API - Please consider, get a recent version of Firefox, Chrome or Safari");
         console.error("Your browser doesn't suppor addEventListener API - Please consider get a recent version of Firefox, Chrome or Safari");
     }
 }());
