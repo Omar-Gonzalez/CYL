@@ -12,6 +12,9 @@ class MouseAction {
         this.kind = kind;
         this.movementRate = 10;
         //Click Move Props
+        this.originX = 0;
+        this.originY = 0;
+
         this.targetX = 0;
         this.targetY = 0;
 
@@ -31,12 +34,31 @@ class MouseAction {
          * Click Move Vector X 
          */
         if (this.kind === "click-move") {
-            //this.targetX = x;
             if (currentX.between(x - frame.width / 2, x + frame.width / 2)) {
                 this.reachedTargetX = true;
                 return currentX;
             }
             return currentX.getCloseTo(x, this.movementRate);
+        }
+
+        /***
+         * Click Move X Vector X Only
+         */
+        if (this.kind === "click-move-x") {
+            this.targetX = x;
+            this.originX = currentX;
+            if (currentX.between(x - frame.width / 2, x + frame.width / 2)) {
+                this.reachedTargetX = true;
+                return currentX;
+            }
+            return currentX.getCloseTo(x, this.movementRate);
+        }
+
+        /***
+         * Click Move X Vector Y Only
+         */
+        if (this.kind === "click-move-y") {
+            return currentX;
         }
     }
 
@@ -53,7 +75,26 @@ class MouseAction {
          */
 
         if (this.kind === "click-move") {
-            //this.targetY = y;
+            if (currentY.between(y - frame.height / 2, y + frame.height / 2)) {
+                this.reachedTargetY = true;
+                return currentY;
+            }
+            return currentY.getCloseTo(y, this.movementRate);
+        }
+
+        /***
+         * Click Move Vector Y - X Only 
+         */
+
+        if (this.kind === "click-move-x") {
+            return currentY;
+        }
+
+        /***
+         * Click Move Vector Y - Y Only
+         */
+
+        if (this.kind === "click-move-y") {
             if (currentY.between(y - frame.height / 2, y + frame.height / 2)) {
                 this.reachedTargetY = true;
                 return currentY;
@@ -63,11 +104,36 @@ class MouseAction {
     }
 
     get shouldKeepUpdating() {
+        if (this.kind === "click-move-x" && this.reachedTargetX) { 
+            this.reachedTargetX = false;
+            return false;
+        }
+        if (this.kind === "click-move-y" && this.reachedTargetY) { 
+            this.reachedTargetY = false;
+            return false;
+        }
         if (this.reachedTargetX && this.reachedTargetY) {
             this.reachedTargetX = false;
             this.reachedTargetY = false;
             return false;
         }
         return true;
+    }
+
+    get vectorDirection(){
+        if (this.kind === "click-move-x"){
+            if(this.originX < this.targetX){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        if (this.kind === "click-move-y"){
+            if(this.originY < this.targetY){
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
 }

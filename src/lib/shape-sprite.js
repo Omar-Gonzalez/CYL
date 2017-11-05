@@ -181,8 +181,8 @@ class ShapeSprite {
     }
 
     /**
-    * Action Methods 
-    */
+     * Action Methods 
+     */
 
     actionWithVector(x, y) {
         this.x = this.action.computeX(x) + this.x;
@@ -193,14 +193,15 @@ class ShapeSprite {
         this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x, this.frame);
         this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y, this.frame);
 
-        if (!(this.mouseAction.shouldKeepUpdating)){
+        if (!(this.mouseAction.shouldKeepUpdating)) {
             clearInterval(this.constantUpdateInterval);
-            this.actionStopped(null,true);
+            this.actionStopped(null, true);
         }
     }
 
     mouseActionUpdate(x, y) {
         clearInterval(this.constantUpdateInterval);
+        this.actionStart(null, true);
         let _this = this;
         this.constantUpdateInterval = setInterval(function() {
             _this.mouseActionWithClick(x, y);
@@ -208,7 +209,7 @@ class ShapeSprite {
 
     }
 
-    actionStopped(cb,shouldRun){
+    actionStopped(cb, shouldRun) {
         if (cb) {
             this.actionStoppedCB = cb;
         }
@@ -217,6 +218,20 @@ class ShapeSprite {
         }
         if (typeof this.actionStoppedCB === "function") {
             this.actionStoppedCB();
+        } else {
+            this._callBackTypeError();
+        }
+    }
+
+    actionStart(cb, shouldRun) {
+        if (cb) {
+            this.actionStartCB = cb;
+        }
+        if (shouldRun === undefined) {
+            return;
+        }
+        if (typeof this.actionStartCB === "function") {
+            this.actionStartCB();
         } else {
             this._callBackTypeError();
         }

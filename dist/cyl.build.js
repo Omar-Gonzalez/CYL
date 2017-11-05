@@ -383,6 +383,9 @@ var MouseAction = function () {
         this.kind = kind;
         this.movementRate = 10;
         //Click Move Props
+        this.originX = 0;
+        this.originY = 0;
+
         this.targetX = 0;
         this.targetY = 0;
 
@@ -404,12 +407,31 @@ var MouseAction = function () {
              * Click Move Vector X 
              */
             if (this.kind === "click-move") {
-                //this.targetX = x;
                 if (currentX.between(x - frame.width / 2, x + frame.width / 2)) {
                     this.reachedTargetX = true;
                     return currentX;
                 }
                 return currentX.getCloseTo(x, this.movementRate);
+            }
+
+            /***
+             * Click Move X Vector X Only
+             */
+            if (this.kind === "click-move-x") {
+                this.targetX = x;
+                this.originX = currentX;
+                if (currentX.between(x - frame.width / 2, x + frame.width / 2)) {
+                    this.reachedTargetX = true;
+                    return currentX;
+                }
+                return currentX.getCloseTo(x, this.movementRate);
+            }
+
+            /***
+             * Click Move X Vector Y Only
+             */
+            if (this.kind === "click-move-y") {
+                return currentX;
             }
         }
     }, {
@@ -427,7 +449,26 @@ var MouseAction = function () {
              */
 
             if (this.kind === "click-move") {
-                //this.targetY = y;
+                if (currentY.between(y - frame.height / 2, y + frame.height / 2)) {
+                    this.reachedTargetY = true;
+                    return currentY;
+                }
+                return currentY.getCloseTo(y, this.movementRate);
+            }
+
+            /***
+             * Click Move Vector Y - X Only 
+             */
+
+            if (this.kind === "click-move-x") {
+                return currentY;
+            }
+
+            /***
+             * Click Move Vector Y - Y Only
+             */
+
+            if (this.kind === "click-move-y") {
                 if (currentY.between(y - frame.height / 2, y + frame.height / 2)) {
                     this.reachedTargetY = true;
                     return currentY;
@@ -438,12 +479,38 @@ var MouseAction = function () {
     }, {
         key: "shouldKeepUpdating",
         get: function get() {
+            if (this.kind === "click-move-x" && this.reachedTargetX) {
+                this.reachedTargetX = false;
+                return false;
+            }
+            if (this.kind === "click-move-y" && this.reachedTargetY) {
+                this.reachedTargetY = false;
+                return false;
+            }
             if (this.reachedTargetX && this.reachedTargetY) {
                 this.reachedTargetX = false;
                 this.reachedTargetY = false;
                 return false;
             }
             return true;
+        }
+    }, {
+        key: "vectorDirection",
+        get: function get() {
+            if (this.kind === "click-move-x") {
+                if (this.originX < this.targetX) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            if (this.kind === "click-move-y") {
+                if (this.originY < this.targetY) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
     }]);
 
@@ -1066,8 +1133,8 @@ var ShapeSprite = function () {
         }
 
         /**
-        * Action Methods 
-        */
+         * Action Methods 
+         */
 
     }, {
         key: "actionWithVector",
@@ -1090,6 +1157,7 @@ var ShapeSprite = function () {
         key: "mouseActionUpdate",
         value: function mouseActionUpdate(x, y) {
             clearInterval(this.constantUpdateInterval);
+            this.actionStart(null, true);
             var _this = this;
             this.constantUpdateInterval = setInterval(function () {
                 _this.mouseActionWithClick(x, y);
@@ -1106,6 +1174,21 @@ var ShapeSprite = function () {
             }
             if (typeof this.actionStoppedCB === "function") {
                 this.actionStoppedCB();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "actionStart",
+        value: function actionStart(cb, shouldRun) {
+            if (cb) {
+                this.actionStartCB = cb;
+            }
+            if (shouldRun === undefined) {
+                return;
+            }
+            if (typeof this.actionStartCB === "function") {
+                this.actionStartCB();
             } else {
                 this._callBackTypeError();
             }
@@ -1300,8 +1383,8 @@ var BitmapSprite = function () {
         }
 
         /**
-        * Action Methods 
-        */
+         * Action Methods 
+         */
 
     }, {
         key: "actionWithVector",
@@ -1324,6 +1407,7 @@ var BitmapSprite = function () {
         key: "mouseActionUpdate",
         value: function mouseActionUpdate(x, y) {
             clearInterval(this.constantUpdateInterval);
+            this.actionStart(null, true);
             var _this = this;
             this.constantUpdateInterval = setInterval(function () {
                 _this.mouseActionWithClick(x, y);
@@ -1345,6 +1429,21 @@ var BitmapSprite = function () {
             }
         }
     }, {
+        key: "actionStart",
+        value: function actionStart(cb, shouldRun) {
+            if (cb) {
+                this.actionStartCB = cb;
+            }
+            if (shouldRun === undefined) {
+                return;
+            }
+            if (typeof this.actionStartCB === "function") {
+                this.actionStartCB();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
         key: "setAction",
         value: function setAction(action) {
             this.action = action;
@@ -1357,7 +1456,7 @@ var BitmapSprite = function () {
     }, {
         key: "_callBackTypeError",
         value: function _callBackTypeError() {
-            console.warn("CYL: action cb requires a function");
+            console.warn("CYL: Action cb requires a function");
         }
     }, {
         key: "bounds",
@@ -1680,39 +1779,75 @@ var Game = function () {
 
 // 1 - Initialize components
 
+var invShape = {};
+
 var c = {
     t: "transparent",
     p: "#6A1B9A",
-    o: "orange"
+    o: "#FF9800",
+    r: "#FF5722"
 };
 
-var idle1 = {
+invShape.idle1 = {
     "set": "idle",
     "shape": [c.t, c.p, c.t, c.t, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.t, c.t, c.p, c.t, c.p]
 };
 
-var idle2 = {
+invShape.idle2 = {
     "set": "idle",
     "shape": [c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p, c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.t, c.t, c.p, c.p, c.p]
 };
 
-var moving1 = {
+invShape.moving1 = {
     "set": "moving",
     "shape": [c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p, c.t, c.p, c.t, c.t, c.t, c.t, c.p, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.o, c.p, c.p, c.o, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.t, c.t, c.p, c.t, c.p]
 };
 
-var moving2 = {
+invShape.moving2 = {
     "set": "moving",
     "shape": [c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p, c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t, c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t, c.p, c.p, c.o, c.p, c.p, c.o, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.o, c.o, c.o, c.o, c.o, c.o, c.p, c.p, c.p, c.p, c.t, c.t, c.p, c.p, c.p]
 };
 
-var invader = new ShapeSprite("invadder", [idle1, idle2, moving1, moving2], 8, 15);
+var pShape = {};
+
+pShape.idle1 = {
+    "set": "idle",
+    "shape": [c.t, c.t, c.t, c.t, c.o, c.t, c.t, c.t, c.t, c.t, c.o, c.o, c.o, c.t, c.t, c.t, c.o, c.o, c.o, c.o, c.o]
+};
+
+pShape.idle2 = {
+    "set": "idle",
+    "shape": [c.t, c.t, c.o, c.t, c.t, c.t, c.t, c.t, c.o, c.o, c.o, c.t, c.t, c.t, c.o, c.o, c.o, c.o, c.o, c.t, c.t]
+};
+
+pShape.mLeft1 = {
+    "set": "moving-left",
+    "shape": [c.t, c.t, c.o, c.t, c.t, c.t, c.t, c.t, c.o, c.o, c.o, c.t, c.r, c.t, c.o, c.o, c.o, c.o, c.o, c.t, c.r]
+};
+
+pShape.mLeft2 = {
+    "set": "moving-left",
+    "shape": [c.t, c.t, c.o, c.t, c.t, c.t, c.t, c.t, c.o, c.o, c.o, c.r, c.t, c.r, c.o, c.o, c.o, c.o, c.o, c.r, c.t]
+};
+
+pShape.mRight1 = {
+    "set": "moving-right",
+    "shape": [c.t, c.t, c.t, c.t, c.o, c.t, c.t, c.r, c.t, c.r, c.o, c.o, c.o, c.t, c.t, c.r, c.o, c.o, c.o, c.o, c.o]
+};
+
+pShape.mRight2 = {
+    "set": "moving-right",
+    "shape": [c.t, c.t, c.t, c.t, c.o, c.t, c.t, c.t, c.r, c.t, c.o, c.o, c.o, c.t, c.r, c.t, c.o, c.o, c.o, c.o, c.o]
+};
+
+var invader = new ShapeSprite("invadder", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
+var player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
 var notice = new LabelSprite("CYL:Game Development Tools 2017", 15);
 var title = new LabelSprite("WEB INVADERS", 60);
 var start = new LabelSprite("Start", 30);
 var topScores = new LabelSprite("Top Scores", 30);
 var dialogue = new Dialogue([start, topScores]);
-var menu = new Scene([invader, notice, title, dialogue]);
+var menu = new Scene([invader, notice, title, dialogue, player]);
 var level = new Scene([notice]);
 var game = new Game([menu, level]);
 game.run();
@@ -1724,18 +1859,18 @@ title.y = menu.frame.height / 2;
 title.x = menu.frame.width / 2 - title.frame.width / 2;
 invader.y = menu.frame.height / 2 - invader.frame.height;
 invader.x = title.x - 140;
+player.x = menu.frame.width / 2 - player.frame.width / 2;
+player.y = menu.frame.height - 150;
 dialogue.updatePos(title.x, menu.frame.height / 2);
 
 //3- Set Input  + Actions
 var input = new Input();
 var action = new Action("shake");
 var mAction = new MouseAction("click-move");
+var pMAction = new MouseAction("click-move-x");
 invader.setAction(action);
 invader.setMouseAction(mAction);
-
-input.click(function (e) {
-    console.log("hey");
-});
+player.setMouseAction(pMAction);
 
 input.arrowLeft(function () {
     invader.actionWithVector();
@@ -1768,10 +1903,26 @@ input.spaceBar(function () {
 
 input.click(function (e) {
     invader.mouseActionUpdate(e.x, e.y);
+    player.mouseActionUpdate(e.x, e.y);
+});
+
+invader.actionStart(function () {
     invader.setAnimation("moving");
 });
 
 invader.actionStopped(function () {
     invader.setAnimation("idle");
+});
+
+player.actionStart(function () {
+    if (player.mouseAction.vectorDirection) {
+        player.setAnimation("moving-left");
+    } else {
+        player.setAnimation("moving-right");
+    }
+});
+
+player.actionStopped(function () {
+    player.setAnimation("idle");
 });
 //# sourceMappingURL=cyl.build.js.map

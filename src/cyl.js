@@ -29,13 +29,16 @@
 
 // 1 - Initialize components
 
+let invShape = {};
+
 let c = {
     t: "transparent",
     p: "#6A1B9A",
-    o: "orange"
+    o: "#FF9800",
+    r: "#FF5722"
 };
 
-let idle1 = {
+invShape.idle1 = {
     "set": "idle",
     "shape": [
         c.t, c.p, c.t, c.t, c.t, c.t, c.p, c.t,
@@ -48,7 +51,7 @@ let idle1 = {
     ]
 };
 
-let idle2 = {
+invShape.idle2 = {
     "set": "idle",
     "shape": [
         c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p,
@@ -61,7 +64,7 @@ let idle2 = {
     ]
 };
 
-let moving1 = {
+invShape.moving1 = {
     "set": "moving",
     "shape": [
         c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p,
@@ -74,7 +77,7 @@ let moving1 = {
     ]
 };
 
-let moving2 = {
+invShape.moving2 = {
     "set": "moving",
     "shape": [
         c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p,
@@ -87,13 +90,70 @@ let moving2 = {
     ]
 };
 
-let invader = new ShapeSprite("invadder", [idle1, idle2, moving1, moving2], 8, 15);
+let pShape = {};
+
+pShape.idle1 = {
+    "set": "idle",
+    "shape": [
+        c.t,c.t,c.t, c.t, c.o, c.t, c.t,
+        c.t,c.t,c.t, c.o, c.o, c.o, c.t,
+        c.t,c.t,c.o, c.o, c.o, c.o, c.o,
+    ]
+};
+
+pShape.idle2 = {
+    "set": "idle",
+    "shape": [
+        c.t, c.t, c.o, c.t, c.t,c.t,c.t,
+        c.t, c.o, c.o, c.o, c.t,c.t,c.t,
+        c.o, c.o, c.o, c.o, c.o,c.t,c.t,
+    ]
+};
+
+pShape.mLeft1 = {
+    "set": "moving-left",
+    "shape": [
+        c.t, c.t, c.o, c.t, c.t,c.t,c.t,
+        c.t, c.o, c.o, c.o, c.t,c.r,c.t,
+        c.o, c.o, c.o, c.o, c.o,c.t,c.r,
+    ]
+};
+
+pShape.mLeft2 = {
+    "set": "moving-left",
+    "shape": [
+        c.t, c.t, c.o, c.t, c.t,c.t,c.t,
+        c.t, c.o, c.o, c.o, c.r,c.t,c.r,
+        c.o, c.o, c.o, c.o, c.o,c.r,c.t,
+    ]
+};
+
+pShape.mRight1 = {
+    "set": "moving-right",
+    "shape": [
+        c.t,c.t,c.t, c.t, c.o, c.t, c.t,
+        c.r,c.t,c.r, c.o, c.o, c.o, c.t,
+        c.t,c.r,c.o, c.o, c.o, c.o, c.o,
+    ]
+};
+
+pShape.mRight2 = {
+    "set": "moving-right",
+    "shape": [
+        c.t,c.t,c.t, c.t, c.o, c.t, c.t,
+        c.t,c.r,c.t, c.o, c.o, c.o, c.t,
+        c.r,c.t,c.o, c.o, c.o, c.o, c.o,
+    ]
+};
+
+let invader = new ShapeSprite("invadder", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
+let player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
 let notice = new LabelSprite("CYL:Game Development Tools 2017", 15);
 let title = new LabelSprite("WEB INVADERS", 60);
 let start = new LabelSprite("Start", 30);
 let topScores = new LabelSprite("Top Scores", 30);
 let dialogue = new Dialogue([start, topScores]);
-let menu = new Scene([invader, notice, title, dialogue]);
+let menu = new Scene([invader, notice, title, dialogue,player]);
 let level = new Scene([notice]);
 let game = new Game([menu, level]);
 game.run();
@@ -105,18 +165,18 @@ title.y = menu.frame.height / 2;
 title.x = menu.frame.width / 2 - title.frame.width / 2;
 invader.y = menu.frame.height / 2 - invader.frame.height;
 invader.x = title.x - 140;
+player.x = menu.frame.width / 2 - player.frame.width / 2;
+player.y = menu.frame.height - 150;
 dialogue.updatePos(title.x, menu.frame.height / 2);
 
 //3- Set Input  + Actions
 let input = new Input();
 let action = new Action("shake");
 let mAction = new MouseAction("click-move");
+let pMAction = new MouseAction("click-move-x");
 invader.setAction(action);
 invader.setMouseAction(mAction);
-
-input.click(function(e) {
-    console.log("hey");
-});
+player.setMouseAction(pMAction);
 
 input.arrowLeft(function() {
     invader.actionWithVector();
@@ -149,9 +209,25 @@ input.spaceBar(function() {
 
 input.click(function(e) {
     invader.mouseActionUpdate(e.x, e.y);
+    player.mouseActionUpdate(e.x, e.y);
+});
+
+invader.actionStart(function() {
     invader.setAnimation("moving");
 });
 
-invader.actionStopped(function(){
+invader.actionStopped(function() {
     invader.setAnimation("idle");
+});
+
+player.actionStart(function(){
+    if(player.mouseAction.vectorDirection){
+        player.setAnimation("moving-left");
+    }else{
+        player.setAnimation("moving-right");
+    }
+});
+
+player.actionStopped(function(){
+    player.setAnimation("idle");
 });

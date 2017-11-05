@@ -43,7 +43,7 @@ class BitmapSprite {
         this.currentFrameIndex = 0;
         //Contact detection props
         this.contactGroup = contactGroup;
-        this.setAnimation()
+        this.setAnimation();
     }
 
     setAnimation(named) {
@@ -143,7 +143,7 @@ class BitmapSprite {
     get currentFrame() {
         return this.spriteFrames[this.currentFrameIndex];
     }
-    
+
     get frames() {
         return this.spriteFrames;
     }
@@ -154,8 +154,8 @@ class BitmapSprite {
     }
 
     /**
-    * Action Methods 
-    */
+     * Action Methods 
+     */
 
     actionWithVector(x, y) {
         this.x = this.action.computeX(x) + this.x;
@@ -166,14 +166,15 @@ class BitmapSprite {
         this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x, this.frame);
         this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y, this.frame);
 
-        if (!(this.mouseAction.shouldKeepUpdating)){
+        if (!(this.mouseAction.shouldKeepUpdating)) {
             clearInterval(this.constantUpdateInterval);
-            this.actionStopped(null,true);
+            this.actionStopped(null, true);
         }
     }
 
     mouseActionUpdate(x, y) {
         clearInterval(this.constantUpdateInterval);
+        this.actionStart(null, true);
         let _this = this;
         this.constantUpdateInterval = setInterval(function() {
             _this.mouseActionWithClick(x, y);
@@ -181,7 +182,7 @@ class BitmapSprite {
 
     }
 
-    actionStopped(cb,shouldRun){
+    actionStopped(cb, shouldRun) {
         if (cb) {
             this.actionStoppedCB = cb;
         }
@@ -190,6 +191,20 @@ class BitmapSprite {
         }
         if (typeof this.actionStoppedCB === "function") {
             this.actionStoppedCB();
+        } else {
+            this._callBackTypeError();
+        }
+    }
+
+    actionStart(cb, shouldRun) {
+        if (cb) {
+            this.actionStartCB = cb;
+        }
+        if (shouldRun === undefined) {
+            return;
+        }
+        if (typeof this.actionStartCB === "function") {
+            this.actionStartCB();
         } else {
             this._callBackTypeError();
         }
@@ -204,6 +219,6 @@ class BitmapSprite {
     }
 
     _callBackTypeError() {
-        console.warn("CYL: action cb requires a function");
+        console.warn("CYL: Action cb requires a function");
     }
 }
