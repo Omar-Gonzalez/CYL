@@ -1078,6 +1078,7 @@ var ShapeSprite = function () {
     }, {
         key: "mouseActionUpdate",
         value: function mouseActionUpdate(x, y) {
+            clearInterval(this.constantUpdateInterval);
             var _this = this;
             this.constantUpdateInterval = setInterval(function () {
                 _this.mouseActionWithClick(x, y);

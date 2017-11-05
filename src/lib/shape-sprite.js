@@ -194,6 +194,7 @@ class ShapeSprite {
     }
 
     mouseActionUpdate(x, y) {
+        clearInterval(this.constantUpdateInterval);
         let _this = this;
         this.constantUpdateInterval = setInterval(function() {
             _this.mouseActionWithClick(x, y);
