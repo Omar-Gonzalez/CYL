@@ -388,7 +388,7 @@ var MouseAction = function () {
 
     _createClass(MouseAction, [{
         key: "computeX",
-        value: function computeX(x, currentX) {
+        value: function computeX(x, currentX, frame) {
             /***
              * Default X Click Render Pos 
              */
@@ -401,16 +401,16 @@ var MouseAction = function () {
              */
             if (this.kind === "click-move") {
                 //this.targetX = x;
-                console.log(" X : " + parseInt(x) + " -- " + parseInt(currentX));
-                if (currentX.between(x - 40, x + 40)) {
+                if (currentX.between(x - frame.width / 2, x + frame.width / 2)) {
                     this.reachedTargetX = true;
+                    return currentX;
                 }
                 return currentX.getCloseTo(x, this.movementRate);
             }
         }
     }, {
         key: "computeY",
-        value: function computeY(y, currentY) {
+        value: function computeY(y, currentY, frame) {
             /***
              * Default Y  Click Render Pos 
              */
@@ -424,9 +424,9 @@ var MouseAction = function () {
 
             if (this.kind === "click-move") {
                 //this.targetY = y;
-                console.log(" Y : " + parseInt(y) + " -- " + parseInt(currentY));
-                if (currentY.between(y - 40, y + 40)) {
+                if (currentY.between(y - frame.height / 2, y + frame.height / 2)) {
                     this.reachedTargetY = true;
+                    return currentY;
                 }
                 return currentY.getCloseTo(y, this.movementRate);
             }
@@ -1067,10 +1067,9 @@ var ShapeSprite = function () {
         }
     }, {
         key: "mouseActionWithClick",
-        value: function mouseActionWithClick(x, y) {
-            console.log(x + " " + y);
-            this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x);
-            this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y);
+        value: function mouseActionWithClick(x, y, frame) {
+            this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x, this.frame);
+            this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y, this.frame);
 
             if (!this.mouseAction.shouldKeepUpdating) {
                 clearInterval(this.constantUpdateInterval);
