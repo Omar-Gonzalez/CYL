@@ -124,9 +124,17 @@ Number.prototype.between = function(min, max) {
 };
 
 Number.prototype.positivity = function() {
-    if (this > 0){
+    if (this > 0) {
         return "positive";
-    }else{
+    } else {
         return "negative";
+    }
+};
+
+Number.prototype.getCloseTo = function(n, rate) {
+    if (this < n) {
+        return this + rate;
+    } else {
+        return this - rate;
     }
 };
