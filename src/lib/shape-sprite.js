@@ -56,6 +56,7 @@ class ShapeSprite {
         this.contactGroup = contactGroup;
         //Sprite Actions 
         this.action = null;
+        this.constantUpdateInterval = ";)";
         //Init Methods
         this.setAnimation();
     }
@@ -108,14 +109,14 @@ class ShapeSprite {
             "minX": this.renderedX.min(),
             "maxY": this.renderedY.max(),
             "minY": this.renderedY.min()
-        }
+        };
     }
 
     get frame() {
         return {
             "width": parseInt(this.renderedX.max() - this.renderedX.min()),
             "height": parseInt(this.renderedY.max() - this.renderedY.min())
-        }
+        };
     }
 
     inContactWith(sprite) {
@@ -133,11 +134,11 @@ class ShapeSprite {
             return {
                 'inContact': true,
                 'contactWith': this.name + " in contact with " + sprite.name
-            }
+            };
         } else {
             return {
                 'inContact': false
-            }
+            };
         }
     }
 
@@ -157,11 +158,11 @@ class ShapeSprite {
             return {
                 'inCollision': true,
                 'collisionWith': this.name + " in collision with " + sprite.name
-            }
+            };
         } else {
             return {
                 'inCollision': false
-            }
+            };
         }
     }
 
@@ -178,12 +179,34 @@ class ShapeSprite {
         this.y = y;
     }
 
-    actionWithVector(x,y){
+    actionWithVector(x, y) {
         this.x = this.action.computeX(x) + this.x;
         this.y = this.action.computeY(y) + this.y;
     }
 
-    setAction(action){
+    mouseActionWithClick(x, y) {
+        console.log(x + " " + y);
+        this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x);
+        this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y);
+
+        if (!(this.mouseAction.shouldKeepUpdating)){
+            clearInterval(this.constantUpdateInterval);
+        }
+    }
+
+    mouseActionUpdate(x, y) {
+        let _this = this;
+        this.constantUpdateInterval = setInterval(function() {
+            _this.mouseActionWithClick(x, y);
+        }, 40);
+
+    }
+
+    setAction(action) {
         this.action = action;
+    }
+
+    setMouseAction(action) {
+        this.mouseAction = action;
     }
 }

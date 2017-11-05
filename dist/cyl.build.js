@@ -136,6 +136,15 @@ Number.prototype.positivity = function () {
         return "negative";
     }
 };
+
+Number.prototype.getCloseTo = function (n, rate) {
+    if (this < n) {
+        return this + rate;
+    } else {
+        return this - rate;
+    }
+};
+
 /******
  * CYL - Config Globals
  * Copyright MIT license 2017
@@ -351,6 +360,90 @@ var Action = function () {
     }]);
 
     return Action;
+}();
+/******
+ * CYL - Mouse Action Sprite
+ * Copyright MIT license 2017
+ */
+
+var MouseAction = function () {
+    function MouseAction() {
+        var kind = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "default";
+
+        _classCallCheck(this, MouseAction);
+
+        //Param Validation
+        if (kind === "default") {
+            console.warn("CYL:Warning, Initializing Mouse Action with default parameter");
+        }
+        this.kind = kind;
+        this.movementRate = 10;
+        //Click Move Props
+        this.targetX = 0;
+        this.targetY = 0;
+
+        this.reachedTargetX = false;
+        this.reachedTargetY = false;
+    }
+
+    _createClass(MouseAction, [{
+        key: "computeX",
+        value: function computeX(x, currentX) {
+            /***
+             * Default X Click Render Pos 
+             */
+            if (this.kind === "default") {
+                return x;
+            }
+
+            /***
+             * Click Move Vector X 
+             */
+            if (this.kind === "click-move") {
+                //this.targetX = x;
+                console.log(" X : " + parseInt(x) + " -- " + parseInt(currentX));
+                if (currentX.between(x - 40, x + 40)) {
+                    this.reachedTargetX = true;
+                }
+                return currentX.getCloseTo(x, this.movementRate);
+            }
+        }
+    }, {
+        key: "computeY",
+        value: function computeY(y, currentY) {
+            /***
+             * Default Y  Click Render Pos 
+             */
+            if (this.kind === "default") {
+                return y;
+            }
+
+            /***
+             * Click Move Vector Y 
+             */
+
+            if (this.kind === "click-move") {
+                //this.targetY = y;
+                console.log(" Y : " + parseInt(y) + " -- " + parseInt(currentY));
+                if (currentY.between(y - 40, y + 40)) {
+                    this.reachedTargetY = true;
+                }
+                return currentY.getCloseTo(y, this.movementRate);
+            }
+        }
+    }, {
+        key: "shouldKeepUpdating",
+        get: function get() {
+            if (this.reachedTargetX && this.reachedTargetY) {
+                this.reachedTargetX = false;
+                this.reachedTargetY = false;
+                return false;
+            }
+            return true;
+        }
+    }]);
+
+    return MouseAction;
 }();
 /******
  * CYL - Class Input + Event Polyfills
@@ -866,6 +959,7 @@ var ShapeSprite = function () {
         this.contactGroup = contactGroup;
         //Sprite Actions 
         this.action = null;
+        this.constantUpdateInterval = ";)";
         //Init Methods
         this.setAnimation();
     }
@@ -972,9 +1066,33 @@ var ShapeSprite = function () {
             this.y = this.action.computeY(y) + this.y;
         }
     }, {
+        key: "mouseActionWithClick",
+        value: function mouseActionWithClick(x, y) {
+            console.log(x + " " + y);
+            this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x);
+            this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y);
+
+            if (!this.mouseAction.shouldKeepUpdating) {
+                clearInterval(this.constantUpdateInterval);
+            }
+        }
+    }, {
+        key: "mouseActionUpdate",
+        value: function mouseActionUpdate(x, y) {
+            var _this = this;
+            this.constantUpdateInterval = setInterval(function () {
+                _this.mouseActionWithClick(x, y);
+            }, 40);
+        }
+    }, {
         key: "setAction",
         value: function setAction(action) {
             this.action = action;
+        }
+    }, {
+        key: "setMouseAction",
+        value: function setMouseAction(action) {
+            this.mouseAction = action;
         }
     }, {
         key: "bounds",
@@ -1450,6 +1568,7 @@ var Game = function () {
 //@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/config.js
 //@prepros-prepend ./lib/action.js
+//@prepros-prepend ./lib/mouse-action.js
 //@prepros-prepend ./lib/input.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
@@ -1505,9 +1624,15 @@ invader.x = title.x - 140;
 dialogue.updatePos(title.x, menu.frame.height / 2);
 
 //3- Set Input  + Actions
-var action = new Action("shake");
 var input = new Input();
+var action = new Action("shake");
+var mAction = new MouseAction("click-move");
 invader.setAction(action);
+invader.setMouseAction(mAction);
+
+input.click(function (e) {
+    console.log("hey");
+});
 
 input.arrowLeft(function () {
     invader.actionWithVector();
@@ -1530,10 +1655,15 @@ input.arrowDown(function () {
 input.spaceBar(function () {
     if (dialogue.focusIndex === 0) {
         //game start
+        alert("Not yet implemented ;)");
     }
     if (dialogue.focusIndex === 1) {
         //show top scores
         alert("Not yet implemented ;)");
     }
+});
+
+input.click(function (e) {
+    invader.mouseActionUpdate(e.x, e.y);
 });
 //# sourceMappingURL=cyl.build.js.map

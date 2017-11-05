@@ -9,6 +9,7 @@
 //@prepros-prepend ./lib/utils.js
 //@prepros-prepend ./lib/config.js
 //@prepros-prepend ./lib/action.js
+//@prepros-prepend ./lib/mouse-action.js
 //@prepros-prepend ./lib/input.js
 //@prepros-prepend ./lib/scene.js
 //@prepros-prepend ./lib/shape-sprite.js
@@ -81,9 +82,15 @@ invader.x = title.x - 140;
 dialogue.updatePos(title.x, menu.frame.height / 2);
 
 //3- Set Input  + Actions
-let action = new Action("shake");
 let input = new Input();
+let action = new Action("shake");
+let mAction = new MouseAction("click-move");
 invader.setAction(action);
+invader.setMouseAction(mAction);
+
+input.click(function(e){
+    console.log("hey");
+});
 
 input.arrowLeft(function() {
     invader.actionWithVector();
@@ -112,4 +119,8 @@ input.spaceBar(function() {
         //show top scores
         alert("Not yet implemented ;)");
     }
+});
+
+input.click(function(e) {
+    invader.mouseActionUpdate(e.x,e.y);
 });
