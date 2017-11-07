@@ -18,23 +18,23 @@
     }
     let canvasSupport = !!window.CanvasRenderingContext2D;
     if (canvasSupport === false) {
-        alert("Your browser doesn't suppor Canvas 2D rendering context - Please consider get a recent version of Firefox, Chrome or Safari");
-        console.error("Your browser doesn't suppor Canvas 2D rendering context. Please consider get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor Canvas 2D rendering context" + consider);
+        console.error("Your browser doesn't suppor Canvas 2D rendering context" + consider);
     }
     if (!window.requestAnimationFrame) {
-        alert("Your browser doesn't suppor the requestAnimationFrame API - Please consider, get a recent version of Firefox, Chrome or Safari");
-        console.error("Your browser doesn't suppor equestAnimationFrame API. Please consider get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor the requestAnimationFrame API" + consider);
+        console.error("Your browser doesn't suppor equestAnimationFrame API" + consider);
     }
     if (!window.addEventListener) {
-        alert("Your browser doesn't suppor the addEventListener API - Please consider, get a recent version of Firefox, Chrome or Safari");
-        console.error("Your browser doesn't suppor addEventListener API - Please consider get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor the addEventListener API" + consider);
+        console.error("Your browser doesn't suppor addEventListener API" + consider);
     }
 }());
 
 console.log(requestAnimationFrame);
 
 /**
- * Custom Document Ready Credits to : jfriend00 - https://stackoverflow.com/questions/9899372/pure-javascript-equivalent-of-jquerys-ready-how-to-call-a-function-when-t
+ * Custom Document Ready 
  */
 (function(funcName, baseObj) {
     funcName = funcName || "docReady";

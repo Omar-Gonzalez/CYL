@@ -9,12 +9,20 @@ class Input {
         this.events = 0;
     }
 
+    get clickForDevice() {
+        if (DEVICE() === "desktop") {
+            return "click";
+        } else {
+            return "touchstart";
+        }
+    }
+
     _registerKeyDown() {
         let _this = this;
         window.addEventListener("keydown", function(e) {
             return _this._filterKeyDown(e);
         });
-        window.addEventListener("click", function(e) {
+        document.getElementById('game').addEventListener(this.clickForDevice, function(e) {
             return _this.click(null, e);
         });
     }
@@ -27,6 +35,10 @@ class Input {
             this.mouseAction = action;
         }
         if (typeof this.mouseAction === "function" && e !== undefined) {
+            if (DEVICE() === "mobile") {
+                e.x = e.touches[0].clientX;
+                e.y = e.touches[0].clientY;
+            }
             this.mouseAction(e);
         } else {
             console.warn("CYL: Click action must be a function");

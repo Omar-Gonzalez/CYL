@@ -24,23 +24,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
     var canvasSupport = !!window.CanvasRenderingContext2D;
     if (canvasSupport === false) {
-        alert("Your browser doesn't suppor Canvas 2D rendering context - Please consider get a recent version of Firefox, Chrome or Safari");
-        console.error("Your browser doesn't suppor Canvas 2D rendering context. Please consider get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor Canvas 2D rendering context" + consider);
+        console.error("Your browser doesn't suppor Canvas 2D rendering context" + consider);
     }
     if (!window.requestAnimationFrame) {
-        alert("Your browser doesn't suppor the requestAnimationFrame API - Please consider, get a recent version of Firefox, Chrome or Safari");
-        console.error("Your browser doesn't suppor equestAnimationFrame API. Please consider get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor the requestAnimationFrame API" + consider);
+        console.error("Your browser doesn't suppor equestAnimationFrame API" + consider);
     }
     if (!window.addEventListener) {
-        alert("Your browser doesn't suppor the addEventListener API - Please consider, get a recent version of Firefox, Chrome or Safari");
-        console.error("Your browser doesn't suppor addEventListener API - Please consider get a recent version of Firefox, Chrome or Safari");
+        alert("Your browser doesn't suppor the addEventListener API" + consider);
+        console.error("Your browser doesn't suppor addEventListener API" + consider);
     }
 })();
 
 console.log(requestAnimationFrame);
 
 /**
- * Custom Document Ready Credits to : jfriend00 - https://stackoverflow.com/questions/9899372/pure-javascript-equivalent-of-jquerys-ready-how-to-call-a-function-when-t
+ * Custom Document Ready 
  */
 (function (funcName, baseObj) {
     funcName = funcName || "docReady";
@@ -203,6 +203,14 @@ window.SCREEN = function () {
 window.addEventListener("resize", function () {
     window.SCREEN();
 });
+
+window.DEVICE = function () {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return "mobile";
+    } else {
+        return "desktop";
+    }
+};
 /******
  * CYL - Action Sprite
  * Copyright MIT license 2017
@@ -536,7 +544,7 @@ var Input = function () {
             window.addEventListener("keydown", function (e) {
                 return _this._filterKeyDown(e);
             });
-            window.addEventListener("click", function (e) {
+            document.getElementById('game').addEventListener(this.clickForDevice, function (e) {
                 return _this.click(null, e);
             });
         }
@@ -550,6 +558,10 @@ var Input = function () {
                 this.mouseAction = action;
             }
             if (typeof this.mouseAction === "function" && e !== undefined) {
+                if (DEVICE() === "mobile") {
+                    e.x = e.touches[0].clientX;
+                    e.y = e.touches[0].clientY;
+                }
                 this.mouseAction(e);
             } else {
                 console.warn("CYL: Click action must be a function");
@@ -769,6 +781,15 @@ var Input = function () {
         key: "_callBackTypeError",
         value: function _callBackTypeError() {
             console.warn("CYL: Input action requires a function");
+        }
+    }, {
+        key: "clickForDevice",
+        get: function get() {
+            if (DEVICE() === "desktop") {
+                return "click";
+            } else {
+                return "touchstart";
+            }
         }
     }]);
 

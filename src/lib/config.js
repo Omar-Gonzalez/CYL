@@ -31,7 +31,7 @@ window.SCREEN = function() {
         height = percentual[1] + "%"
     }
 
-    if(apectRatio){
+    if (apectRatio) {
         width = window.innerWidth;
         height = parseFloat((width / apectRatio[0]) * apectRatio[1]);
         let verticalMargin = (window.innerHeight - height) / 2;
@@ -52,3 +52,11 @@ window.SCREEN = function() {
 window.addEventListener("resize", () => {
     window.SCREEN();
 });
+
+window.DEVICE = function() {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return "mobile";
+    }else{
+        return "desktop";
+    }
+};
