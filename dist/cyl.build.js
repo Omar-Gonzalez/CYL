@@ -1168,25 +1168,26 @@ var ShapeSprite = function () {
         value: function mouseActionWithClick(x, y, frame) {
             this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x, this.frame);
             this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y, this.frame);
+            this.actionIsRunning(null, true);
 
             if (!this.mouseAction.shouldKeepUpdating) {
                 clearInterval(this.constantUpdateInterval);
-                this.actionStopped(null, true);
+                this.actionDidStop(null, true);
             }
         }
     }, {
         key: "mouseActionUpdate",
         value: function mouseActionUpdate(x, y) {
             clearInterval(this.constantUpdateInterval);
-            this.actionStart(null, true);
+            this.actionDidStart(null, true);
             var _this = this;
             this.constantUpdateInterval = setInterval(function () {
                 _this.mouseActionWithClick(x, y);
             }, 40);
         }
     }, {
-        key: "actionStopped",
-        value: function actionStopped(cb, shouldRun) {
+        key: "actionDidStop",
+        value: function actionDidStop(cb, shouldRun) {
             if (cb) {
                 this.actionStoppedCB = cb;
             }
@@ -1200,8 +1201,8 @@ var ShapeSprite = function () {
             }
         }
     }, {
-        key: "actionStart",
-        value: function actionStart(cb, shouldRun) {
+        key: "actionDidStart",
+        value: function actionDidStart(cb, shouldRun) {
             if (cb) {
                 this.actionStartCB = cb;
             }
@@ -1210,6 +1211,21 @@ var ShapeSprite = function () {
             }
             if (typeof this.actionStartCB === "function") {
                 this.actionStartCB();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "actionIsRunning",
+        value: function actionIsRunning(cb, shouldRun) {
+            if (cb) {
+                this.actionIsRunning = cb;
+            }
+            if (shouldRun === undefined) {
+                return;
+            }
+            if (typeof this.actionIsRunning === "function") {
+                this.actionIsRunning();
             } else {
                 this._callBackTypeError();
             }
@@ -1418,25 +1434,26 @@ var BitmapSprite = function () {
         value: function mouseActionWithClick(x, y, frame) {
             this.x = this.mouseAction.computeX(x - this.frame.width / 2, this.x, this.frame);
             this.y = this.mouseAction.computeY(y - this.frame.height / 2, this.y, this.frame);
+            this.actionIsRunning(null, true);
 
             if (!this.mouseAction.shouldKeepUpdating) {
                 clearInterval(this.constantUpdateInterval);
-                this.actionStopped(null, true);
+                this.actionDidStop(null, true);
             }
         }
     }, {
         key: "mouseActionUpdate",
         value: function mouseActionUpdate(x, y) {
             clearInterval(this.constantUpdateInterval);
-            this.actionStart(null, true);
+            this.actionDidStart(null, true);
             var _this = this;
             this.constantUpdateInterval = setInterval(function () {
                 _this.mouseActionWithClick(x, y);
             }, 40);
         }
     }, {
-        key: "actionStopped",
-        value: function actionStopped(cb, shouldRun) {
+        key: "actionDidStop",
+        value: function actionDidStop(cb, shouldRun) {
             if (cb) {
                 this.actionStoppedCB = cb;
             }
@@ -1450,8 +1467,8 @@ var BitmapSprite = function () {
             }
         }
     }, {
-        key: "actionStart",
-        value: function actionStart(cb, shouldRun) {
+        key: "actionDidStart",
+        value: function actionDidStart(cb, shouldRun) {
             if (cb) {
                 this.actionStartCB = cb;
             }
@@ -1460,6 +1477,21 @@ var BitmapSprite = function () {
             }
             if (typeof this.actionStartCB === "function") {
                 this.actionStartCB();
+            } else {
+                this._callBackTypeError();
+            }
+        }
+    }, {
+        key: "actionIsRunning",
+        value: function actionIsRunning(cb, shouldRun) {
+            if (cb) {
+                this.actionIsRunning = cb;
+            }
+            if (shouldRun === undefined) {
+                return;
+            }
+            if (typeof this.actionIsRunning === "function") {
+                this.actionIsRunning();
             } else {
                 this._callBackTypeError();
             }
@@ -1477,7 +1509,7 @@ var BitmapSprite = function () {
     }, {
         key: "_callBackTypeError",
         value: function _callBackTypeError() {
-            console.warn("CYL: Action cb requires a function");
+            console.warn("CYL: action cb requires a function");
         }
     }, {
         key: "bounds",
@@ -1927,23 +1959,23 @@ input.click(function (e) {
     player.mouseActionUpdate(e.x, e.y);
 });
 
-invader.actionStart(function () {
+invader.actionDidStart(function () {
     invader.setAnimation("moving");
 });
 
-invader.actionStopped(function () {
+invader.actionDidStop(function () {
     invader.setAnimation("idle");
 });
 
-player.actionStart(function () {
+player.actionIsRunning(function () {
     if (player.mouseAction.vectorDirection) {
-        player.setAnimation("moving-left");
-    } else {
         player.setAnimation("moving-right");
+    } else {
+        player.setAnimation("moving-left");
     }
 });
 
-player.actionStopped(function () {
+player.actionDidStop(function () {
     player.setAnimation("idle");
 });
 //# sourceMappingURL=cyl.build.js.map

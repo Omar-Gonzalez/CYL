@@ -212,22 +212,22 @@ input.click(function(e) {
     player.mouseActionUpdate(e.x, e.y);
 });
 
-invader.actionStart(function() {
+invader.actionDidStart(function() {
     invader.setAnimation("moving");
 });
 
-invader.actionStopped(function() {
+invader.actionDidStop(function() {
     invader.setAnimation("idle");
 });
 
-player.actionStart(function(){
+player.actionIsRunning(function(){
     if(player.mouseAction.vectorDirection){
-        player.setAnimation("moving-left");
-    }else{
         player.setAnimation("moving-right");
+    }else{
+        player.setAnimation("moving-left");
     }
 });
 
-player.actionStopped(function(){
+player.actionDidStop(function(){
     player.setAnimation("idle");
 });

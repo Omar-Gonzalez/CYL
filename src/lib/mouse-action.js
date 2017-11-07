@@ -104,11 +104,11 @@ class MouseAction {
     }
 
     get shouldKeepUpdating() {
-        if (this.kind === "click-move-x" && this.reachedTargetX) { 
+        if (this.kind === "click-move-x" && this.reachedTargetX) {
             this.reachedTargetX = false;
             return false;
         }
-        if (this.kind === "click-move-y" && this.reachedTargetY) { 
+        if (this.kind === "click-move-y" && this.reachedTargetY) {
             this.reachedTargetY = false;
             return false;
         }
@@ -120,18 +120,18 @@ class MouseAction {
         return true;
     }
 
-    get vectorDirection(){
-        if (this.kind === "click-move-x"){
-            if(this.originX < this.targetX){
+    get vectorDirection() {
+        if (this.kind === "click-move-x") {
+            if (this.originX < this.targetX) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
-        if (this.kind === "click-move-y"){
-            if(this.originY < this.targetY){
+        if (this.kind === "click-move-y") {
+            if (this.originY < this.targetY) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
