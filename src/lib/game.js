@@ -29,6 +29,22 @@ class Game {
         this.activeScene = this.scenes[this.active];
     }
 
+    setActiveSceneNamed(name){
+        for(let scene of this.scenes){
+            if (scene.name === name){
+                this.activeScene = scene;
+            }
+        }
+    }
+
+    getSceneNamed(name){
+        for(let scene of this.scenes){
+            if (scene.name === name){
+                return scene;
+            }
+        }
+    }
+
     get assets() {
         return {
             'scenes': this.scenes,

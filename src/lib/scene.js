@@ -9,6 +9,7 @@ class Scene {
      * @param Screen Size - W x H - defaults to 100%
      */
     constructor(
+        name = "",
         sprites = []
     ) {
         //Param Validation
@@ -21,6 +22,7 @@ class Scene {
             return;
         }
         //Props
+        this.name = name;
         this.screen = document.getElementById("screen");
         this.canvas = document.getElementById("game");
         this.ctx = this.canvas.getContext("2d");
@@ -162,5 +164,9 @@ class Scene {
             return;
         }
         this.sprites = sprites;
+    }
+
+    addSprite(sprite){
+        this.sprites.push(sprite);
     }
 }

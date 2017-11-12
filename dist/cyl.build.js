@@ -808,7 +808,8 @@ var Scene = function () {
      * @param Screen Size - W x H - defaults to 100%
      */
     function Scene() {
-        var sprites = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+        var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+        var sprites = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
         _classCallCheck(this, Scene);
 
@@ -822,6 +823,7 @@ var Scene = function () {
             return;
         }
         //Props
+        this.name = name;
         this.screen = document.getElementById("screen");
         this.canvas = document.getElementById("game");
         this.ctx = this.canvas.getContext("2d");
@@ -970,6 +972,11 @@ var Scene = function () {
                 return;
             }
             this.sprites = sprites;
+        }
+    }, {
+        key: "addSprite",
+        value: function addSprite(sprite) {
+            this.sprites.push(sprite);
         }
     }, {
         key: "frame",
@@ -1737,6 +1744,66 @@ var Game = function () {
             this.activeScene = this.scenes[this.active];
         }
     }, {
+        key: "setActiveSceneNamed",
+        value: function setActiveSceneNamed(name) {
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = this.scenes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var scene = _step.value;
+
+                    if (scene.name === name) {
+                        this.activeScene = scene;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        }
+    }, {
+        key: "getSceneNamed",
+        value: function getSceneNamed(name) {
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = this.scenes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var scene = _step2.value;
+
+                    if (scene.name === name) {
+                        return scene;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+        }
+    }, {
         key: "run",
         value: function run() {
             if (this.shouldUpdate) {
@@ -1900,12 +1967,13 @@ var title = new LabelSprite("WEB INVADERS", 60);
 var start = new LabelSprite("Start", 30);
 var topScores = new LabelSprite("Top Scores", 30);
 var dialogue = new Dialogue([start, topScores]);
-var menu = new Scene([invader, notice, title, dialogue, player]);
-var level = new Scene([notice]);
+var menu = new Scene("menu", [invader, notice, title, dialogue, player]);
+var level = new Scene("level", [notice]);
 var game = new Game([menu, level]);
 game.run();
 
 // 2 - Set up scene
+// Start Screen
 notice.y = menu.frame.height - 50;
 notice.x = menu.frame.width / 2 - notice.frame.width / 2;
 title.y = menu.frame.height / 2;
@@ -1915,6 +1983,32 @@ invader.x = title.x - 140;
 player.x = menu.frame.width / 2 - player.frame.width / 2;
 player.y = menu.frame.height - 150;
 dialogue.updatePos(title.x, menu.frame.height / 2);
+
+// Game Scene
+
+var InvaderPattern = function InvaderPattern(level) {
+    _classCallCheck(this, InvaderPattern);
+
+    this.xOffset = level.frame.width / 4;
+    this.yOffset = level.frame.height / 6;
+
+    var yRow = 0;
+    var xRow = 0;
+    for (var i = 0; i < 12; i++) {
+        var _invader = new ShapeSprite("invader", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
+        _invader.x = this.xOffset * i;
+        if (i === 4 || i === 8) {
+            yRow++;
+            xRow = 0;
+        }
+        _invader.x = this.xOffset * xRow;
+        _invader.y = this.yOffset * yRow;
+        xRow++;
+        game.getSceneNamed("level").addSprite(_invader);
+    }
+};
+
+var invPattern = new InvaderPattern(level);
 
 //3- Set Input  + Actions
 var input = new Input();
@@ -1946,12 +2040,16 @@ input.arrowDown(function () {
 input.spaceBar(function () {
     if (dialogue.focusIndex === 0) {
         //game start
-        alert("Not yet implemented ;)");
+        game.setActiveSceneNamed("level");
     }
     if (dialogue.focusIndex === 1) {
         //show top scores
         alert("Not yet implemented ;)");
     }
+});
+
+input.escape(function () {
+    game.setActiveSceneNamed("menu");
 });
 
 input.click(function (e) {
