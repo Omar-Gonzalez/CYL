@@ -192,8 +192,6 @@ class BitmapSprite {
         }
         if (typeof this.actionStoppedCB === "function") {
             this.actionStoppedCB();
-        } else {
-            this._callBackTypeError();
         }
     }
 
@@ -206,8 +204,6 @@ class BitmapSprite {
         }
         if (typeof this.actionStartCB === "function") {
             this.actionStartCB();
-        } else {
-            this._callBackTypeError();
         }
     }
 
@@ -220,8 +216,6 @@ class BitmapSprite {
         }
         if (typeof this.actionIsRunning === "function") {
             this.actionIsRunning();
-        } else {
-            this._callBackTypeError();
         }
     }
 

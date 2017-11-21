@@ -16,6 +16,7 @@ class Game {
         this.scenes = scenes;
         this.active = active;
         this.shouldUpdate = true;
+        this.patterns = [];
         //Init Mehtods:
         this.setActiveScene();
         //Bind run method - animation request frame call back
@@ -54,6 +55,7 @@ class Game {
 
     run() {
         if (this.shouldUpdate) {
+            this.updatePatterns();
             this.activeScene.update();
             this.detectContact();
         }
@@ -96,5 +98,26 @@ class Game {
     detectCollision() {
         //set your collision logic
 
+    }
+
+    addPatternToScene(pattern, scene){
+        let p = {
+            "pattern":pattern,
+            "scene":scene
+        };
+        this.patterns.push(p);
+    }
+
+    updatePatterns(){
+        for(let i = 0; i < this.patterns.length; i++){
+            if(this.patterns[i].pattern.scene === this.activeScene.name){
+                this.patterns[i].pattern.update();
+                let applyFor = this.patterns[i].pattern.applyFor;
+                for(let j = 0; j < this.spritesNamed(applyFor).length; j++){
+                    this.spritesNamed(applyFor)[j].x = this.spritesNamed(applyFor)[j].x + this.patterns[i].pattern.pos.x;
+                    this.spritesNamed(applyFor)[j].y = this.spritesNamed(applyFor)[j].y + this.patterns[i].pattern.pos.y;
+                }
+            }
+        }
     }
 }

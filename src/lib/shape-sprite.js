@@ -95,9 +95,9 @@ class ShapeSprite {
                 y: relativeY,
                 color: shape[i]
             });
-            relativeX = relativeX + SCREEN().pixelSize;
+            relativeX = relativeX + CFG.SCREEN().pixelSize;
             if ((i + 1) % this.width === 0) {
-                relativeY = relativeY + SCREEN().pixelSize;
+                relativeY = relativeY + CFG.SCREEN().pixelSize;
                 relativeX = 0;
             }
         }
@@ -219,9 +219,7 @@ class ShapeSprite {
         }
         if (typeof this.actionStoppedCB === "function") {
             this.actionStoppedCB();
-        } else {
-            this._callBackTypeError();
-        }
+        } 
     }
 
     actionDidStart(cb, shouldRun) {
@@ -233,9 +231,7 @@ class ShapeSprite {
         }
         if (typeof this.actionStartCB === "function") {
             this.actionStartCB();
-        } else {
-            this._callBackTypeError();
-        }
+        } 
     }
 
     actionIsRunning(cb, shouldRun) {
@@ -247,8 +243,6 @@ class ShapeSprite {
         }
         if (typeof this.actionIsRunning === "function") {
             this.actionIsRunning();
-        } else {
-            this._callBackTypeError();
         }
     }
 

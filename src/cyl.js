@@ -16,6 +16,7 @@
 //@prepros-prepend ./lib/bitmap-sprite.js
 //@prepros-prepend ./lib/label-sprite.js
 //@prepros-prepend ./lib/dialogue.js
+//@prepros-prepend ./lib/pattern.js
 //@prepros-prepend ./lib/game.js
 
 /***
@@ -148,10 +149,10 @@ pShape.mRight2 = {
 
 let invader = new ShapeSprite("invadder", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
 let player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
-let notice = new LabelSprite("CYL:Game Development Tools 2017", 15);
-let title = new LabelSprite("WEB INVADERS", 60);
-let start = new LabelSprite("Start", 30);
-let topScores = new LabelSprite("Top Scores", 30);
+let notice = new LabelSprite("CYL:Game Development Tools 2017", "small");
+let title = new LabelSprite("WEB INVADERS", "large");
+let start = new LabelSprite("Start", "medium");
+let topScores = new LabelSprite("Top Scores", "medium");
 let dialogue = new Dialogue([start, topScores]);
 let menu = new Scene("menu", [invader, notice, title, dialogue, player]);
 let level = new Scene("level", [notice]);
@@ -171,31 +172,54 @@ player.y = menu.frame.height - 150;
 dialogue.updatePos(title.x, menu.frame.height / 2);
 
 // Game Scene
+function placeInvadersWith(level) {
+    let xOffset = level.frame.width / 4;
+    let yOffset = level.frame.height / 6;
 
-class InvaderPattern {
-    constructor(level) {
-        this.xOffset = level.frame.width / 4;
-        this.yOffset = level.frame.height / 6;
-
-        let yRow = 0;
-        let xRow = 0;
-        for (let i = 0; i < 12; i++) {
-            let invader = new ShapeSprite("invader", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
-            invader.x = this.xOffset * i;
-            if(i === 4 || i === 8){
-                yRow++;
-                xRow = 0;
-            }
-            invader.x = this.xOffset * xRow;
-            invader.y = this.yOffset * yRow;
-            xRow++;
-            game.getSceneNamed("level").addSprite(invader);
+    let yRow = 0;
+    let xRow = 0;
+    for (let i = 0; i < 12; i++) {
+        let invader = new ShapeSprite("invader", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
+        invader.x = xOffset * i;
+        if (i === 4 || i === 8) {
+            yRow++;
+            xRow = 0;
         }
+        invader.x = xOffset * xRow;
+        invader.y = yOffset * yRow;
+        xRow++;
+        game.getSceneNamed("level").addSprite(invader);
     }
 }
 
-let invPattern = new InvaderPattern(level);
+placeInvadersWith(level);
 
+class InvaderPattern extends Pattern {
+    update() {
+        if (this.cycle) {
+            this.xMovement = Math.abs(this.xMovement);
+            this.xProgression = this.xProgression + this.xMovement;
+            //this.yMovement = 0;
+            if (this.xProgression > this.xMax) {
+                //this.yMovement = 0;
+                this.cycle = false;
+            }
+        } else {
+            this.xMovement = -Math.abs(this.xMovement);
+            //this.yMovement = 0;
+            this.xProgression = this.xProgression + this.xMovement;
+            if (this.xProgression < 0) {
+                //this.yMovement = 50;
+                this.cycle = true;
+            }
+        }
+
+    }
+}
+
+let invaderPattern = new InvaderPattern("level","invader",3,1);
+invaderPattern.xMax = 50;
+game.addPatternToScene(invaderPattern);
 
 //3- Set Input  + Actions
 let input = new Input();
@@ -235,7 +259,7 @@ input.spaceBar(function() {
     }
 });
 
-input.escape(function(){
+input.escape(function() {
     game.setActiveSceneNamed("menu");
 });
 
@@ -263,4 +287,3 @@ player.actionIsRunning(function() {
 player.actionDidStop(function() {
     player.setAnimation("idle");
 });
-

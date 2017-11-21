@@ -10,7 +10,7 @@ class Input {
     }
 
     get clickForDevice() {
-        if (DEVICE() === "desktop") {
+        if (CFG.DEVICE() === "desktop") {
             return "click";
         } else {
             return "touchstart";
@@ -35,7 +35,7 @@ class Input {
             this.mouseAction = action;
         }
         if (typeof this.mouseAction === "function" && e !== undefined) {
-            if (DEVICE() === "mobile") {
+            if (CFG.DEVICE() === "mobile") {
                 e.x = e.touches[0].clientX;
                 e.y = e.touches[0].clientY;
             }

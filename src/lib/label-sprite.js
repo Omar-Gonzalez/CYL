@@ -6,7 +6,7 @@
 class LabelSprite {
     constructor(
         text,
-        size = 25,
+        size = "medium",
         font = "Verdana",
         weight = "normal",
         color = "white",
@@ -23,13 +23,21 @@ class LabelSprite {
         //Font properties
         this.text = text;
         this.font = font;
-        this.size = size + "px";
+        this.fontSize = size;
         this.weight = weight;
         this.color = color;
         //Container properties
         this.width;
         this.x = x;
         this.y = y;
+    }
+
+    get size(){
+        if(this.fontSize === "small" || this.fontSize === "medium" || this.fontSize === "large"){
+            return CFG.FONTSIZE(this.fontSize);
+        }else{
+            return this.fontSize + "px";
+        }
     }
 
     get ctxFont() {
@@ -40,7 +48,7 @@ class LabelSprite {
         return {
             'width': parseInt(this.width),
             'height': parseInt(this.size)
-        }
+        };
     }
 
     updatePos(x, y) {

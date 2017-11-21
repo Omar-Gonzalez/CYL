@@ -46,14 +46,14 @@ class Scene {
     }
 
     _defineCanvasDimensions() {
-        this.screen.style.width = SCREEN().screen.width;
-        this.screen.style.height = SCREEN().screen.height;
+        this.screen.style.width = CFG.SCREEN().screen.width;
+        this.screen.style.height = CFG.SCREEN().screen.height;
         this.canvas.width = this.screen.offsetWidth;
         this.canvas.height = this.screen.offsetHeight;
 
         window.addEventListener("resize", () => {
-            this.screen.style.width = SCREEN().screen.width;
-            this.screen.style.height = SCREEN().screen.height;
+            this.screen.style.width = CFG.SCREEN().screen.width;
+            this.screen.style.height = CFG.SCREEN().screen.height;
             this.canvas.width = this.screen.offsetWidth;
             this.canvas.height = this.screen.offsetHeight;
         });
@@ -73,7 +73,7 @@ class Scene {
 
     _renderPixel(sprite, pixel, x = 0, y = 0) {
         this.ctx.fillStyle = pixel.color;
-        this.ctx.fillRect(pixel.x + x, pixel.y + y, SCREEN().pixelSize, SCREEN().pixelSize);
+        this.ctx.fillRect(pixel.x + x, pixel.y + y, CFG.SCREEN().pixelSize, CFG.SCREEN().pixelSize);
         sprite.renderedX.push(pixel.x + x);
         sprite.renderedY.push(pixel.y + y);
     }

@@ -2,6 +2,10 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /******
@@ -149,13 +153,79 @@ Number.prototype.getCloseTo = function (n, rate) {
         return this - rate;
     }
 };
+
+var Logger = function () {
+    function Logger() {
+        _classCallCheck(this, Logger);
+
+        this.logs = [];
+    }
+
+    _createClass(Logger, [{
+        key: "print",
+        value: function print() {
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = this.logs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    log = _step.value;
+
+                    console.log("CYL:Log - " + log);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        }
+    }, {
+        key: "add",
+        value: function add(log) {
+            this.logs.push(log);
+        }
+    }, {
+        key: "delete",
+        value: function _delete() {
+            this.logs = [];
+        }
+    }, {
+        key: "dump",
+        get: function get() {
+            return this.logs;
+        }
+    }]);
+
+    return Logger;
+}();
 /******
  * CYL - Config Globals
  * Copyright MIT license 2017
  */
 
-//Scene Config 
-window.SCREEN = function () {
+var CFG = CFG || {};
+
+//Device
+CFG.DEVICE = function () {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return "mobile";
+    } else {
+        return "desktop";
+    }
+};
+
+//Screen Config 
+CFG.SCREEN = function () {
     //Set Accordingily 
     var pixelSize = 10;
     var predefinedPixel = "L"; //S,M,L //set to null if you want a fixed dimension
@@ -200,17 +270,47 @@ window.SCREEN = function () {
     };
 };
 
-window.addEventListener("resize", function () {
-    window.SCREEN();
-});
+CFG.FONTSIZE = function (fontSize) {
+    var width = window.innerWidth;
 
-window.DEVICE = function () {
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        return "mobile";
-    } else {
-        return "desktop";
+    if (fontSize === "small") {
+        if (width < 768) {
+            return "12px";
+        }
+        if (width > 768 && width < 1028) {
+            return "16px";
+        }
+        if (width > 1028) {
+            return "20px";
+        }
+    }
+    if (fontSize === "medium") {
+        if (width < 768) {
+            return "20px";
+        }
+        if (width > 768 && width < 1028) {
+            return "40px";
+        }
+        if (width > 1028) {
+            return "50px";
+        }
+    }
+    if (fontSize === "large") {
+        if (width < 768) {
+            return "28px";
+        }
+        if (width > 768 && width < 1028) {
+            return "50px";
+        }
+        if (width > 1028) {
+            return "70px";
+        }
     }
 };
+
+window.addEventListener("resize", function () {
+    window.CFG.SCREEN();
+});
 /******
  * CYL - Action Sprite
  * Copyright MIT license 2017
@@ -558,7 +658,7 @@ var Input = function () {
                 this.mouseAction = action;
             }
             if (typeof this.mouseAction === "function" && e !== undefined) {
-                if (DEVICE() === "mobile") {
+                if (CFG.DEVICE() === "mobile") {
                     e.x = e.touches[0].clientX;
                     e.y = e.touches[0].clientY;
                 }
@@ -785,7 +885,7 @@ var Input = function () {
     }, {
         key: "clickForDevice",
         get: function get() {
-            if (DEVICE() === "desktop") {
+            if (CFG.DEVICE() === "desktop") {
                 return "click";
             } else {
                 return "touchstart";
@@ -837,14 +937,14 @@ var Scene = function () {
         value: function _defineCanvasDimensions() {
             var _this2 = this;
 
-            this.screen.style.width = SCREEN().screen.width;
-            this.screen.style.height = SCREEN().screen.height;
+            this.screen.style.width = CFG.SCREEN().screen.width;
+            this.screen.style.height = CFG.SCREEN().screen.height;
             this.canvas.width = this.screen.offsetWidth;
             this.canvas.height = this.screen.offsetHeight;
 
             window.addEventListener("resize", function () {
-                _this2.screen.style.width = SCREEN().screen.width;
-                _this2.screen.style.height = SCREEN().screen.height;
+                _this2.screen.style.width = CFG.SCREEN().screen.width;
+                _this2.screen.style.height = CFG.SCREEN().screen.height;
                 _this2.canvas.width = _this2.screen.offsetWidth;
                 _this2.canvas.height = _this2.screen.offsetHeight;
             });
@@ -870,7 +970,7 @@ var Scene = function () {
             var y = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
             this.ctx.fillStyle = pixel.color;
-            this.ctx.fillRect(pixel.x + x, pixel.y + y, SCREEN().pixelSize, SCREEN().pixelSize);
+            this.ctx.fillRect(pixel.x + x, pixel.y + y, CFG.SCREEN().pixelSize, CFG.SCREEN().pixelSize);
             sprite.renderedX.push(pixel.x + x);
             sprite.renderedY.push(pixel.y + y);
         }
@@ -1100,9 +1200,9 @@ var ShapeSprite = function () {
                     y: relativeY,
                     color: shape[i]
                 });
-                relativeX = relativeX + SCREEN().pixelSize;
+                relativeX = relativeX + CFG.SCREEN().pixelSize;
                 if ((i + 1) % this.width === 0) {
-                    relativeY = relativeY + SCREEN().pixelSize;
+                    relativeY = relativeY + CFG.SCREEN().pixelSize;
                     relativeX = 0;
                 }
             }
@@ -1203,8 +1303,6 @@ var ShapeSprite = function () {
             }
             if (typeof this.actionStoppedCB === "function") {
                 this.actionStoppedCB();
-            } else {
-                this._callBackTypeError();
             }
         }
     }, {
@@ -1218,8 +1316,6 @@ var ShapeSprite = function () {
             }
             if (typeof this.actionStartCB === "function") {
                 this.actionStartCB();
-            } else {
-                this._callBackTypeError();
             }
         }
     }, {
@@ -1233,8 +1329,6 @@ var ShapeSprite = function () {
             }
             if (typeof this.actionIsRunning === "function") {
                 this.actionIsRunning();
-            } else {
-                this._callBackTypeError();
             }
         }
     }, {
@@ -1469,8 +1563,6 @@ var BitmapSprite = function () {
             }
             if (typeof this.actionStoppedCB === "function") {
                 this.actionStoppedCB();
-            } else {
-                this._callBackTypeError();
             }
         }
     }, {
@@ -1484,8 +1576,6 @@ var BitmapSprite = function () {
             }
             if (typeof this.actionStartCB === "function") {
                 this.actionStartCB();
-            } else {
-                this._callBackTypeError();
             }
         }
     }, {
@@ -1499,8 +1589,6 @@ var BitmapSprite = function () {
             }
             if (typeof this.actionIsRunning === "function") {
                 this.actionIsRunning();
-            } else {
-                this._callBackTypeError();
             }
         }
     }, {
@@ -1549,7 +1637,7 @@ var BitmapSprite = function () {
 
 var LabelSprite = function () {
     function LabelSprite(text) {
-        var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 25;
+        var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "medium";
         var font = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "Verdana";
         var weight = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "normal";
         var color = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "white";
@@ -1568,7 +1656,7 @@ var LabelSprite = function () {
         //Font properties
         this.text = text;
         this.font = font;
-        this.size = size + "px";
+        this.fontSize = size;
         this.weight = weight;
         this.color = color;
         //Container properties
@@ -1582,6 +1670,15 @@ var LabelSprite = function () {
         value: function updatePos(x, y) {
             this.x = x;
             this.y = y;
+        }
+    }, {
+        key: "size",
+        get: function get() {
+            if (this.fontSize === "small" || this.fontSize === "medium" || this.fontSize === "large") {
+                return CFG.FONTSIZE(this.fontSize);
+            } else {
+                return this.fontSize + "px";
+            }
         }
     }, {
         key: "ctxFont",
@@ -1651,10 +1748,8 @@ var Dialogue = function () {
         value: function _processFocus() {
             for (var i = 0; i < this.labels.length; i++) {
                 if (i === this.focusIndex) {
-                    this.labels[i].size = this.focusSize;
                     this.labels[i].color = this.focusColor;
                 } else {
-                    this.labels[i].size = this.defaultFontSize;
                     this.labels[i].color = this.defaultColor;
                 }
             }
@@ -1706,6 +1801,54 @@ var Dialogue = function () {
     return Dialogue;
 }();
 /******
+ * CYL - Pattern
+ * Copyright MIT license 2017
+ */
+
+var Pattern = function () {
+    function Pattern(scene, applyFor) {
+        var xMovement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+        var yMovement = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+
+        _classCallCheck(this, Pattern);
+
+        if (xMovement === undefined || yMovement === undefined) {
+            console.warn("CYL:[Warning] X and Y displacemente where set to default of 0");
+        }
+        this.scene = scene;
+        this.xMovement = xMovement;
+        this.yMovement = yMovement;
+        this.xProgression = 0;
+        this.yProgression = 0;
+        this.xMax = 0;
+        this.yMax = 0;
+        this.cycle = true;
+        this.applyFor = applyFor;
+
+        if (this.update === undefined) {
+            console.error("CYL:[Exception]Pattern requires a update method to initialize");
+        }
+
+        console.log(this.update);
+    }
+
+    /**
+    * Extends requires Update() Method
+    */
+
+    _createClass(Pattern, [{
+        key: "pos",
+        get: function get() {
+            return {
+                "x": this.xMovement,
+                "y": this.yMovement
+            };
+        }
+    }]);
+
+    return Pattern;
+}();
+/******
  * CYL - Game
  * Copyright MIT license 2017
  */
@@ -1729,6 +1872,7 @@ var Game = function () {
         this.scenes = scenes;
         this.active = active;
         this.shouldUpdate = true;
+        this.patterns = [];
         //Init Mehtods:
         this.setActiveScene();
         //Bind run method - animation request frame call back
@@ -1746,36 +1890,6 @@ var Game = function () {
     }, {
         key: "setActiveSceneNamed",
         value: function setActiveSceneNamed(name) {
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-                for (var _iterator = this.scenes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var scene = _step.value;
-
-                    if (scene.name === name) {
-                        this.activeScene = scene;
-                    }
-                }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
-            }
-        }
-    }, {
-        key: "getSceneNamed",
-        value: function getSceneNamed(name) {
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
@@ -1785,7 +1899,7 @@ var Game = function () {
                     var scene = _step2.value;
 
                     if (scene.name === name) {
-                        return scene;
+                        this.activeScene = scene;
                     }
                 }
             } catch (err) {
@@ -1804,9 +1918,40 @@ var Game = function () {
             }
         }
     }, {
+        key: "getSceneNamed",
+        value: function getSceneNamed(name) {
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
+
+            try {
+                for (var _iterator3 = this.scenes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var scene = _step3.value;
+
+                    if (scene.name === name) {
+                        return scene;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
+                    }
+                } finally {
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
+                    }
+                }
+            }
+        }
+    }, {
         key: "run",
         value: function run() {
             if (this.shouldUpdate) {
+                this.updatePatterns();
                 this.activeScene.update();
                 this.detectContact();
             }
@@ -1857,6 +2002,29 @@ var Game = function () {
 
         }
     }, {
+        key: "addPatternToScene",
+        value: function addPatternToScene(pattern, scene) {
+            var p = {
+                "pattern": pattern,
+                "scene": scene
+            };
+            this.patterns.push(p);
+        }
+    }, {
+        key: "updatePatterns",
+        value: function updatePatterns() {
+            for (var i = 0; i < this.patterns.length; i++) {
+                if (this.patterns[i].pattern.scene === this.activeScene.name) {
+                    this.patterns[i].pattern.update();
+                    var applyFor = this.patterns[i].pattern.applyFor;
+                    for (var j = 0; j < this.spritesNamed(applyFor).length; j++) {
+                        this.spritesNamed(applyFor)[j].x = this.spritesNamed(applyFor)[j].x + this.patterns[i].pattern.pos.x;
+                        this.spritesNamed(applyFor)[j].y = this.spritesNamed(applyFor)[j].y + this.patterns[i].pattern.pos.y;
+                    }
+                }
+            }
+        }
+    }, {
         key: "assets",
         get: function get() {
             return {
@@ -1886,6 +2054,7 @@ var Game = function () {
 //@prepros-prepend ./lib/bitmap-sprite.js
 //@prepros-prepend ./lib/label-sprite.js
 //@prepros-prepend ./lib/dialogue.js
+//@prepros-prepend ./lib/pattern.js
 //@prepros-prepend ./lib/game.js
 
 /***
@@ -1962,10 +2131,10 @@ pShape.mRight2 = {
 
 var invader = new ShapeSprite("invadder", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
 var player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
-var notice = new LabelSprite("CYL:Game Development Tools 2017", 15);
-var title = new LabelSprite("WEB INVADERS", 60);
-var start = new LabelSprite("Start", 30);
-var topScores = new LabelSprite("Top Scores", 30);
+var notice = new LabelSprite("CYL:Game Development Tools 2017", "small");
+var title = new LabelSprite("WEB INVADERS", "large");
+var start = new LabelSprite("Start", "medium");
+var topScores = new LabelSprite("Top Scores", "medium");
 var dialogue = new Dialogue([start, topScores]);
 var menu = new Scene("menu", [invader, notice, title, dialogue, player]);
 var level = new Scene("level", [notice]);
@@ -1985,30 +2154,66 @@ player.y = menu.frame.height - 150;
 dialogue.updatePos(title.x, menu.frame.height / 2);
 
 // Game Scene
-
-var InvaderPattern = function InvaderPattern(level) {
-    _classCallCheck(this, InvaderPattern);
-
-    this.xOffset = level.frame.width / 4;
-    this.yOffset = level.frame.height / 6;
+function placeInvadersWith(level) {
+    var xOffset = level.frame.width / 4;
+    var yOffset = level.frame.height / 6;
 
     var yRow = 0;
     var xRow = 0;
     for (var i = 0; i < 12; i++) {
         var _invader = new ShapeSprite("invader", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
-        _invader.x = this.xOffset * i;
+        _invader.x = xOffset * i;
         if (i === 4 || i === 8) {
             yRow++;
             xRow = 0;
         }
-        _invader.x = this.xOffset * xRow;
-        _invader.y = this.yOffset * yRow;
+        _invader.x = xOffset * xRow;
+        _invader.y = yOffset * yRow;
         xRow++;
         game.getSceneNamed("level").addSprite(_invader);
     }
-};
+}
 
-var invPattern = new InvaderPattern(level);
+placeInvadersWith(level);
+
+var InvaderPattern = function (_Pattern) {
+    _inherits(InvaderPattern, _Pattern);
+
+    function InvaderPattern() {
+        _classCallCheck(this, InvaderPattern);
+
+        return _possibleConstructorReturn(this, (InvaderPattern.__proto__ || Object.getPrototypeOf(InvaderPattern)).apply(this, arguments));
+    }
+
+    _createClass(InvaderPattern, [{
+        key: "update",
+        value: function update() {
+            if (this.cycle) {
+                this.xMovement = Math.abs(this.xMovement);
+                this.xProgression = this.xProgression + this.xMovement;
+                //this.yMovement = 0;
+                if (this.xProgression > this.xMax) {
+                    //this.yMovement = 0;
+                    this.cycle = false;
+                }
+            } else {
+                this.xMovement = -Math.abs(this.xMovement);
+                //this.yMovement = 0;
+                this.xProgression = this.xProgression + this.xMovement;
+                if (this.xProgression < 0) {
+                    //this.yMovement = 50;
+                    this.cycle = true;
+                }
+            }
+        }
+    }]);
+
+    return InvaderPattern;
+}(Pattern);
+
+var invaderPattern = new InvaderPattern("level", "invader", 3, 1);
+invaderPattern.xMax = 50;
+game.addPatternToScene(invaderPattern);
 
 //3- Set Input  + Actions
 var input = new Input();

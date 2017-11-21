@@ -45,10 +45,8 @@ class Dialogue  {
     _processFocus() {
         for (let i = 0; i < this.labels.length; i++) {
             if (i === this.focusIndex) {
-                this.labels[i].size = this.focusSize;
                 this.labels[i].color = this.focusColor;
             } else {
-                this.labels[i].size = this.defaultFontSize;
                 this.labels[i].color = this.defaultColor;
             }
         }

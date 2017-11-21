@@ -3,8 +3,19 @@
  * Copyright MIT license 2017
  */
 
-//Scene Config 
-window.SCREEN = function() {
+var CFG = CFG || {};
+
+//Device
+CFG.DEVICE = function() {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return "mobile";
+    }else{
+        return "desktop";
+    }
+};
+
+//Screen Config 
+CFG.SCREEN = function() {
     //Set Accordingily 
     let pixelSize = 10;
     let predefinedPixel = "L" //S,M,L //set to null if you want a fixed dimension
@@ -46,17 +57,47 @@ window.SCREEN = function() {
             'width': width,
             'height': height
         }
+    };
+};
+
+CFG.FONTSIZE = function(fontSize){
+    let width = window.innerWidth;
+
+    if(fontSize === "small"){
+        if(width < 768){
+            return "12px";
+        }
+        if(width > 768 && width < 1028){
+            return "16px";
+        }
+        if(width > 1028){
+            return "20px";
+        }       
     }
-}
-
-window.addEventListener("resize", () => {
-    window.SCREEN();
-});
-
-window.DEVICE = function() {
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        return "mobile";
-    }else{
-        return "desktop";
+    if(fontSize === "medium"){
+        if(width < 768){
+            return "20px";
+        }
+        if(width > 768 && width < 1028){
+            return "40px";
+        }
+        if(width > 1028){
+            return "50px";
+        }
+    }
+    if(fontSize === "large"){
+        if(width < 768){
+            return "28px";
+        }
+        if(width > 768 && width < 1028){
+            return "50px";
+        }
+        if(width > 1028){
+            return "70px";
+        }
     }
 };
+
+window.addEventListener("resize", () => {
+    window.CFG.SCREEN();
+});

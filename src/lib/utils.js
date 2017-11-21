@@ -143,3 +143,27 @@ Number.prototype.getCloseTo = function(n, rate) {
         return this - rate;
     }
 };
+
+class Logger {
+    constructor() {
+        this.logs = [];
+    }
+
+    print() {
+        for (log of this.logs) {
+            console.log("CYL:Log - " + log);
+        }
+    }
+
+    add(log) {
+        this.logs.push(log);
+    }
+
+    get dump() {
+        return this.logs;
+    }
+
+    delete() {
+        this.logs = [];
+    }
+}
