@@ -18,6 +18,7 @@
 //@prepros-prepend ./lib/dialogue.js
 //@prepros-prepend ./lib/pattern.js
 //@prepros-prepend ./lib/game.js
+//@prepros-prepend ./sprites.js
 
 /***
  __      _____| |__   (_)_ ____   ____ _  __| | ___ _ __ ___ 
@@ -28,125 +29,6 @@
    Sample Game:
 */
 
-// 1 - Initialize components
-
-let invShape = {};
-
-let c = {
-    t: "transparent",
-    p: "#6A1B9A",
-    o: "#FF9800",
-    r: "#FF5722"
-};
-
-invShape.idle1 = {
-    "set": "idle",
-    "shape": [
-        c.t, c.p, c.t, c.t, c.t, c.t, c.p, c.t,
-        c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t,
-        c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t,
-        c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p,
-        c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p,
-        c.p, c.t, c.p, c.p, c.p, c.p, c.t, c.p,
-        c.p, c.t, c.p, c.t, c.t, c.p, c.t, c.p,
-    ]
-};
-
-invShape.idle2 = {
-    "set": "idle",
-    "shape": [
-        c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p,
-        c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t,
-        c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t,
-        c.p, c.p, c.t, c.p, c.p, c.t, c.p, c.p,
-        c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p,
-        c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p,
-        c.p, c.p, c.p, c.t, c.t, c.p, c.p, c.p,
-    ]
-};
-
-invShape.moving1 = {
-    "set": "moving",
-    "shape": [
-        c.p, c.t, c.t, c.t, c.t, c.t, c.t, c.p,
-        c.t, c.p, c.t, c.t, c.t, c.t, c.p, c.t,
-        c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t,
-        c.p, c.p, c.o, c.p, c.p, c.o, c.p, c.p,
-        c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p,
-        c.p, c.t, c.p, c.p, c.p, c.p, c.t, c.p,
-        c.p, c.t, c.p, c.t, c.t, c.p, c.t, c.p,
-    ]
-};
-
-invShape.moving2 = {
-    "set": "moving",
-    "shape": [
-        c.p, c.p, c.t, c.t, c.t, c.t, c.p, c.p,
-        c.t, c.t, c.p, c.t, c.t, c.p, c.t, c.t,
-        c.t, c.p, c.p, c.p, c.p, c.p, c.p, c.t,
-        c.p, c.p, c.o, c.p, c.p, c.o, c.p, c.p,
-        c.p, c.p, c.p, c.p, c.p, c.p, c.p, c.p,
-        c.p, c.o, c.o, c.o, c.o, c.o, c.o, c.p,
-        c.p, c.p, c.p, c.t, c.t, c.p, c.p, c.p,
-    ]
-};
-
-let pShape = {};
-
-pShape.idle1 = {
-    "set": "idle",
-    "shape": [
-        c.t, c.t, c.t, c.t, c.o, c.t, c.t,
-        c.t, c.t, c.t, c.o, c.o, c.o, c.t,
-        c.t, c.t, c.o, c.o, c.o, c.o, c.o,
-    ]
-};
-
-pShape.idle2 = {
-    "set": "idle",
-    "shape": [
-        c.t, c.t, c.o, c.t, c.t, c.t, c.t,
-        c.t, c.o, c.o, c.o, c.t, c.t, c.t,
-        c.o, c.o, c.o, c.o, c.o, c.t, c.t,
-    ]
-};
-
-pShape.mLeft1 = {
-    "set": "moving-left",
-    "shape": [
-        c.t, c.t, c.o, c.t, c.t, c.t, c.t,
-        c.t, c.o, c.o, c.o, c.t, c.r, c.t,
-        c.o, c.o, c.o, c.o, c.o, c.t, c.r,
-    ]
-};
-
-pShape.mLeft2 = {
-    "set": "moving-left",
-    "shape": [
-        c.t, c.t, c.o, c.t, c.t, c.t, c.t,
-        c.t, c.o, c.o, c.o, c.r, c.t, c.r,
-        c.o, c.o, c.o, c.o, c.o, c.r, c.t,
-    ]
-};
-
-pShape.mRight1 = {
-    "set": "moving-right",
-    "shape": [
-        c.t, c.t, c.t, c.t, c.o, c.t, c.t,
-        c.r, c.t, c.r, c.o, c.o, c.o, c.t,
-        c.t, c.r, c.o, c.o, c.o, c.o, c.o,
-    ]
-};
-
-pShape.mRight2 = {
-    "set": "moving-right",
-    "shape": [
-        c.t, c.t, c.t, c.t, c.o, c.t, c.t,
-        c.t, c.r, c.t, c.o, c.o, c.o, c.t,
-        c.r, c.t, c.o, c.o, c.o, c.o, c.o,
-    ]
-};
-
 let invader = new ShapeSprite("invadder", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
 let player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
 let notice = new LabelSprite("CYL:Game Development Tools 2017", "small");
@@ -155,7 +37,7 @@ let start = new LabelSprite("Start", "medium");
 let topScores = new LabelSprite("Top Scores", "medium");
 let dialogue = new Dialogue([start, topScores]);
 let menu = new Scene("menu", [invader, notice, title, dialogue, player]);
-let level = new Scene("level", [notice]);
+let level = new Scene("level", [notice,player]);
 let game = new Game([menu, level]);
 game.run();
 
@@ -166,11 +48,10 @@ notice.x = menu.frame.width / 2 - notice.frame.width / 2;
 title.y = menu.frame.height / 2;
 title.x = menu.frame.width / 2 - title.frame.width / 2;
 invader.y = menu.frame.height / 2 - invader.frame.height;
-invader.x = title.x - 140;
+invader.x = title.x - invader.frame.width - 20;
 player.x = menu.frame.width / 2 - player.frame.width / 2;
 player.y = menu.frame.height - 150;
 dialogue.updatePos(title.x, menu.frame.height / 2);
-
 // Game Scene
 function placeInvadersWith(level) {
     let xOffset = level.frame.width / 4;
@@ -266,6 +147,7 @@ input.escape(function() {
 input.click(function(e) {
     invader.mouseActionUpdate(e.x, e.y);
     player.mouseActionUpdate(e.x, e.y);
+    shoot();
 });
 
 invader.actionDidStart(function() {
@@ -287,3 +169,25 @@ player.actionIsRunning(function() {
 player.actionDidStop(function() {
     player.setAnimation("idle");
 });
+
+class BulletPattern extends Pattern {
+    update(){}
+}
+
+let bulletPattern = new BulletPattern("level","bullet",0,-4);
+game.addPatternToScene(bulletPattern);
+
+function shoot(){
+    let bullet = new ShapeSprite("bullet",[bulletShape.frame1, bulletShape.frame2],1,4);
+    let p = game.spriteNamed("player");
+    bullet.x = p.x;
+    bullet.y = p.y;
+    game.getSceneNamed("level").addSprite(bullet);
+}
+
+game.setCollisionMethod(function(){
+    if(game.spriteNamed("bullet") === undefined){return}
+});
+
+game.setActiveSceneNamed("level");
+

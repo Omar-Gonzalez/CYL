@@ -21,8 +21,6 @@ class Pattern {
         if(this.update === undefined){
             console.error("CYL:[Exception]Pattern requires a update method to initialize");
         }
-
-        console.log(this.update);
     }
 
     /**

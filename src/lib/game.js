@@ -17,6 +17,8 @@ class Game {
         this.active = active;
         this.shouldUpdate = true;
         this.patterns = [];
+        this.collisionCb = null;
+        this.contactCb = null; 
         //Init Mehtods:
         this.setActiveScene();
         //Bind run method - animation request frame call back
@@ -57,7 +59,12 @@ class Game {
         if (this.shouldUpdate) {
             this.updatePatterns();
             this.activeScene.update();
-            this.detectContact();
+            if(this.collisionCb !== null){
+                this.collisionCb();
+            }
+            if(this.contactCb !== null){
+                this.contactCb();
+            }
         }
         window.requestAnimationFrame(this.run);
     }
@@ -90,14 +97,39 @@ class Game {
         });
     }
 
-    detectContact() {
-        //set your contact logic
-
+    removeSprite(sprite) {
+        for (let i = 0; i < this.activeScene.sprites.length; i++) {
+            if (this.activeScene.sprites[i] === sprite) {
+                this.activeScene.sprites.removeIndex(i);
+            }
+        }
     }
 
-    detectCollision() {
-        //set your collision logic
+    removeSpritesNamed(name) {
+        for (let i = 0; i < this.activeScene.sprites.length; i++) {
+            if (this.activeScene.sprites[i].name === sprite.name) {
+                this.activeScene.sprites.removeIndex(i);
+            }
+        }
+    }
 
+    removeSpriteIndex(i){
+        this.activeScene.sprites.removeIndex(i);
+    }
+
+    setContactMethod(cb) {
+        if(typeof cb !== "function"){
+            console.error("CYL:[Exception] contact methods must be a function");
+        }
+        this.contactCb = cb;
+    }
+
+    setCollisionMethod(cb) {
+        //set your collision logic
+        if(typeof cb !== "function"){
+            console.error("CYL:[Exception] collision methods must be a function");
+        }
+        this.collisionCb = cb;
     }
 
     addPatternToScene(pattern, scene){

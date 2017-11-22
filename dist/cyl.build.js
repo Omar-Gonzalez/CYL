@@ -154,6 +154,21 @@ Number.prototype.getCloseTo = function (n, rate) {
     }
 };
 
+Array.prototype.removeVal = function (val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] === val) {
+            this.splice(i, 1);
+            i--;
+        }
+    }
+    return this;
+};
+
+Array.prototype.removeIndex = function (i) {
+    this.splice(i, 1);
+    return this;
+};
+
 var Logger = function () {
     function Logger() {
         _classCallCheck(this, Logger);
@@ -1828,8 +1843,6 @@ var Pattern = function () {
         if (this.update === undefined) {
             console.error("CYL:[Exception]Pattern requires a update method to initialize");
         }
-
-        console.log(this.update);
     }
 
     /**
@@ -1873,6 +1886,8 @@ var Game = function () {
         this.active = active;
         this.shouldUpdate = true;
         this.patterns = [];
+        this.collisionCb = null;
+        this.contactCb = null;
         //Init Mehtods:
         this.setActiveScene();
         //Bind run method - animation request frame call back
@@ -1953,7 +1968,12 @@ var Game = function () {
             if (this.shouldUpdate) {
                 this.updatePatterns();
                 this.activeScene.update();
-                this.detectContact();
+                if (this.collisionCb !== null) {
+                    this.collisionCb();
+                }
+                if (this.contactCb !== null) {
+                    this.contactCb();
+                }
             }
             window.requestAnimationFrame(this.run);
         }
@@ -1990,16 +2010,44 @@ var Game = function () {
             });
         }
     }, {
-        key: "detectContact",
-        value: function detectContact() {
-            //set your contact logic
-
+        key: "removeSprite",
+        value: function removeSprite(sprite) {
+            for (var i = 0; i < this.activeScene.sprites.length; i++) {
+                if (this.activeScene.sprites[i] === sprite) {
+                    this.activeScene.sprites.removeIndex(i);
+                }
+            }
         }
     }, {
-        key: "detectCollision",
-        value: function detectCollision() {
+        key: "removeSpritesNamed",
+        value: function removeSpritesNamed(name) {
+            for (var i = 0; i < this.activeScene.sprites.length; i++) {
+                if (this.activeScene.sprites[i].name === sprite.name) {
+                    this.activeScene.sprites.removeIndex(i);
+                }
+            }
+        }
+    }, {
+        key: "removeSpriteIndex",
+        value: function removeSpriteIndex(i) {
+            this.activeScene.sprites.removeIndex(i);
+        }
+    }, {
+        key: "setContactMethod",
+        value: function setContactMethod(cb) {
+            if (typeof cb !== "function") {
+                console.error("CYL:[Exception] contact methods must be a function");
+            }
+            this.contactCb = cb;
+        }
+    }, {
+        key: "setCollisionMethod",
+        value: function setCollisionMethod(cb) {
             //set your collision logic
-
+            if (typeof cb !== "function") {
+                console.error("CYL:[Exception] collision methods must be a function");
+            }
+            this.collisionCb = cb;
         }
     }, {
         key: "addPatternToScene",
@@ -2036,45 +2084,25 @@ var Game = function () {
 
     return Game;
 }();
-/******
- * CYL ES6 Game Dev Tools 
- * Copyright MIT license 2017
- * Conventions: 
- * _underscore for pseudo private methods 
- */
-
-//Lib Concatenation
-//@prepros-prepend ./lib/utils.js
-//@prepros-prepend ./lib/config.js
-//@prepros-prepend ./lib/action.js
-//@prepros-prepend ./lib/mouse-action.js
-//@prepros-prepend ./lib/input.js
-//@prepros-prepend ./lib/scene.js
-//@prepros-prepend ./lib/shape-sprite.js
-//@prepros-prepend ./lib/bitmap-sprite.js
-//@prepros-prepend ./lib/label-sprite.js
-//@prepros-prepend ./lib/dialogue.js
-//@prepros-prepend ./lib/pattern.js
-//@prepros-prepend ./lib/game.js
-
-/***
- __      _____| |__   (_)_ ____   ____ _  __| | ___ _ __ ___ 
- \ \ /\ / / _ \ '_ \  | | '_ \ \ / / _` |/ _` |/ _ \ '__/ __|
-  \ V  V /  __/ |_) | | | | | \ V / (_| | (_| |  __/ |  \__ \
-   \_/\_/ \___|_.__/  |_|_| |_|\_/ \__,_|\__,_|\___|_|  |___/ 
-   -----
-   Sample Game:
-*/
-
-// 1 - Initialize components
+// 1 - Initialize Sprites
 
 var invShape = {};
-
+var bulletShape = {};
 var c = {
     t: "transparent",
     p: "#6A1B9A",
     o: "#FF9800",
     r: "#FF5722"
+};
+
+bulletShape.frame1 = {
+    "set": "idle",
+    "shape": [c.r, c.o, c.r]
+};
+
+bulletShape.frame2 = {
+    "set": "idle",
+    "shape": [c.o, c.r, c.o]
 };
 
 invShape.idle1 = {
@@ -2128,6 +2156,36 @@ pShape.mRight2 = {
     "set": "moving-right",
     "shape": [c.t, c.t, c.t, c.t, c.o, c.t, c.t, c.t, c.r, c.t, c.o, c.o, c.o, c.t, c.r, c.t, c.o, c.o, c.o, c.o, c.o]
 };
+/******
+ * CYL ES6 Game Dev Tools 
+ * Copyright MIT license 2017
+ * Conventions: 
+ * _underscore for pseudo private methods 
+ */
+
+//Lib Concatenation
+//@prepros-prepend ./lib/utils.js
+//@prepros-prepend ./lib/config.js
+//@prepros-prepend ./lib/action.js
+//@prepros-prepend ./lib/mouse-action.js
+//@prepros-prepend ./lib/input.js
+//@prepros-prepend ./lib/scene.js
+//@prepros-prepend ./lib/shape-sprite.js
+//@prepros-prepend ./lib/bitmap-sprite.js
+//@prepros-prepend ./lib/label-sprite.js
+//@prepros-prepend ./lib/dialogue.js
+//@prepros-prepend ./lib/pattern.js
+//@prepros-prepend ./lib/game.js
+//@prepros-prepend ./sprites.js
+
+/***
+ __      _____| |__   (_)_ ____   ____ _  __| | ___ _ __ ___ 
+ \ \ /\ / / _ \ '_ \  | | '_ \ \ / / _` |/ _` |/ _ \ '__/ __|
+  \ V  V /  __/ |_) | | | | | \ V / (_| | (_| |  __/ |  \__ \
+   \_/\_/ \___|_.__/  |_|_| |_|\_/ \__,_|\__,_|\___|_|  |___/ 
+   -----
+   Sample Game:
+*/
 
 var invader = new ShapeSprite("invadder", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
 var player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
@@ -2137,7 +2195,7 @@ var start = new LabelSprite("Start", "medium");
 var topScores = new LabelSprite("Top Scores", "medium");
 var dialogue = new Dialogue([start, topScores]);
 var menu = new Scene("menu", [invader, notice, title, dialogue, player]);
-var level = new Scene("level", [notice]);
+var level = new Scene("level", [notice, player]);
 var game = new Game([menu, level]);
 game.run();
 
@@ -2148,11 +2206,10 @@ notice.x = menu.frame.width / 2 - notice.frame.width / 2;
 title.y = menu.frame.height / 2;
 title.x = menu.frame.width / 2 - title.frame.width / 2;
 invader.y = menu.frame.height / 2 - invader.frame.height;
-invader.x = title.x - 140;
+invader.x = title.x - invader.frame.width - 20;
 player.x = menu.frame.width / 2 - player.frame.width / 2;
 player.y = menu.frame.height - 150;
 dialogue.updatePos(title.x, menu.frame.height / 2);
-
 // Game Scene
 function placeInvadersWith(level) {
     var xOffset = level.frame.width / 4;
@@ -2260,6 +2317,7 @@ input.escape(function () {
 input.click(function (e) {
     invader.mouseActionUpdate(e.x, e.y);
     player.mouseActionUpdate(e.x, e.y);
+    shoot();
 });
 
 invader.actionDidStart(function () {
@@ -2281,4 +2339,40 @@ player.actionIsRunning(function () {
 player.actionDidStop(function () {
     player.setAnimation("idle");
 });
+
+var BulletPattern = function (_Pattern2) {
+    _inherits(BulletPattern, _Pattern2);
+
+    function BulletPattern() {
+        _classCallCheck(this, BulletPattern);
+
+        return _possibleConstructorReturn(this, (BulletPattern.__proto__ || Object.getPrototypeOf(BulletPattern)).apply(this, arguments));
+    }
+
+    _createClass(BulletPattern, [{
+        key: "update",
+        value: function update() {}
+    }]);
+
+    return BulletPattern;
+}(Pattern);
+
+var bulletPattern = new BulletPattern("level", "bullet", 0, -4);
+game.addPatternToScene(bulletPattern);
+
+function shoot() {
+    var bullet = new ShapeSprite("bullet", [bulletShape.frame1, bulletShape.frame2], 1, 4);
+    var p = game.spriteNamed("player");
+    bullet.x = p.x;
+    bullet.y = p.y;
+    game.getSceneNamed("level").addSprite(bullet);
+}
+
+game.setCollisionMethod(function () {
+    if (game.spriteNamed("bullet") === undefined) {
+        return;
+    }
+});
+
+game.setActiveSceneNamed("level");
 //# sourceMappingURL=cyl.build.js.map

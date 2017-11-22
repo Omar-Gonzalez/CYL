@@ -144,6 +144,21 @@ Number.prototype.getCloseTo = function(n, rate) {
     }
 };
 
+Array.prototype.removeVal = function(val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] === val) {
+            this.splice(i, 1);
+            i--;
+        }
+    }
+    return this;
+};
+
+Array.prototype.removeIndex = function(i) {
+    this.splice(i, 1);
+    return this;
+};
+
 class Logger {
     constructor() {
         this.logs = [];
