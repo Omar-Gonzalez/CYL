@@ -228,104 +228,155 @@ var Logger = function () {
  * Copyright MIT license 2017
  */
 
-var CFG = CFG || {};
+var Config = function () {
+    function Config() {
+        _classCallCheck(this, Config);
 
-//Device
-CFG.DEVICE = function () {
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        return "mobile";
-    } else {
-        return "desktop";
-    }
-};
-
-//Screen Config 
-CFG.SCREEN = function () {
-    //Set Accordingily 
-    var pixelSize = 10;
-    var predefinedPixel = "L"; //S,M,L //set to null if you want a fixed dimension
-    var apectRatio = null; //[16, 9];
-    var percentual = [100, 100]; //null or ser w % or h &
-
-    if (predefinedPixel === "S") {
-        pixelSize = window.innerWidth / 200;
-    }
-    if (predefinedPixel === "M") {
-        pixelSize = window.innerWidth / 150;
-    }
-    if (predefinedPixel === "L") {
-        pixelSize = window.innerWidth / 100;
+        this.predefinedPixel = "l";
+        this.screenKind = "full";
+        this.dimension = [100, 100];
     }
 
-    var width = void 0;
-    var height = void 0;
+    _createClass(Config, [{
+        key: "setScreen",
+        value: function setScreen(kind, dimension) {
+            if (kind === undefined) {
+                console.error("CYL:[Exception]CFG.setScreen requires kind fixed | full | percentual] parameter");
+                return;
+            }
+            if (dimension === undefined) {
+                console.error("CYL:[Warning]CFG.setScreen no dimension parameter, dimesion will set to default 100x100");
+            }
 
-    if (percentual) {
-        var verticalMargin = (100 - percentual[1]) / 2;
-        document.getElementById('screen').style.marginTop = verticalMargin + "%";
-        width = percentual[0] + "%";
-        height = percentual[1] + "%";
-    }
+            this.dimension = dimension;
+            this.screenKind = kind;
+            var sDiv = document.getElementById("screen");
+            sDiv.style.width = this.dimension[0] + "px";
+            sDiv.style.height = this.dimension[1] + "px";
+        }
+    }, {
+        key: "FONTSIZE",
+        value: function FONTSIZE(fontSize) {
+            var width = document.getElementById('screen').offsetWidth;
 
-    if (apectRatio) {
-        width = window.innerWidth;
-        height = parseFloat(width / apectRatio[0] * apectRatio[1]);
-        var _verticalMargin = (window.innerHeight - height) / 2;
-        document.getElementById('screen').style.marginTop = _verticalMargin + "px";
-        width = width + "px";
-        height = height + "px";
-    }
+            if (fontSize === "small") {
+                if (width < 768) {
+                    return "12px";
+                }
+                if (width > 768 && width < 1028) {
+                    return "16px";
+                }
+                if (width > 1028) {
+                    return "20px";
+                }
+            }
+            if (fontSize === "medium") {
+                if (width < 768) {
+                    return "20px";
+                }
+                if (width > 768 && width < 1028) {
+                    return "40px";
+                }
+                if (width > 1028) {
+                    return "50px";
+                }
+            }
+            if (fontSize === "large") {
+                if (width < 768) {
+                    return "28px";
+                }
+                if (width > 768 && width < 1028) {
+                    return "50px";
+                }
+                if (width > 1028) {
+                    return "70px";
+                }
+            }
+        }
+    }, {
+        key: "DEVICE",
+        get: function get() {
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                return "mobile";
+            } else {
+                return "desktop";
+            }
+        }
+    }, {
+        key: "SCREEN",
+        get: function get() {
 
-    return {
-        'pixelSize': pixelSize,
-        'screen': {
-            'width': width,
-            'height': height
-        }
-    };
-};
+            var width = void 0;
+            var height = void 0;
+            var verticalMargin = 0;
 
-CFG.FONTSIZE = function (fontSize) {
-    var width = window.innerWidth;
+            if (this.screenKind === "percentual") {
+                verticalMargin = (100 - this.dimension[1]) / 2;
+                document.getElementById('screen').style.marginTop = verticalMargin + "%";
+                width = this.dimension[0] + "%";
+                height = this.dimension[1] + "%";
+            }
 
-    if (fontSize === "small") {
-        if (width < 768) {
-            return "12px";
-        }
-        if (width > 768 && width < 1028) {
-            return "16px";
-        }
-        if (width > 1028) {
-            return "20px";
-        }
-    }
-    if (fontSize === "medium") {
-        if (width < 768) {
-            return "20px";
-        }
-        if (width > 768 && width < 1028) {
-            return "40px";
-        }
-        if (width > 1028) {
-            return "50px";
-        }
-    }
-    if (fontSize === "large") {
-        if (width < 768) {
-            return "28px";
-        }
-        if (width > 768 && width < 1028) {
-            return "50px";
-        }
-        if (width > 1028) {
-            return "70px";
-        }
-    }
-};
+            if (this.screenKind === "aspect-ratio") {
+                width = window.innerWidth;
+                height = parseFloat(width / this.dimension[0] * this.dimension[1]);
+                verticalMargin = (window.innerHeight - height) / 2;
+                document.getElementById('screen').style.marginTop = verticalMargin + "px";
+                width = width + "px";
+                height = height + "px";
+            }
 
-window.addEventListener("resize", function () {
-    window.CFG.SCREEN();
-});
+            if (this.screenKind === "fixed") {
+                width = this.dimension[0] + "px";
+                height = this.dimension[1] + "px";
+
+                if (this.predefinedPixel === "s") {
+                    this.pixelSize = document.getElementById("screen").offsetWidth / 200;
+                }
+                if (this.predefinedPixel === "m") {
+                    this.pixelSize = document.getElementById("screen").offsetWidth / 150;
+                }
+                if (this.predefinedPixel === "l") {
+                    this.pixelSize = document.getElementById("screen").offsetWidth / 100;
+                }
+            }
+
+            if (this.screenKind === "full") {
+                width = "100%";
+                height = "100%";
+            }
+
+            return {
+                "width": width,
+                "height": height,
+                "verticalMargin": verticalMargin,
+                "horizontalMargin": (window.innerWidth - document.getElementById("game").offsetWidth) / 2
+            };
+        }
+    }, {
+        key: "PIXELSIZE",
+        get: function get() {
+            if (this.predefinedPixel === "s") {
+                this.pixelSize = document.getElementById('screen').offsetWidth / 200;
+            }
+            if (this.predefinedPixel === "m") {
+                this.pixelSize = document.getElementById('screen').offsetWidth / 150;
+            }
+            if (this.predefinedPixel === "l") {
+                this.pixelSize = document.getElementById('screen').offsetWidth / 100;
+            }
+            return this.pixelSize;
+        }
+    }]);
+
+    return Config;
+}();
+
+var CFG = new Config();
+
+// window.addEventListener("resize", () => {
+//     window.CFG.SCREEN;
+// });
 /******
  * CYL - Action Sprite
  * Copyright MIT license 2017
@@ -659,7 +710,7 @@ var Input = function () {
             window.addEventListener("keydown", function (e) {
                 return _this._filterKeyDown(e);
             });
-            document.getElementById('game').addEventListener(this.clickForDevice, function (e) {
+            document.getElementById("game").addEventListener(this.clickForDevice, function (e) {
                 return _this.click(null, e);
             });
         }
@@ -673,11 +724,15 @@ var Input = function () {
                 this.mouseAction = action;
             }
             if (typeof this.mouseAction === "function" && e !== undefined) {
-                if (CFG.DEVICE() === "mobile") {
+                if (CFG.DEVICE === "mobile") {
                     e.x = e.touches[0].clientX;
                     e.y = e.touches[0].clientY;
                 }
-                this.mouseAction(e);
+                //e.x e.y coords polyfill
+                var cords = {};
+                cords.x = e.x - CFG.SCREEN.horizontalMargin;
+                cords.y = e.y - CFG.SCREEN.verticalMargin;
+                this.mouseAction(cords);
             } else {
                 console.warn("CYL: Click action must be a function");
             }
@@ -900,7 +955,7 @@ var Input = function () {
     }, {
         key: "clickForDevice",
         get: function get() {
-            if (CFG.DEVICE() === "desktop") {
+            if (CFG.DEVICE === "desktop") {
                 return "click";
             } else {
                 return "touchstart";
@@ -952,14 +1007,14 @@ var Scene = function () {
         value: function _defineCanvasDimensions() {
             var _this2 = this;
 
-            this.screen.style.width = CFG.SCREEN().screen.width;
-            this.screen.style.height = CFG.SCREEN().screen.height;
+            this.screen.style.width = CFG.SCREEN.width;
+            this.screen.style.height = CFG.SCREEN.height;
             this.canvas.width = this.screen.offsetWidth;
             this.canvas.height = this.screen.offsetHeight;
 
             window.addEventListener("resize", function () {
-                _this2.screen.style.width = CFG.SCREEN().screen.width;
-                _this2.screen.style.height = CFG.SCREEN().screen.height;
+                _this2.screen.style.width = CFG.SCREEN.width;
+                _this2.screen.style.height = CFG.SCREEN.height;
                 _this2.canvas.width = _this2.screen.offsetWidth;
                 _this2.canvas.height = _this2.screen.offsetHeight;
             });
@@ -985,7 +1040,7 @@ var Scene = function () {
             var y = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
             this.ctx.fillStyle = pixel.color;
-            this.ctx.fillRect(pixel.x + x, pixel.y + y, CFG.SCREEN().pixelSize, CFG.SCREEN().pixelSize);
+            this.ctx.fillRect(pixel.x + x, pixel.y + y, CFG.PIXELSIZE, CFG.PIXELSIZE);
             sprite.renderedX.push(pixel.x + x);
             sprite.renderedY.push(pixel.y + y);
         }
@@ -1208,6 +1263,7 @@ var ShapeSprite = function () {
             var frame = [];
             var relativeX = 0;
             var relativeY = 0;
+            console.log(CFG.PIXELSIZE);
             //Iterate Build Shape
             for (var i = 0; i < shape.length; i++) {
                 frame.push({
@@ -1215,9 +1271,9 @@ var ShapeSprite = function () {
                     y: relativeY,
                     color: shape[i]
                 });
-                relativeX = relativeX + CFG.SCREEN().pixelSize;
+                relativeX = relativeX + CFG.PIXELSIZE;
                 if ((i + 1) % this.width === 0) {
-                    relativeY = relativeY + CFG.SCREEN().pixelSize;
+                    relativeY = relativeY + CFG.PIXELSIZE;
                     relativeX = 0;
                 }
             }
@@ -2187,6 +2243,8 @@ pShape.mRight2 = {
    Sample Game:
 */
 
+CFG.setScreen("fixed", [375, 667]);
+
 var invader = new ShapeSprite("invadder", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
 var player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
 var notice = new LabelSprite("CYL:Game Development Tools 2017", "small");
@@ -2373,6 +2431,4 @@ game.setCollisionMethod(function () {
         return;
     }
 });
-
-game.setActiveSceneNamed("level");
 //# sourceMappingURL=cyl.build.js.map

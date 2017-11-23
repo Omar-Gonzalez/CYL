@@ -10,7 +10,7 @@ class Input {
     }
 
     get clickForDevice() {
-        if (CFG.DEVICE() === "desktop") {
+        if (CFG.DEVICE === "desktop") {
             return "click";
         } else {
             return "touchstart";
@@ -22,7 +22,7 @@ class Input {
         window.addEventListener("keydown", function(e) {
             return _this._filterKeyDown(e);
         });
-        document.getElementById('game').addEventListener(this.clickForDevice, function(e) {
+        document.getElementById("game").addEventListener(this.clickForDevice, function(e) {
             return _this.click(null, e);
         });
     }
@@ -35,11 +35,15 @@ class Input {
             this.mouseAction = action;
         }
         if (typeof this.mouseAction === "function" && e !== undefined) {
-            if (CFG.DEVICE() === "mobile") {
+            if (CFG.DEVICE === "mobile") {
                 e.x = e.touches[0].clientX;
                 e.y = e.touches[0].clientY;
             }
-            this.mouseAction(e);
+            //e.x e.y coords polyfill
+            let cords = {};
+            cords.x = e.x - CFG.SCREEN.horizontalMargin;
+            cords.y = e.y - CFG.SCREEN.verticalMargin;
+            this.mouseAction(cords);
         } else {
             console.warn("CYL: Click action must be a function");
         }

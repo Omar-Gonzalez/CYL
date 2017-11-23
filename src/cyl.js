@@ -29,6 +29,9 @@
    Sample Game:
 */
 
+
+CFG.setScreen("fixed",[375,667]);
+ 
 let invader = new ShapeSprite("invadder", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
 let player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
 let notice = new LabelSprite("CYL:Game Development Tools 2017", "small");
@@ -188,6 +191,4 @@ function shoot(){
 game.setCollisionMethod(function(){
     if(game.spriteNamed("bullet") === undefined){return}
 });
-
-game.setActiveSceneNamed("level");
 

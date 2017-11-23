@@ -7,8 +7,6 @@ body, html {
 }
 
 #screen {
-  width: 640px;
-  height: 480px;
   background-color: #21252B;
   margin-left: auto;
   margin-right: auto;

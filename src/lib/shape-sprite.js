@@ -88,6 +88,7 @@ class ShapeSprite {
         let frame = [];
         let relativeX = 0;
         let relativeY = 0;
+        console.log(CFG.PIXELSIZE);
         //Iterate Build Shape
         for (let i = 0; i < shape.length; i++) {
             frame.push({
@@ -95,9 +96,9 @@ class ShapeSprite {
                 y: relativeY,
                 color: shape[i]
             });
-            relativeX = relativeX + CFG.SCREEN().pixelSize;
+            relativeX = relativeX + CFG.PIXELSIZE;
             if ((i + 1) % this.width === 0) {
-                relativeY = relativeY + CFG.SCREEN().pixelSize;
+                relativeY = relativeY + CFG.PIXELSIZE;
                 relativeX = 0;
             }
         }
