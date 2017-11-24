@@ -88,7 +88,6 @@ class ShapeSprite {
         let frame = [];
         let relativeX = 0;
         let relativeY = 0;
-        console.log(CFG.PIXELSIZE);
         //Iterate Build Shape
         for (let i = 0; i < shape.length; i++) {
             frame.push({
@@ -121,7 +120,7 @@ class ShapeSprite {
         };
     }
 
-    inContactWith(sprite) {
+    inCollisionWith(sprite) {
         let xContact = false;
         let yContact = false;
         if ((this.bounds.maxX).between(sprite.bounds.minX, sprite.bounds.maxX) ||
@@ -133,38 +132,9 @@ class ShapeSprite {
             yContact = true;
         }
         if (xContact === true && yContact === true) {
-            return {
-                'inContact': true,
-                'contactWith': this.name + " in contact with " + sprite.name
-            };
+            return true;
         } else {
-            return {
-                'inContact': false
-            };
-        }
-    }
-
-    inCollisionWith(sprite) {
-        let xCollision = false;
-        let yCollision = false;
-        if ((this.bounds.maxX).between(sprite.bounds.minX, sprite.bounds.maxX) ||
-            (this.bounds.minX).between(sprite.bounds.minX, sprite.bounds.maxX)) {
-            xCollision = true;
-        }
-        if ((this.bounds.maxY).between(sprite.bounds.minY, sprite.bounds.maxY) ||
-            (this.bounds.minY).between(sprite.bounds.minY, sprite.bounds.maxY)) {
-            yCollision = true;
-        }
-        if (xCollision === true && yCollision === true) {
-            //if in collision prevent futher movement
-            return {
-                'inCollision': true,
-                'collisionWith': this.name + " in collision with " + sprite.name
-            };
-        } else {
-            return {
-                'inCollision': false
-            };
+            return false;
         }
     }
 

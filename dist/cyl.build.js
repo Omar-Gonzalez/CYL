@@ -1263,7 +1263,6 @@ var ShapeSprite = function () {
             var frame = [];
             var relativeX = 0;
             var relativeY = 0;
-            console.log(CFG.PIXELSIZE);
             //Iterate Build Shape
             for (var i = 0; i < shape.length; i++) {
                 frame.push({
@@ -1280,8 +1279,8 @@ var ShapeSprite = function () {
             this.spriteFrames.push(frame);
         }
     }, {
-        key: "inContactWith",
-        value: function inContactWith(sprite) {
+        key: "inCollisionWith",
+        value: function inCollisionWith(sprite) {
             var xContact = false;
             var yContact = false;
             if (this.bounds.maxX.between(sprite.bounds.minX, sprite.bounds.maxX) || this.bounds.minX.between(sprite.bounds.minX, sprite.bounds.maxX)) {
@@ -1291,37 +1290,9 @@ var ShapeSprite = function () {
                 yContact = true;
             }
             if (xContact === true && yContact === true) {
-                return {
-                    'inContact': true,
-                    'contactWith': this.name + " in contact with " + sprite.name
-                };
+                return true;
             } else {
-                return {
-                    'inContact': false
-                };
-            }
-        }
-    }, {
-        key: "inCollisionWith",
-        value: function inCollisionWith(sprite) {
-            var xCollision = false;
-            var yCollision = false;
-            if (this.bounds.maxX.between(sprite.bounds.minX, sprite.bounds.maxX) || this.bounds.minX.between(sprite.bounds.minX, sprite.bounds.maxX)) {
-                xCollision = true;
-            }
-            if (this.bounds.maxY.between(sprite.bounds.minY, sprite.bounds.maxY) || this.bounds.minY.between(sprite.bounds.minY, sprite.bounds.maxY)) {
-                yCollision = true;
-            }
-            if (xCollision === true && yCollision === true) {
-                //if in collision prevent futher movement
-                return {
-                    'inCollision': true,
-                    'collisionWith': this.name + " in collision with " + sprite.name
-                };
-            } else {
-                return {
-                    'inCollision': false
-                };
+                return false;
             }
         }
     }, {
@@ -1526,8 +1497,8 @@ var BitmapSprite = function () {
             this.frameCount = activeCount;
         }
     }, {
-        key: "inContactWith",
-        value: function inContactWith(sprite) {
+        key: "inCollisionWith",
+        value: function inCollisionWith(sprite) {
             var xContact = false;
             var yContact = false;
             if (this.bounds.maxX.between(sprite.bounds.minX, sprite.bounds.maxX) || this.bounds.minX.between(sprite.bounds.minX, sprite.bounds.maxX)) {
@@ -1537,37 +1508,9 @@ var BitmapSprite = function () {
                 yContact = true;
             }
             if (xContact === true && yContact === true) {
-                return {
-                    'inContact': true,
-                    'contactWith': this.name + " in contact with " + sprite.name
-                };
+                return true;
             } else {
-                return {
-                    'inContact': false
-                };
-            }
-        }
-    }, {
-        key: "inCollisionWith",
-        value: function inCollisionWith(sprite) {
-            var xCollision = false;
-            var yCollision = false;
-            if (this.bounds.maxX.between(sprite.bounds.minX, sprite.bounds.maxX) || this.bounds.minX.between(sprite.bounds.minX, sprite.bounds.maxX)) {
-                xCollision = true;
-            }
-            if (this.bounds.maxY.between(sprite.bounds.minY, sprite.bounds.maxY) || this.bounds.minY.between(sprite.bounds.minY, sprite.bounds.maxY)) {
-                yCollision = true;
-            }
-            if (xCollision === true && yCollision === true) {
-                //if in collision prevent futher movement
-                return {
-                    'inCollision': true,
-                    'collisionWith': this.name + " in collision with " + sprite.name
-                };
-            } else {
-                return {
-                    'inCollision': false
-                };
+                return false;
             }
         }
     }, {
@@ -1942,8 +1885,7 @@ var Game = function () {
         this.active = active;
         this.shouldUpdate = true;
         this.patterns = [];
-        this.collisionCb = null;
-        this.contactCb = null;
+        this.onUpdateCb = null;
         //Init Mehtods:
         this.setActiveScene();
         //Bind run method - animation request frame call back
@@ -2024,11 +1966,8 @@ var Game = function () {
             if (this.shouldUpdate) {
                 this.updatePatterns();
                 this.activeScene.update();
-                if (this.collisionCb !== null) {
-                    this.collisionCb();
-                }
-                if (this.contactCb !== null) {
-                    this.contactCb();
+                if (this.onUpdateCb !== null) {
+                    this.onUpdateCb();
                 }
             }
             window.requestAnimationFrame(this.run);
@@ -2041,6 +1980,14 @@ var Game = function () {
             } else {
                 this.shouldUpdate = true;
             }
+        }
+    }, {
+        key: "onUpdate",
+        value: function onUpdate(cb) {
+            if (typeof cb !== "function") {
+                console.error("CYL:[Exception] contact methods must be a function");
+            }
+            this.onUpdateCb = cb;
         }
     }, {
         key: "spriteNamed",
@@ -2089,23 +2036,6 @@ var Game = function () {
             this.activeScene.sprites.removeIndex(i);
         }
     }, {
-        key: "setContactMethod",
-        value: function setContactMethod(cb) {
-            if (typeof cb !== "function") {
-                console.error("CYL:[Exception] contact methods must be a function");
-            }
-            this.contactCb = cb;
-        }
-    }, {
-        key: "setCollisionMethod",
-        value: function setCollisionMethod(cb) {
-            //set your collision logic
-            if (typeof cb !== "function") {
-                console.error("CYL:[Exception] collision methods must be a function");
-            }
-            this.collisionCb = cb;
-        }
-    }, {
         key: "addPatternToScene",
         value: function addPatternToScene(pattern, scene) {
             var p = {
@@ -2135,6 +2065,11 @@ var Game = function () {
                 'scenes': this.scenes,
                 'activeScene': this.activeScene
             };
+        }
+    }, {
+        key: "numberOfActiveSprites",
+        get: function get() {
+            return this.activeScene.sprites.length;
         }
     }]);
 
@@ -2426,9 +2361,26 @@ function shoot() {
     game.getSceneNamed("level").addSprite(bullet);
 }
 
-game.setCollisionMethod(function () {
-    if (game.spriteNamed("bullet") === undefined) {
+game.onUpdate(function () {
+    if (this.spriteNamed("bullet") === undefined && this.spritesNamed("invader") === undefined) {
         return;
+    }
+    for (var i = 0; i < this.spritesNamed("bullet").length; i++) {
+        if (this.spritesNamed("bullet")[i] === undefined) {
+            return;
+        }
+        for (var j = 0; j < this.spritesNamed("invader").length; j++) {
+            if (this.spritesNamed("invader")[j] === undefined) {
+                return;
+            }
+            if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
+                this.removeSprite(this.spritesNamed("invader")[j]);
+                this.removeSprite(this.spritesNamed("bullet")[i]);
+            }
+        }
+        if (this.spritesNamed("bullet")[i] !== undefined && this.spritesNamed("bullet")[i].y < 0) {
+            this.removeSprite(this.spritesNamed("bullet")[i]);
+        }
     }
 });
 //# sourceMappingURL=cyl.build.js.map

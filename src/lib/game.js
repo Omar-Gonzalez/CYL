@@ -17,8 +17,7 @@ class Game {
         this.active = active;
         this.shouldUpdate = true;
         this.patterns = [];
-        this.collisionCb = null;
-        this.contactCb = null; 
+        this.onUpdateCb = null;
         //Init Mehtods:
         this.setActiveScene();
         //Bind run method - animation request frame call back
@@ -59,11 +58,8 @@ class Game {
         if (this.shouldUpdate) {
             this.updatePatterns();
             this.activeScene.update();
-            if(this.collisionCb !== null){
-                this.collisionCb();
-            }
-            if(this.contactCb !== null){
-                this.contactCb();
+            if(this.onUpdateCb !== null){
+                this.onUpdateCb();
             }
         }
         window.requestAnimationFrame(this.run);
@@ -75,6 +71,13 @@ class Game {
         } else {
             this.shouldUpdate = true;
         }
+    }
+
+    onUpdate(cb) {
+        if(typeof cb !== "function"){
+            console.error("CYL:[Exception] contact methods must be a function");
+        }
+        this.onUpdateCb = cb;
     }
 
     spriteNamed(name) {
@@ -117,21 +120,6 @@ class Game {
         this.activeScene.sprites.removeIndex(i);
     }
 
-    setContactMethod(cb) {
-        if(typeof cb !== "function"){
-            console.error("CYL:[Exception] contact methods must be a function");
-        }
-        this.contactCb = cb;
-    }
-
-    setCollisionMethod(cb) {
-        //set your collision logic
-        if(typeof cb !== "function"){
-            console.error("CYL:[Exception] collision methods must be a function");
-        }
-        this.collisionCb = cb;
-    }
-
     addPatternToScene(pattern, scene){
         let p = {
             "pattern":pattern,
@@ -151,5 +139,9 @@ class Game {
                 }
             }
         }
+    }
+
+    get numberOfActiveSprites(){
+        return this.activeScene.sprites.length;
     }
 }

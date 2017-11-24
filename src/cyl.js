@@ -187,8 +187,27 @@ function shoot(){
     bullet.y = p.y;
     game.getSceneNamed("level").addSprite(bullet);
 }
-
-game.setCollisionMethod(function(){
-    if(game.spriteNamed("bullet") === undefined){return}
+ 
+game.onUpdate(function() {
+    if (this.spriteNamed("bullet") === undefined && this.spritesNamed("invader") === undefined) {
+        return;
+    }
+    for (let i = 0; i < this.spritesNamed("bullet").length; i++) {
+        if (this.spritesNamed("bullet")[i] === undefined) {
+            return;
+        }
+        for (let j = 0; j < this.spritesNamed("invader").length; j++) {
+            if(this.spritesNamed("invader")[j] === undefined){
+                return;
+            }
+            if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
+                this.removeSprite(this.spritesNamed("invader")[j]);
+                this.removeSprite(this.spritesNamed("bullet")[i]);
+            }
+        }
+        if (this.spritesNamed("bullet")[i] !== undefined && this.spritesNamed("bullet")[i].y < 0) {
+            this.removeSprite(this.spritesNamed("bullet")[i]);
+        }
+    }
 });
 
