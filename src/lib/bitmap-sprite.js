@@ -77,7 +77,7 @@ class BitmapSprite {
             "minX": this.x,
             "minY": this.y,
             "maxY": this.height + this.y
-        }
+        };
     }
 
     inCollisionWith(sprite) {

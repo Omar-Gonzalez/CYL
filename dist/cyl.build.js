@@ -2435,27 +2435,22 @@ function shoot() {
 }
 
 game.onUpdate(function () {
-    if (game.activeScene.name === "level") {
-        if (this.spritesNamed("bullet") === undefined && this.spritesNamed("invader") === undefined) {
-            return;
-        }
-        for (var i = 0; i < this.spritesNamed("bullet").length; i++) {
-            if (this.spritesNamed("bullet")[i] === undefined) {
-                return;
-            }
-            for (var j = 0; j < this.spritesNamed("invader").length; j++) {
-                if (this.spritesNamed("invader")[j] === undefined && this.spritesNamed("bullet")[i] === undefined) {
-                    return;
+    try {
+        if (game.activeScene.name === "level") {
+            for (var i = 0; i < this.spritesNamed("bullet").length; i++) {
+                for (var j = 0; j < this.spritesNamed("invader").length; j++) {
+                    if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
+                        this.removeSprite(this.spritesNamed("invader")[j]);
+                        this.removeSprite(this.spritesNamed("bullet")[i]);
+                    }
                 }
-                if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
-                    this.removeSprite(this.spritesNamed("invader")[j]);
+                if (this.spritesNamed("bullet")[i].y < 0) {
                     this.removeSprite(this.spritesNamed("bullet")[i]);
                 }
             }
-            if (this.spritesNamed("bullet")[i] !== undefined && this.spritesNamed("bullet")[i].y < 0) {
-                this.removeSprite(this.spritesNamed("bullet")[i]);
-            }
         }
+    } catch (e) {
+        //out of index, but whatevs
     }
 });
 //# sourceMappingURL=cyl.build.js.map
