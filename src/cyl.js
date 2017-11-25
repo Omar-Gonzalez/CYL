@@ -1,8 +1,6 @@
 /******
  * CYL ES6 Game Dev Tools 
  * Copyright MIT license 2017
- * Conventions: 
- * _underscore for pseudo private methods 
  */
 
 //Lib Concatenation
@@ -29,9 +27,20 @@
    Sample Game:
 */
 
+CFG.setScreen("fixed", [375, 667]);
 
-CFG.setScreen("fixed",[375,667]);
- 
+let bg1 = {
+    "set": "idle",
+    "src": "assets/bg-menu.jpg"
+};
+
+let bg2 = {
+    "set":"idle",
+    "src": "assets/bg-level.jpg"
+}
+
+let bgMenu = new BitmapSprite("bg", [bg1], 375, 667);
+let bgLevel = new BitmapSprite("bg", [bg2], 375, 667);
 let invader = new ShapeSprite("invader", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
 let player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
 let notice = new LabelSprite("CYL:Game Development Tools 2017", "small");
@@ -39,13 +48,13 @@ let title = new LabelSprite("WEB INVADERS", "large");
 let start = new LabelSprite("Start", "medium");
 let topScores = new LabelSprite("Top Scores", "medium");
 let dialogue = new Dialogue([start, topScores]);
-let menu = new Scene("menu", [invader, notice, title, dialogue, player]);
-let level = new Scene("level", [notice,player]);
+let menu = new Scene("menu", [bgMenu, invader, notice, title, dialogue, player]);
+let level = new Scene("level", [bgLevel, notice, player]);
 let game = new Game([menu, level]);
 game.run();
 
 // 2 - Set up scene
-// Start Screen
+// Menu
 notice.y = menu.frame.height - 50;
 notice.x = menu.frame.width / 2 - notice.frame.width / 2;
 title.y = menu.frame.height / 2;
@@ -55,7 +64,7 @@ invader.x = title.x - invader.frame.width - 20;
 player.x = menu.frame.width / 2 - player.frame.width / 2;
 player.y = menu.frame.height - 150;
 dialogue.updatePos(title.x, menu.frame.height / 2);
-// Game Scene
+// Level
 function placeInvadersWith(level) {
     let xOffset = level.frame.width / 4;
     let yOffset = level.frame.height / 6;
@@ -101,7 +110,7 @@ class InvaderPattern extends Pattern {
     }
 }
 
-let invaderPattern = new InvaderPattern("level","invader",3,1);
+let invaderPattern = new InvaderPattern("level", "invader", 3, 1);
 invaderPattern.xMax = 50;
 game.addPatternToScene(invaderPattern);
 
@@ -186,14 +195,14 @@ player.actionDidStop(function() {
 });
 
 class BulletPattern extends Pattern {
-    update(){}
+    update() {}
 }
 
-let bulletPattern = new BulletPattern("level","bullet",0,-4);
+let bulletPattern = new BulletPattern("level", "bullet", 0, -4);
 game.addPatternToScene(bulletPattern);
 
-function shoot(){
-    let bullet = new ShapeSprite("bullet",[bulletShape.frame1, bulletShape.frame2],1,4);
+function shoot() {
+    let bullet = new ShapeSprite("bullet", [bulletShape.frame1, bulletShape.frame2], 1, 4);
     let p = game.spriteNamed("player");
     bullet.x = p.x;
     bullet.y = p.y;
@@ -201,27 +210,26 @@ function shoot(){
 }
 
 game.onUpdate(function() {
-     if (game.activeScene.name === "level") {
-         if (this.spritesNamed("bullet") === undefined && this.spritesNamed("invader") === undefined) {
-             return;
-         }
-         for (let i = 0; i < this.spritesNamed("bullet").length; i++) {
-             if (this.spritesNamed("bullet")[i] === undefined) {
-                 return;
-             }
-             for (let j = 0; j < this.spritesNamed("invader").length; j++) {
-                 if (this.spritesNamed("invader")[j] === undefined && this.spritesNamed("bullet")[i] === undefined) {
-                     return;
-                 }
-                 if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
-                     this.removeSprite(this.spritesNamed("invader")[j]);
-                     this.removeSprite(this.spritesNamed("bullet")[i]);
-                 }
-             }
-             if (this.spritesNamed("bullet")[i] !== undefined && this.spritesNamed("bullet")[i].y < 0) {
-                 this.removeSprite(this.spritesNamed("bullet")[i]);
-             }
-         }
-     }
- });
-
+    if (game.activeScene.name === "level") {
+        if (this.spritesNamed("bullet") === undefined && this.spritesNamed("invader") === undefined) {
+            return;
+        }
+        for (let i = 0; i < this.spritesNamed("bullet").length; i++) {
+            if (this.spritesNamed("bullet")[i] === undefined) {
+                return;
+            }
+            for (let j = 0; j < this.spritesNamed("invader").length; j++) {
+                if (this.spritesNamed("invader")[j] === undefined && this.spritesNamed("bullet")[i] === undefined) {
+                    return;
+                }
+                if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
+                    this.removeSprite(this.spritesNamed("invader")[j]);
+                    this.removeSprite(this.spritesNamed("bullet")[i]);
+                }
+            }
+            if (this.spritesNamed("bullet")[i] !== undefined && this.spritesNamed("bullet")[i].y < 0) {
+                this.removeSprite(this.spritesNamed("bullet")[i]);
+            }
+        }
+    }
+});

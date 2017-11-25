@@ -2201,8 +2201,6 @@ pShape.mRight2 = {
 /******
  * CYL ES6 Game Dev Tools 
  * Copyright MIT license 2017
- * Conventions: 
- * _underscore for pseudo private methods 
  */
 
 //Lib Concatenation
@@ -2231,6 +2229,18 @@ pShape.mRight2 = {
 
 CFG.setScreen("fixed", [375, 667]);
 
+var bg1 = {
+    "set": "idle",
+    "src": "assets/bg-menu.jpg"
+};
+
+var bg2 = {
+    "set": "idle",
+    "src": "assets/bg-level.jpg"
+};
+
+var bgMenu = new BitmapSprite("bg", [bg1], 375, 667);
+var bgLevel = new BitmapSprite("bg", [bg2], 375, 667);
 var invader = new ShapeSprite("invader", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
 var player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
 var notice = new LabelSprite("CYL:Game Development Tools 2017", "small");
@@ -2238,13 +2248,13 @@ var title = new LabelSprite("WEB INVADERS", "large");
 var start = new LabelSprite("Start", "medium");
 var topScores = new LabelSprite("Top Scores", "medium");
 var dialogue = new Dialogue([start, topScores]);
-var menu = new Scene("menu", [invader, notice, title, dialogue, player]);
-var level = new Scene("level", [notice, player]);
+var menu = new Scene("menu", [bgMenu, invader, notice, title, dialogue, player]);
+var level = new Scene("level", [bgLevel, notice, player]);
 var game = new Game([menu, level]);
 game.run();
 
 // 2 - Set up scene
-// Start Screen
+// Menu
 notice.y = menu.frame.height - 50;
 notice.x = menu.frame.width / 2 - notice.frame.width / 2;
 title.y = menu.frame.height / 2;
@@ -2254,7 +2264,7 @@ invader.x = title.x - invader.frame.width - 20;
 player.x = menu.frame.width / 2 - player.frame.width / 2;
 player.y = menu.frame.height - 150;
 dialogue.updatePos(title.x, menu.frame.height / 2);
-// Game Scene
+// Level
 function placeInvadersWith(level) {
     var xOffset = level.frame.width / 4;
     var yOffset = level.frame.height / 6;
