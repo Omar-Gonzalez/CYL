@@ -51,6 +51,22 @@ class LabelSprite {
         };
     }
 
+    onClick(e,cb){
+        if (cb !== undefined && typeof cb === "function" && this._isClickTarget(e)){
+            cb();
+        }
+    }
+
+    _isClickTarget(e){
+        //Touch between x,y range
+        if (e.x.between(this.x, (this.x + this.frame.width)) && 
+            e.y.between((this.y - this.frame.height), this.y)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     updatePos(x, y) {
         this.x = x;
         this.y = y;

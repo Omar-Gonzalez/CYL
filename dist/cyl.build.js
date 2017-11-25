@@ -1326,12 +1326,12 @@ var ShapeSprite = function () {
         }
     }, {
         key: "mouseActionUpdate",
-        value: function mouseActionUpdate(x, y) {
+        value: function mouseActionUpdate(e) {
             clearInterval(this.constantUpdateInterval);
             this.actionDidStart(null, true);
             var _this = this;
             this.constantUpdateInterval = setInterval(function () {
-                _this.mouseActionWithClick(x, y);
+                _this.mouseActionWithClick(e.x, e.y);
             }, 40);
         }
     }, {
@@ -1382,6 +1382,23 @@ var ShapeSprite = function () {
         key: "setMouseAction",
         value: function setMouseAction(action) {
             this.mouseAction = action;
+        }
+    }, {
+        key: "onClick",
+        value: function onClick(e, cb) {
+            if (cb !== undefined && typeof cb === "function" && this._isClickTarget(e)) {
+                cb();
+            }
+        }
+    }, {
+        key: "_isClickTarget",
+        value: function _isClickTarget(e) {
+            //Touch between x,y range
+            if (e.x.between(this.x, this.x + this.frame.width) && e.y.between(this.y, this.y + this.frame.height)) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }, {
         key: "_callBackTypeError",
@@ -1558,12 +1575,12 @@ var BitmapSprite = function () {
         }
     }, {
         key: "mouseActionUpdate",
-        value: function mouseActionUpdate(x, y) {
+        value: function mouseActionUpdate(e) {
             clearInterval(this.constantUpdateInterval);
             this.actionDidStart(null, true);
             var _this = this;
             this.constantUpdateInterval = setInterval(function () {
-                _this.mouseActionWithClick(x, y);
+                _this.mouseActionWithClick(e.x, e.y);
             }, 40);
         }
     }, {
@@ -1614,6 +1631,23 @@ var BitmapSprite = function () {
         key: "setMouseAction",
         value: function setMouseAction(action) {
             this.mouseAction = action;
+        }
+    }, {
+        key: "onClick",
+        value: function onClick(e, cb) {
+            if (cb !== undefined && typeof cb === "function" && this._isClickTarget(e)) {
+                cb();
+            }
+        }
+    }, {
+        key: "_isClickTarget",
+        value: function _isClickTarget(e) {
+            //Touch between x,y range
+            if (e.x.between(this.x, this.x + this.frame.width) && e.y.between(this.y, this.y + this.frame.height)) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }, {
         key: "_callBackTypeError",
@@ -1680,6 +1714,23 @@ var LabelSprite = function () {
     }
 
     _createClass(LabelSprite, [{
+        key: "onClick",
+        value: function onClick(e, cb) {
+            if (cb !== undefined && typeof cb === "function" && this._isClickTarget(e)) {
+                cb();
+            }
+        }
+    }, {
+        key: "_isClickTarget",
+        value: function _isClickTarget(e) {
+            //Touch between x,y range
+            if (e.x.between(this.x, this.x + this.frame.width) && e.y.between(this.y - this.frame.height, this.y)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }, {
         key: "updatePos",
         value: function updatePos(x, y) {
             this.x = x;
@@ -2180,7 +2231,7 @@ pShape.mRight2 = {
 
 CFG.setScreen("fixed", [375, 667]);
 
-var invader = new ShapeSprite("invadder", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
+var invader = new ShapeSprite("invader", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
 var player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
 var notice = new LabelSprite("CYL:Game Development Tools 2017", "small");
 var title = new LabelSprite("WEB INVADERS", "large");
@@ -2308,9 +2359,21 @@ input.escape(function () {
 });
 
 input.click(function (e) {
-    invader.mouseActionUpdate(e.x, e.y);
-    player.mouseActionUpdate(e.x, e.y);
-    shoot();
+    if (game.activeScene.name === "menu") {
+        invader.mouseActionUpdate(e);
+        start.onClick(e, function () {
+            game.setActiveSceneNamed("level");
+        });
+        topScores.onClick(e, function () {
+            alert("Not yet implemented ;)");
+        });
+    }
+
+    if (game.activeScene.name === "level") {
+        shoot();
+    }
+
+    player.mouseActionUpdate(e);
 });
 
 invader.actionDidStart(function () {
@@ -2362,24 +2425,26 @@ function shoot() {
 }
 
 game.onUpdate(function () {
-    if (this.spriteNamed("bullet") === undefined && this.spritesNamed("invader") === undefined) {
-        return;
-    }
-    for (var i = 0; i < this.spritesNamed("bullet").length; i++) {
-        if (this.spritesNamed("bullet")[i] === undefined) {
+    if (game.activeScene.name === "level") {
+        if (this.spritesNamed("bullet") === undefined && this.spritesNamed("invader") === undefined) {
             return;
         }
-        for (var j = 0; j < this.spritesNamed("invader").length; j++) {
-            if (this.spritesNamed("invader")[j] === undefined) {
+        for (var i = 0; i < this.spritesNamed("bullet").length; i++) {
+            if (this.spritesNamed("bullet")[i] === undefined) {
                 return;
             }
-            if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
-                this.removeSprite(this.spritesNamed("invader")[j]);
+            for (var j = 0; j < this.spritesNamed("invader").length; j++) {
+                if (this.spritesNamed("invader")[j] === undefined && this.spritesNamed("bullet")[i] === undefined) {
+                    return;
+                }
+                if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
+                    this.removeSprite(this.spritesNamed("invader")[j]);
+                    this.removeSprite(this.spritesNamed("bullet")[i]);
+                }
+            }
+            if (this.spritesNamed("bullet")[i] !== undefined && this.spritesNamed("bullet")[i].y < 0) {
                 this.removeSprite(this.spritesNamed("bullet")[i]);
             }
-        }
-        if (this.spritesNamed("bullet")[i] !== undefined && this.spritesNamed("bullet")[i].y < 0) {
-            this.removeSprite(this.spritesNamed("bullet")[i]);
         }
     }
 });

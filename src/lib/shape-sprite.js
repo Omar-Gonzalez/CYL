@@ -171,12 +171,12 @@ class ShapeSprite {
         }
     }
 
-    mouseActionUpdate(x, y) {
+    mouseActionUpdate(e) {
         clearInterval(this.constantUpdateInterval);
         this.actionDidStart(null, true);
         let _this = this;
         this.constantUpdateInterval = setInterval(function() {
-            _this.mouseActionWithClick(x, y);
+            _this.mouseActionWithClick(e.x, e.y);
         }, 40);
 
     }
@@ -223,6 +223,22 @@ class ShapeSprite {
 
     setMouseAction(action) {
         this.mouseAction = action;
+    }
+
+    onClick(e,cb){
+        if (cb !== undefined && typeof cb === "function" && this._isClickTarget(e)){
+            cb();
+        }
+    }
+
+    _isClickTarget(e){
+        //Touch between x,y range
+        if (e.x.between(this.x, (this.x + this.frame.width)) && 
+            e.y.between(this.y, (this.y + this.frame.height))){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     _callBackTypeError() {

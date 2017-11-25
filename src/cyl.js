@@ -32,7 +32,7 @@
 
 CFG.setScreen("fixed",[375,667]);
  
-let invader = new ShapeSprite("invadder", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
+let invader = new ShapeSprite("invader", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
 let player = new ShapeSprite("player", [pShape.idle1, pShape.idle2, pShape.mLeft1, pShape.mLeft2, pShape.mRight1, pShape.mRight2], 7, 12);
 let notice = new LabelSprite("CYL:Game Development Tools 2017", "small");
 let title = new LabelSprite("WEB INVADERS", "large");
@@ -148,9 +148,21 @@ input.escape(function() {
 });
 
 input.click(function(e) {
-    invader.mouseActionUpdate(e.x, e.y);
-    player.mouseActionUpdate(e.x, e.y);
-    shoot();
+    if (game.activeScene.name === "menu") {
+        invader.mouseActionUpdate(e);
+        start.onClick(e, () => {
+            game.setActiveSceneNamed("level");
+        });
+        topScores.onClick(e, () => {
+            alert("Not yet implemented ;)");
+        });
+    }
+
+    if (game.activeScene.name === "level") {
+        shoot();
+    }
+
+    player.mouseActionUpdate(e);
 });
 
 invader.actionDidStart(function() {
@@ -187,27 +199,29 @@ function shoot(){
     bullet.y = p.y;
     game.getSceneNamed("level").addSprite(bullet);
 }
- 
+
 game.onUpdate(function() {
-    if (this.spriteNamed("bullet") === undefined && this.spritesNamed("invader") === undefined) {
-        return;
-    }
-    for (let i = 0; i < this.spritesNamed("bullet").length; i++) {
-        if (this.spritesNamed("bullet")[i] === undefined) {
-            return;
-        }
-        for (let j = 0; j < this.spritesNamed("invader").length; j++) {
-            if(this.spritesNamed("invader")[j] === undefined){
-                return;
-            }
-            if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
-                this.removeSprite(this.spritesNamed("invader")[j]);
-                this.removeSprite(this.spritesNamed("bullet")[i]);
-            }
-        }
-        if (this.spritesNamed("bullet")[i] !== undefined && this.spritesNamed("bullet")[i].y < 0) {
-            this.removeSprite(this.spritesNamed("bullet")[i]);
-        }
-    }
-});
+     if (game.activeScene.name === "level") {
+         if (this.spritesNamed("bullet") === undefined && this.spritesNamed("invader") === undefined) {
+             return;
+         }
+         for (let i = 0; i < this.spritesNamed("bullet").length; i++) {
+             if (this.spritesNamed("bullet")[i] === undefined) {
+                 return;
+             }
+             for (let j = 0; j < this.spritesNamed("invader").length; j++) {
+                 if (this.spritesNamed("invader")[j] === undefined && this.spritesNamed("bullet")[i] === undefined) {
+                     return;
+                 }
+                 if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
+                     this.removeSprite(this.spritesNamed("invader")[j]);
+                     this.removeSprite(this.spritesNamed("bullet")[i]);
+                 }
+             }
+             if (this.spritesNamed("bullet")[i] !== undefined && this.spritesNamed("bullet")[i].y < 0) {
+                 this.removeSprite(this.spritesNamed("bullet")[i]);
+             }
+         }
+     }
+ });
 
