@@ -71,21 +71,37 @@ function placeInvadersWith(level) {
 
     let yRow = 0;
     let xRow = 0;
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 4; i++) {
         let invader = new ShapeSprite("invader", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
         invader.x = xOffset * i;
         if (i === 4 || i === 8) {
             yRow++;
-            xRow = 0;
+            xRow = 40;
         }
-        invader.x = xOffset * xRow;
+        invader.x = (xOffset * xRow) + 40;
         invader.y = yOffset * yRow;
         xRow++;
         game.getSceneNamed("level").addSprite(invader);
     }
 }
 
-placeInvadersWith(level);
+
+// setInterval(()=>{
+//     if(game.activeScene.name === "level"){
+//         placeInvadersWith(level);
+//     }
+// },1500);
+
+let waveDelay = 1500;
+
+function newInvaderWave() {
+    if (game.activeScene.name === "level") {
+        placeInvadersWith(level);
+    }
+    setTimeout(newInvaderWave, waveDelay);
+}
+
+newInvaderWave();
 
 class InvaderPattern extends Pattern {
     update() {
@@ -111,7 +127,7 @@ class InvaderPattern extends Pattern {
 }
 
 let invaderPattern = new InvaderPattern("level", "invader", 3, 1);
-invaderPattern.xMax = 50;
+invaderPattern.xMax = 80;
 game.addPatternToScene(invaderPattern);
 
 //3- Set Input  + Actions

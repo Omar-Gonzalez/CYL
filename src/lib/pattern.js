@@ -4,8 +4,18 @@
  */
 
 class Pattern {
-    constructor(scene, applyFor, xMovement = 0, yMovement = 0) {
-        if(xMovement === undefined || yMovement === undefined){
+    constructor(
+        scene,
+        applyFor,
+        xMovement = 0,
+        yMovement = 0,
+        xProgression = 0,
+        yProgression = 0
+    ) {
+        if (xMovement === undefined || yMovement === undefined) {
+            console.warn("CYL:[Warning] X and Y displacemente where set to default of 0");
+        }
+        if (xProgression === undefined || yProgression === undefined) {
             console.warn("CYL:[Warning] X and Y displacemente where set to default of 0");
         }
         this.scene = scene;
@@ -18,14 +28,14 @@ class Pattern {
         this.cycle = true;
         this.applyFor = applyFor;
 
-        if(this.update === undefined){
+        if (this.update === undefined) {
             console.error("CYL:[Exception]Pattern requires a update method to initialize");
         }
     }
 
     /**
-    * Extends requires Update() Method
-    */
+     * Extends requires Update() Method
+     */
 
     get pos() {
         return {

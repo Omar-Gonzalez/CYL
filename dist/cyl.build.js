@@ -1874,10 +1874,15 @@ var Pattern = function () {
     function Pattern(scene, applyFor) {
         var xMovement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
         var yMovement = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+        var xProgression = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+        var yProgression = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
 
         _classCallCheck(this, Pattern);
 
         if (xMovement === undefined || yMovement === undefined) {
+            console.warn("CYL:[Warning] X and Y displacemente where set to default of 0");
+        }
+        if (xProgression === undefined || yProgression === undefined) {
             console.warn("CYL:[Warning] X and Y displacemente where set to default of 0");
         }
         this.scene = scene;
@@ -1896,8 +1901,8 @@ var Pattern = function () {
     }
 
     /**
-    * Extends requires Update() Method
-    */
+     * Extends requires Update() Method
+     */
 
     _createClass(Pattern, [{
         key: "pos",
@@ -2271,21 +2276,36 @@ function placeInvadersWith(level) {
 
     var yRow = 0;
     var xRow = 0;
-    for (var i = 0; i < 12; i++) {
+    for (var i = 0; i < 4; i++) {
         var _invader = new ShapeSprite("invader", [invShape.idle1, invShape.idle2, invShape.moving1, invShape.moving2], 8, 15);
         _invader.x = xOffset * i;
         if (i === 4 || i === 8) {
             yRow++;
-            xRow = 0;
+            xRow = 40;
         }
-        _invader.x = xOffset * xRow;
+        _invader.x = xOffset * xRow + 40;
         _invader.y = yOffset * yRow;
         xRow++;
         game.getSceneNamed("level").addSprite(_invader);
     }
 }
 
-placeInvadersWith(level);
+// setInterval(()=>{
+//     if(game.activeScene.name === "level"){
+//         placeInvadersWith(level);
+//     }
+// },1500);
+
+var waveDelay = 1500;
+
+function newInvaderWave() {
+    if (game.activeScene.name === "level") {
+        placeInvadersWith(level);
+    }
+    setTimeout(newInvaderWave, waveDelay);
+}
+
+newInvaderWave();
 
 var InvaderPattern = function (_Pattern) {
     _inherits(InvaderPattern, _Pattern);
@@ -2323,7 +2343,7 @@ var InvaderPattern = function (_Pattern) {
 }(Pattern);
 
 var invaderPattern = new InvaderPattern("level", "invader", 3, 1);
-invaderPattern.xMax = 50;
+invaderPattern.xMax = 80;
 game.addPatternToScene(invaderPattern);
 
 //3- Set Input  + Actions
