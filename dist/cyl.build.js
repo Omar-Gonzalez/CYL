@@ -1942,6 +1942,7 @@ var Game = function () {
         this.shouldUpdate = true;
         this.patterns = [];
         this.onUpdateCb = null;
+        this.overCb = null;
         //Init Mehtods:
         this.setActiveScene();
         //Bind run method - animation request frame call back
@@ -2099,6 +2100,45 @@ var Game = function () {
                 "scene": scene
             };
             this.patterns.push(p);
+        }
+    }, {
+        key: "over",
+        value: function over(cb) {
+            if (typeof cb === "function" && this.overCb === null) {
+                this.over = cb;
+                return;
+            }
+            this.overCb();
+        }
+    }, {
+        key: "clearSceneNamed",
+        value: function clearSceneNamed(name) {
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                for (var _iterator4 = this.scenes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var scene = _step4.value;
+
+                    if (scene.name === name) {
+                        scene.sprites = [];
+                    }
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
+            }
         }
     }, {
         key: "updatePatterns",
@@ -2290,12 +2330,6 @@ function placeInvadersWith(level) {
     }
 }
 
-// setInterval(()=>{
-//     if(game.activeScene.name === "level"){
-//         placeInvadersWith(level);
-//     }
-// },1500);
-
 var waveDelay = 1500;
 
 function newInvaderWave() {
@@ -2454,6 +2488,14 @@ function shoot() {
     game.getSceneNamed("level").addSprite(bullet);
 }
 
+game.over(function () {
+    game.setActiveSceneNamed("menu");
+    alert("you loose!");
+    setTimeout(function () {
+        location.reload();
+    }, 10);
+});
+
 game.onUpdate(function () {
     try {
         if (game.activeScene.name === "level") {
@@ -2462,6 +2504,9 @@ game.onUpdate(function () {
                     if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
                         this.removeSprite(this.spritesNamed("invader")[j]);
                         this.removeSprite(this.spritesNamed("bullet")[i]);
+                    }
+                    if (this.spritesNamed("invader")[j].y > 600) {
+                        this.over();
                     }
                 }
                 if (this.spritesNamed("bullet")[i].y < 0) {

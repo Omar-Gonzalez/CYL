@@ -35,7 +35,7 @@ let bg1 = {
 };
 
 let bg2 = {
-    "set":"idle",
+    "set": "idle",
     "src": "assets/bg-level.jpg"
 }
 
@@ -84,13 +84,6 @@ function placeInvadersWith(level) {
         game.getSceneNamed("level").addSprite(invader);
     }
 }
-
-
-// setInterval(()=>{
-//     if(game.activeScene.name === "level"){
-//         placeInvadersWith(level);
-//     }
-// },1500);
 
 let waveDelay = 1500;
 
@@ -225,6 +218,14 @@ function shoot() {
     game.getSceneNamed("level").addSprite(bullet);
 }
 
+game.over(() => {
+    game.setActiveSceneNamed("menu");
+    alert("you loose!");
+    setTimeout(function() {
+        location.reload();
+    }, 10);
+});
+
 game.onUpdate(function() {
     try {
         if (game.activeScene.name === "level") {
@@ -233,6 +234,9 @@ game.onUpdate(function() {
                     if (this.spritesNamed("bullet")[i].inCollisionWith(this.spritesNamed("invader")[j])) {
                         this.removeSprite(this.spritesNamed("invader")[j]);
                         this.removeSprite(this.spritesNamed("bullet")[i]);
+                    }
+                    if (this.spritesNamed("invader")[j].y > 600) {
+                        this.over();
                     }
                 }
                 if (this.spritesNamed("bullet")[i].y < 0) {

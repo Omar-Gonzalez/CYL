@@ -18,6 +18,7 @@ class Game {
         this.shouldUpdate = true;
         this.patterns = [];
         this.onUpdateCb = null;
+        this.overCb = null;
         //Init Mehtods:
         this.setActiveScene();
         //Bind run method - animation request frame call back
@@ -126,6 +127,22 @@ class Game {
             "scene":scene
         };
         this.patterns.push(p);
+    }
+
+    over(cb){
+        if(typeof cb === "function" && this.overCb === null){
+            this.over = cb;
+            return;
+        }
+        this.overCb();
+    }
+
+    clearSceneNamed(name){
+        for(let scene of this.scenes){
+            if (scene.name === name){
+                scene.sprites = [];
+            }
+        }
     }
 
     updatePatterns(){
